@@ -64,6 +64,7 @@ function ItemEditor({ block, itemIndex, ctx }: ItemProps): ReactElement {
       </div>
 
       {note ? <p className="item__note">Заметка: {note}</p> : null}
+      {item.note ? <p className="item__note item__note--tpl">{item.note}</p> : null}
       {ex?.perSide ? <p className="item__hint">Повторы считаются на каждую сторону</p> : null}
 
       {canChangeLoad ? (

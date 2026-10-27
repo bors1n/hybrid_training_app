@@ -12,6 +12,7 @@ import {
 } from '../../domain/sessionEdit.ts';
 import { SESSION_TYPE_LABELS, sessionTypeColorVar } from '../../domain/sessionType.ts';
 import { countPendingSets, sessionDurationMin, summarize } from '../../domain/summary.ts';
+import { dropEmptyBlocks } from '../../domain/templateSession.ts';
 import { formatDecimal, formatDuration } from '../../domain/units.ts';
 import { deleteRecord } from '../../sync/records.ts';
 import { useCatalog } from '../library/useCatalog.ts';
@@ -72,7 +73,11 @@ export function WorkoutScreen(): ReactElement {
   const showClock = !finished && draft.startedAt !== undefined && draft.date === today;
 
   async function complete(mode: 'keep' | 'mark' | 'drop'): Promise<void> {
-    update((s) => finishSession(mode === 'mark' ? markPendingDone(s) : mode === 'drop' ? dropPendingSets(s) : s, Date.now()));
+    // Заготовки из шаблона, в которые так ничего и не внесли (разминка, комплекс без результата), не сохраняются.
+    update((s) => {
+      const handled = mode === 'mark' ? markPendingDone(s) : mode === 'drop' ? dropPendingSets(s) : s;
+      return finishSession(dropEmptyBlocks(handled).session, Date.now());
+    });
     await flush();
     navigate('/', { replace: true });
   }
@@ -84,8 +89,9 @@ export function WorkoutScreen(): ReactElement {
   }
 
   function onFinish(): void {
-    if (draft!.blocks.length === 0) setAsking('empty');
-    else if (countPendingSets(draft!) > 0) setAsking('pending');
+    const cleaned = dropEmptyBlocks(draft!).session;
+    if (cleaned.blocks.length === 0) setAsking('empty');
+    else if (countPendingSets(cleaned) > 0) setAsking('pending');
     else void complete('keep');
   }
 
