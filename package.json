@@ -1,0 +1,29 @@
+{
+  "name": "splav",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "design",
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,cyan \"npm run dev -w server\" \"npm run dev -w client\"",
+    "build": "npm run build -w design && npm run build -w shared && npm run build -w client && npm run build -w server",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p shared && tsc --noEmit -p design && tsc --noEmit -p client && tsc --noEmit -p server",
+    "preview:phone": "npm run build -w client && npm run preview -w client"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "devDependencies": {
+    "@types/node": "^24",
+    "concurrently": "^10.0.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  }
+}

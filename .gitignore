@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.cache/
+server/.data/
+client/public/media/repdb/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example

@@ -1,0 +1,15 @@
+{
+  "name": "@splav/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx src/main.ts",
+    "build": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@splav/shared": "*",
+    "fastify": "^5.12.7"
+  }
+}
