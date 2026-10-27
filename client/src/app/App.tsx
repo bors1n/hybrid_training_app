@@ -1,4 +1,4 @@
-import { useEffect, type ReactElement } from 'react';
+import { lazy, Suspense, useEffect, type ReactElement } from 'react';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router';
 import { useAuth } from '../auth/store.ts';
 import { TabBar } from '../components/TabBar.tsx';
@@ -10,6 +10,9 @@ import { TodayScreen } from '../features/today/TodayScreen.tsx';
 import { WorkoutScreen } from '../features/workout/WorkoutScreen.tsx';
 import { startSync } from '../sync/runtime.ts';
 import { ProfileProvider } from './profile.tsx';
+
+// Импорт нужен редко: разбор CSV и Excel подгружается отдельным куском.
+const ImportScreen = lazy(() => import('../features/profile/ImportScreen.tsx').then((m) => ({ default: m.ImportScreen })));
 
 function TabsLayout(): ReactElement {
   return (
@@ -34,6 +37,7 @@ function Authed(): ReactElement {
             <Route path="library" element={<LibraryScreen />} />
           </Route>
           <Route path="workout/:id" element={<WorkoutScreen />} />
+          <Route path="import" element={<Suspense fallback={<div className="fullscreen" aria-busy="true" />}><ImportScreen /></Suspense>} />
         </Routes>
       </ProfileProvider>
     </BrowserRouter>

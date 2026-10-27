@@ -1,0 +1,32 @@
+/* Импорт и экспорт */
+.imp { background: var(--surface); padding: calc(var(--space-4) + env(safe-area-inset-top)) var(--space-4) calc(var(--space-8) + env(safe-area-inset-bottom)); }
+.imp__head { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-4); }
+.imp__title { margin: 0; font: 700 22px/28px var(--font-display); }
+.round-btn--light { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+.imp__body { display: flex; flex-direction: column; gap: var(--space-3); }
+.imp__body p { margin: 0; }
+.imp__link { text-decoration: none; }
+.imp__file { cursor: pointer; position: relative; }
+.imp__file:focus-within { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+.imp__file-name { font: 500 13px var(--font-data); color: var(--ink-muted); word-break: break-all; }
+.imp__counts { font-size: 13px; color: var(--ink-muted); }
+.imp__actions { display: flex; flex-direction: column; gap: var(--space-2); margin-top: var(--space-2); }
+
+.imp-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); }
+.imp-tile { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-3); display: flex; flex-direction: column; gap: 2px; }
+.imp-tile output { font: 600 28px/32px var(--font-data); }
+
+.imp-issues { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-2) var(--space-3); }
+.imp-issues summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; font-weight: 600; }
+.imp-issues ul { margin: 0 0 var(--space-2); padding-left: var(--space-4); display: flex; flex-direction: column; gap: 6px; font-size: 13px; line-height: 18px; }
+.imp-issues__row { font: 600 12px var(--font-data); color: var(--ink-muted); }
+
+.imp-block { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+.imp-block__title { margin: 0; font: 600 16px/22px var(--font-display); }
+.imp-ex-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-3); }
+.imp-ex { display: flex; flex-direction: column; gap: var(--space-2); }
+.imp-ex__name { font-weight: 600; }
+.imp-changes { margin: 0; padding-left: var(--space-4); display: flex; flex-direction: column; gap: 4px; }
+
+.sheet__status { margin: 0; font-size: 13px; line-height: 18px; color: var(--ink-muted); }
+.sheet__status ul { margin: 4px 0 0; padding-left: var(--space-4); }

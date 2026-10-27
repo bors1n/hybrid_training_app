@@ -28,7 +28,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,csv}'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         // Иллюстрации упражнений (RepDB) не входят в precache: их больше тысячи. Кэшируются при первом просмотре.
