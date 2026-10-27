@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { PullQuerySchema, PushRequestSchema } from '@splav/shared';
+import { checkRecord, PullQuerySchema, PushRequestSchema, type PushResponse, type SyncRecord } from '@splav/shared';
 import { requireUser } from '../auth/routes.ts';
 import type { AuthDeps } from '../auth/service.ts';
 import { pullRecords, pushRecords } from './service.ts';
@@ -16,6 +16,15 @@ export function registerSyncRoutes(app: FastifyInstance, deps: AuthDeps): void {
   app.post('/api/sync', { preHandler }, async (request, reply) => {
     const body = PushRequestSchema.safeParse(request.body);
     if (!body.success) return reply.code(400).send({ error: 'bad_request' });
-    return pushRecords(deps.db, request.user!.id, body.data.records);
+
+    const valid: SyncRecord[] = [];
+    const rejected: PushResponse['rejected'] = [];
+    for (const rec of body.data.records) {
+      const check = checkRecord(rec.collection, rec, rec.data);
+      if (check.ok) valid.push({ ...rec, data: check.data });
+      else rejected.push({ collection: rec.collection, id: rec.id, reason: check.reason });
+    }
+    const result = await pushRecords(deps.db, request.user!.id, valid);
+    return { ...result, rejected };
   });
 }

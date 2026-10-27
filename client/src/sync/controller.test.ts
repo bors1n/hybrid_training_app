@@ -4,6 +4,7 @@ import { createSyncController } from './controller.ts';
 import { AuthError, NetworkError, type Transport } from './engine.ts';
 import { saveRecord } from './records.ts';
 import { syncLabel, type SyncStatus } from './status.ts';
+import { session, template } from '../test/fixtures.ts';
 
 let database: SplavDB;
 beforeEach(async () => {
@@ -12,7 +13,7 @@ beforeEach(async () => {
 });
 
 const okTransport: Transport = {
-  push: async (r) => ({ applied: r.length, stale: [] }),
+  push: async (r) => ({ applied: r.length, stale: [], rejected: [] }),
   pull: async (since) => ({ records: [], cursor: since, hasMore: false }),
 };
 
@@ -25,7 +26,7 @@ function setup(transport: Transport, isOnline = () => true) {
 
 describe('контроллер синхронизации', () => {
   it('успех: syncing → idle, время и счётчик очереди', async () => {
-    await saveRecord('sessions', { id: 'a' }, { database });
+    await saveRecord('sessions', session('a'), { database });
     const { c, log, states } = setup(okTransport);
     await c.trigger();
     expect(states()).toEqual(['syncing', 'idle']);
@@ -34,7 +35,7 @@ describe('контроллер синхронизации', () => {
   });
 
   it('офлайн не обращается к сети, но показывает очередь', async () => {
-    await saveRecord('sessions', { id: 'a' }, { database });
+    await saveRecord('sessions', session('a'), { database });
     const push = vi.fn(okTransport.push);
     const { c, log, states } = setup({ ...okTransport, push }, () => false);
     await c.trigger();
@@ -44,7 +45,7 @@ describe('контроллер синхронизации', () => {
   });
 
   it('сетевая ошибка → offline, очередь цела', async () => {
-    await saveRecord('sessions', { id: 'a' }, { database });
+    await saveRecord('sessions', session('a'), { database });
     const { c, states, log } = setup({
       ...okTransport,
       push: async () => {

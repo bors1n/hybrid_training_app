@@ -1,10 +1,13 @@
 import { PullResponseSchema, PushResponseSchema, type SyncRecord } from '@splav/shared';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SplavDB } from '../../client/src/data/db.ts';
+import { SplavDB, getMeta } from '../../client/src/data/db.ts';
+import { ensureSeed, seedRecords } from '../../client/src/seed/install.ts';
+import { TEMPLATES } from '../../client/src/seed/templates.ts';
 import { AuthError, NetworkError, syncOnce, type Transport } from '../../client/src/sync/engine.ts';
 import { deleteRecord, listRecords, saveRecord } from '../../client/src/sync/records.ts';
 import { createTestApp, type TestApp } from '../../server/src/test-helpers.ts';
+import { session, template } from '../../client/src/test/fixtures.ts';
 
 /** Транспорт клиента поверх настоящего сервера (без сети: fastify.inject). */
 function serverTransport(app: FastifyInstance, sid: string, online = { value: true }): Transport {
@@ -45,7 +48,7 @@ describe('два устройства одного аккаунта', () => {
     const laptopNet = serverTransport(t.app, sid);
 
     // iPhone без сети: запись остаётся в очереди.
-    await saveRecord('sessions', { id: 's1', title: 'Тренировка 1', date: '2026-10-20' }, { database: phone });
+    await saveRecord('sessions', session('s1', { title: 'Тренировка 1', date: '2026-10-20' }), { database: phone });
     await expect(syncOnce(phoneNet, phone)).rejects.toBeInstanceOf(NetworkError);
     expect(await phone.outbox.count()).toBe(1);
     await syncOnce(laptopNet, laptop);
@@ -68,10 +71,10 @@ describe('два устройства одного аккаунта', () => {
     const b = await device();
     const [na, nb] = [serverTransport(t.app, sid), serverTransport(t.app, sid)];
 
-    await saveRecord('sessions', { id: 's1', title: 'до' }, { database: a });
+    await saveRecord('sessions', session('s1', { title: 'до' }), { database: a });
     await syncOnce(na, a);
     await syncOnce(nb, b);
-    await saveRecord('sessions', { id: 's1', title: 'после' }, { database: b });
+    await saveRecord('sessions', session('s1', { title: 'после' }), { database: b });
     await syncOnce(nb, b);
     await syncOnce(na, a);
     expect((await listRecords('sessions', a))[0]).toMatchObject({ title: 'после' });
@@ -83,13 +86,13 @@ describe('два устройства одного аккаунта', () => {
     const b = await device();
     const [na, nb] = [serverTransport(t.app, sid), serverTransport(t.app, sid)];
 
-    await saveRecord('sessions', { id: 's1', title: 'исходная' }, { database: a, now: () => 1000 });
+    await saveRecord('sessions', session('s1', { title: 'исходная' }), { database: a, now: () => 1000 });
     await syncOnce(na, a);
     await syncOnce(nb, b);
 
     // Оба правят офлайн; на B правка позже.
-    await saveRecord('sessions', { id: 's1', title: 'правка A' }, { database: a, now: () => 2000 });
-    await saveRecord('sessions', { id: 's1', title: 'правка B' }, { database: b, now: () => 3000 });
+    await saveRecord('sessions', session('s1', { title: 'правка A' }), { database: a, now: () => 2000 });
+    await saveRecord('sessions', session('s1', { title: 'правка B' }), { database: b, now: () => 3000 });
 
     // Раньше на сервер приходит более старая правка A, затем B.
     await syncOnce(na, a);
@@ -106,11 +109,11 @@ describe('два устройства одного аккаунта', () => {
     const b = await device();
     const [na, nb] = [serverTransport(t.app, sid), serverTransport(t.app, sid)];
 
-    await saveRecord('sessions', { id: 's1', title: 'исходная' }, { database: a, now: () => 1000 });
+    await saveRecord('sessions', session('s1', { title: 'исходная' }), { database: a, now: () => 1000 });
     await syncOnce(na, a);
     await syncOnce(nb, b);
-    await saveRecord('sessions', { id: 's1', title: 'позже' }, { database: b, now: () => 5000 });
-    await saveRecord('sessions', { id: 's1', title: 'раньше' }, { database: a, now: () => 4000 });
+    await saveRecord('sessions', session('s1', { title: 'позже' }), { database: b, now: () => 5000 });
+    await saveRecord('sessions', session('s1', { title: 'раньше' }), { database: a, now: () => 4000 });
 
     await syncOnce(nb, b);
     await syncOnce(na, a); // A отправляет более старую правку: сервер её отклоняет, A получает версию B.
@@ -124,7 +127,7 @@ describe('два устройства одного аккаунта', () => {
     const b = await device();
     const [na, nb] = [serverTransport(t.app, sid), serverTransport(t.app, sid)];
 
-    await saveRecord('sessions', { id: 's1' }, { database: a });
+    await saveRecord('sessions', session('s1'), { database: a });
     await syncOnce(na, a);
     await syncOnce(nb, b);
     expect(await listRecords('sessions', b)).toHaveLength(1);
@@ -139,12 +142,66 @@ describe('два устройства одного аккаунта', () => {
     const sid = await t.login('e2e-bulk@example.com');
     const a = await device();
     const b = await device();
-    for (let i = 0; i < 450; i++) await saveRecord('sessions', { id: `r${i}`, n: i }, { database: a });
+    for (let i = 0; i < 450; i++) await saveRecord('sessions', session(`r${i}`), { database: a });
     await syncOnce(serverTransport(t.app, sid), a);
     const res = await syncOnce(serverTransport(t.app, sid), b);
     expect(res.pulled).toBe(450);
     expect(await b.rows('sessions').count()).toBe(450);
   }, 60_000);
+});
+
+describe('начальные данные (seed)', () => {
+  it('seed одного устройства принимается сервером, доезжает до второго, дублей нет', async () => {
+    const sid = await t.login('e2e-seed@example.com');
+    const a = await device();
+    const b = await device();
+    const [na, nb] = [serverTransport(t.app, sid), serverTransport(t.app, sid)];
+
+    expect(await syncOnce(na, a)).toEqual({ pushed: 0, pulled: 0 });
+    const created = await ensureSeed(a);
+    expect(created).toBe(seedRecords().length);
+    const pushed = await syncOnce(na, a);
+    expect(pushed.pushed).toBe(created);
+    // Сервер ничего не отклонил: иначе очередь осталась бы непустой не по нашей воле, а записи пропали бы.
+    expect(await a.outbox.count()).toBe(0);
+    expect(await getMeta('rejectedRecords', a)).toBeUndefined();
+
+    // Второе устройство сначала синхронизируется, поэтому его seed ничего не создаёт.
+    await syncOnce(nb, b);
+    expect(await b.rows('complexes').count()).toBe(24);
+    expect(await ensureSeed(b)).toBe(0);
+    expect(await b.outbox.count()).toBe(0);
+  });
+
+  it('если оба устройства засеяли независимо, записи сходятся без дублей', async () => {
+    const sid = await t.login('e2e-seed2@example.com');
+    const a = await device();
+    const b = await device();
+    const [na, nb] = [serverTransport(t.app, sid), serverTransport(t.app, sid)];
+    await ensureSeed(a);
+    await ensureSeed(b);
+    await syncOnce(na, a);
+    await syncOnce(nb, b);
+    await syncOnce(na, a);
+    for (const d of [a, b]) {
+      expect(await d.rows('complexes').count()).toBe(24);
+      expect(await d.rows('templates').count()).toBe(3);
+    }
+  });
+
+  it('правка шаблона на одном устройстве побеждает seed на другом', async () => {
+    const sid = await t.login('e2e-seed3@example.com');
+    const a = await device();
+    const b = await device();
+    const [na, nb] = [serverTransport(t.app, sid), serverTransport(t.app, sid)];
+    await ensureSeed(a);
+    await syncOnce(na, a);
+    await syncOnce(nb, b);
+    await saveRecord('templates', { ...TEMPLATES[0]!, title: 'Моя Т1' }, { database: a });
+    await syncOnce(na, a);
+    await syncOnce(nb, b);
+    expect((await b.rows('templates').get('seed:template:t1'))?.['title']).toBe('Моя Т1');
+  });
 });
 
 describe('безопасность', () => {
@@ -153,7 +210,7 @@ describe('безопасность', () => {
     const other = await t.login('e2e-other@example.com');
     const a = await device();
     const intruder = await device();
-    await saveRecord('sessions', { id: 'private', title: 'личное' }, { database: a });
+    await saveRecord('sessions', session('private', { title: 'личное' }), { database: a });
     await syncOnce(serverTransport(t.app, mine), a);
 
     await syncOnce(serverTransport(t.app, other), intruder);
@@ -164,7 +221,7 @@ describe('безопасность', () => {
     const email = 'e2e-expired@example.com';
     const sid = await t.login(email);
     const d = await device();
-    await saveRecord('sessions', { id: 's1' }, { database: d });
+    await saveRecord('sessions', session('s1'), { database: d });
 
     t.clock.t += 91 * 24 * 60 * 60 * 1000;
     await expect(syncOnce(serverTransport(t.app, sid), d)).rejects.toBeInstanceOf(AuthError);

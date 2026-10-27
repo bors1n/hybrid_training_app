@@ -32,10 +32,14 @@ export const PushRequestSchema = z.object({
 });
 export type PushRequest = z.infer<typeof PushRequestSchema>;
 
-/** `stale` — записи, у которых на сервере updatedAt новее; клиент получит их при pull. */
+/**
+ * `stale` — записи, у которых на сервере updatedAt новее; клиент получит их при pull.
+ * `rejected` — записи, не прошедшие проверку схемы: повторять их бессмысленно.
+ */
 export const PushResponseSchema = z.object({
   applied: z.number().int().nonnegative(),
   stale: z.array(z.object({ collection: CollectionSchema, id: z.string() })),
+  rejected: z.array(z.object({ collection: CollectionSchema, id: z.string(), reason: z.string() })).default([]),
 });
 export type PushResponse = z.infer<typeof PushResponseSchema>;
 

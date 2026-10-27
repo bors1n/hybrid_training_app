@@ -1,4 +1,4 @@
-import type { Collection, PullRecord } from '@splav/shared';
+import { RECORD_SCHEMAS, type Collection, type PullRecord, type RecordInput } from '@splav/shared';
 import { db, outboxKey, type Row, type SplavDB } from '../data/db.ts';
 
 type Listener = () => void;
@@ -16,21 +16,22 @@ export interface SaveOptions {
 }
 
 /**
- * Сохраняет запись и ставит её в очередь отправки в одной транзакции.
+ * Проверяет запись по схеме коллекции, сохраняет её и ставит в очередь отправки в одной транзакции.
+ * Невалидная запись не сохраняется (бросает ZodError) — так на сервер не уйдёт то, что он всё равно отклонит.
  * updatedAt растёт строго монотонно: правка в ту же миллисекунду не проиграет предыдущей версии.
  */
-export async function saveRecord<T extends { id: string }>(
-  collection: Collection,
-  data: T & Record<string, unknown>,
+export async function saveRecord<C extends Collection>(
+  collection: C,
+  data: Omit<RecordInput<C>, 'updatedAt' | 'deletedAt'>,
   { database = db, now = Date.now }: SaveOptions = {},
 ): Promise<Row> {
   const table = database.rows(collection);
   const row = await database.transaction('rw', [table, database.outbox], async () => {
     const prev = await table.get(data.id);
     const updatedAt = Math.max(now(), (prev?.updatedAt ?? 0) + 1);
-    const next: Row = { ...data, id: data.id, updatedAt, deletedAt: null };
+    const next = RECORD_SCHEMAS[collection].parse({ ...data, updatedAt, deletedAt: null }) as Row;
     await table.put(next);
-    await database.outbox.put({ key: outboxKey(collection, data.id), collection, id: data.id });
+    await database.outbox.put({ key: outboxKey(collection, next.id), collection, id: next.id });
     return next;
   });
   for (const l of writeListeners) l();

@@ -3,6 +3,7 @@ import type { PullResponse, PushResponse, SyncRecord } from '@splav/shared';
 import { getMeta, SplavDB } from '../data/db.ts';
 import { AuthError, CURSOR_KEY, NetworkError, syncOnce, type Transport } from './engine.ts';
 import { saveRecord } from './records.ts';
+import { session, template } from '../test/fixtures.ts';
 
 let database: SplavDB;
 beforeEach(async () => {
@@ -18,7 +19,7 @@ function fakeTransport(over: Partial<Transport> = {}): Transport & { pushed: Syn
     pulls,
     push: async (records): Promise<PushResponse> => {
       pushed.push(records);
-      return { applied: records.length, stale: [] };
+      return { applied: records.length, stale: [], rejected: [] };
     },
     pull: async (since): Promise<PullResponse> => {
       pulls.push(since);
@@ -30,8 +31,8 @@ function fakeTransport(over: Partial<Transport> = {}): Transport & { pushed: Syn
 
 describe('syncOnce: отправка', () => {
   it('отправляет очередь целиком записями и очищает её', async () => {
-    await saveRecord('sessions', { id: 'a', title: 'A' }, { database });
-    await saveRecord('templates', { id: 'b' }, { database });
+    await saveRecord('sessions', session('a', { title: 'A' }), { database });
+    await saveRecord('templates', template('b'), { database });
     const t = fakeTransport();
     expect(await syncOnce(t, database)).toEqual({ pushed: 2, pulled: 0 });
     expect(t.pushed).toHaveLength(1);
@@ -41,7 +42,7 @@ describe('syncOnce: отправка', () => {
   });
 
   it('без сети очередь сохраняется и уходит при следующей попытке', async () => {
-    await saveRecord('sessions', { id: 'a' }, { database });
+    await saveRecord('sessions', session('a'), { database });
     const down = fakeTransport({
       push: async () => {
         throw new NetworkError('нет сети');
@@ -57,7 +58,7 @@ describe('syncOnce: отправка', () => {
   });
 
   it('при 401 очередь не теряется', async () => {
-    await saveRecord('sessions', { id: 'a' }, { database });
+    await saveRecord('sessions', session('a'), { database });
     const t = fakeTransport({
       push: async () => {
         throw new AuthError('вход');
@@ -68,7 +69,7 @@ describe('syncOnce: отправка', () => {
   });
 
   it('правка во время отправки не теряется и уходит следующей пачкой', async () => {
-    await saveRecord('sessions', { id: 'a', title: 'v1' }, { database, now: () => 100 });
+    await saveRecord('sessions', session('a', { title: 'v1' }), { database, now: () => 100 });
     const sentTitles: unknown[] = [];
     let edited = false;
     const t = fakeTransport({
@@ -77,9 +78,9 @@ describe('syncOnce: отправка', () => {
         if (!edited) {
           edited = true;
           // Пользователь меняет запись, пока идёт первый запрос.
-          await saveRecord('sessions', { id: 'a', title: 'v2' }, { database, now: () => 200 });
+          await saveRecord('sessions', session('a', { title: 'v2' }), { database, now: () => 200 });
         }
-        return { applied: records.length, stale: [] };
+        return { applied: records.length, stale: [], rejected: [] };
       },
     });
     await syncOnce(t, database);
@@ -88,7 +89,7 @@ describe('syncOnce: отправка', () => {
   });
 
   it('большая очередь уходит пачками не больше 200', async () => {
-    for (let i = 0; i < 450; i++) await saveRecord('sessions', { id: `r${i}` }, { database });
+    for (let i = 0; i < 450; i++) await saveRecord('sessions', session(`r${i}`), { database });
     const t = fakeTransport();
     expect((await syncOnce(t, database)).pushed).toBe(450);
     expect(t.pushed.map((b) => b.length)).toEqual([200, 200, 50]);

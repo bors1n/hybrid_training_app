@@ -1,5 +1,6 @@
 import { useState, type ReactElement } from 'react';
 import { useAuth } from '../auth/store.ts';
+import { REPDB_ATTRIBUTION, REPDB_URL } from '../seed/catalog.ts';
 import { triggerSync } from '../sync/runtime.ts';
 import { syncLabel, useSyncStatus } from '../sync/status.ts';
 
@@ -37,6 +38,9 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
         </button>
 
         <p className="stub">Импорт и экспорт, «О приложении» появятся на следующих этапах.</p>
+        <p className="sheet__credit">
+          <a href={REPDB_URL} target="_blank" rel="noreferrer">{REPDB_ATTRIBUTION}</a>
+        </p>
 
         {confirming ? (
           <div className="sheet__confirm" role="alert">

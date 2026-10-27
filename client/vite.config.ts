@@ -31,6 +31,18 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
+        // Иллюстрации упражнений (RepDB) не входят в precache: их больше тысячи. Кэшируются при первом просмотре.
+        runtimeCaching: [
+          {
+            urlPattern: ({ url }) => url.pathname.startsWith('/media/repdb/'),
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'repdb-media',
+              expiration: { maxEntries: 1500, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              cacheableResponse: { statuses: [200] },
+            },
+          },
+        ],
       },
     }),
   ],

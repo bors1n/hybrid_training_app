@@ -41,7 +41,7 @@ describe('доступ', () => {
 describe('push и pull', () => {
   it('записи возвращаются с растущим seq', async () => {
     const sid = await t.login('basic@example.com');
-    expect(await push(sid, [rec('a', 10), rec('b', 20)])).toEqual({ applied: 2, stale: [] });
+    expect(await push(sid, [rec('a', 10), rec('b', 20)])).toMatchObject({ applied: 2, stale: [], rejected: [] });
     const got = await pull(sid);
     expect(got.records.map((r) => r.id)).toEqual(['a', 'b']);
     expect(got.records[0]!.seq).toBeLessThan(got.records[1]!.seq);
@@ -92,19 +92,55 @@ describe('push и pull', () => {
   });
 });
 
+describe('проверка содержимого записей', () => {
+  it('невалидная запись отклоняется отдельно, остальные принимаются', async () => {
+    const sid = await t.login('schema@example.com');
+    const bad = rec('bad', 5, { data: { ...rec('bad', 5).data, date: '2026-13-45' } });
+    const res = await push(sid, [rec('good', 5), bad]);
+    expect(res.applied).toBe(1);
+    expect(res.rejected).toHaveLength(1);
+    expect(res.rejected[0]).toMatchObject({ collection: 'sessions', id: 'bad' });
+    expect((await pull(sid)).records.map((r) => r.id)).toEqual(['good']);
+  });
+
+  it('данные должны совпадать с конвертом: id, updatedAt, deletedAt', async () => {
+    const sid = await t.login('envelope@example.com');
+    const base = rec('x', 5);
+    const res = await push(sid, [
+      { ...base, id: 'y' },
+      { ...base, updatedAt: 6 },
+      { ...base, deletedAt: 5 },
+    ]);
+    expect(res.applied).toBe(0);
+    expect(res.rejected).toHaveLength(3);
+  });
+
+  it('RPE вне 1–10 не принимается', async () => {
+    const sid = await t.login('rpe@example.com');
+    const bad = rec('r', 5, { data: { ...rec('r', 5).data, rpe: 11 } });
+    expect((await push(sid, [bad])).rejected).toHaveLength(1);
+  });
+
+  it('неизвестные поля отбрасываются', async () => {
+    const sid = await t.login('strip@example.com');
+    await push(sid, [rec('s', 5, { data: { ...rec('s', 5).data, secret: 'x' } })]);
+    expect((await pull(sid)).records[0]!.data).not.toHaveProperty('secret');
+  });
+});
+
 describe('last-write-wins', () => {
   it('старая версия не затирает новую и попадает в stale', async () => {
     const sid = await t.login('lww@example.com');
     await push(sid, [rec('a', 100)]);
     const res = await push(sid, [rec('a', 50)]);
-    expect(res).toEqual({ applied: 0, stale: [{ collection: 'sessions', id: 'a' }] });
+    expect(res).toMatchObject({ applied: 0, stale: [{ collection: 'sessions', id: 'a' }] });
     expect((await pull(sid)).records[0]!.updatedAt).toBe(100);
   });
 
   it('более новая версия заменяет старую', async () => {
     const sid = await t.login('lww2@example.com');
     await push(sid, [rec('a', 100)]);
-    expect(await push(sid, [rec('a', 200)])).toEqual({ applied: 1, stale: [] });
+    expect(await push(sid, [rec('a', 200)])).toMatchObject({ applied: 1, stale: [], rejected: [] });
     const got = await pull(sid);
     expect(got.records).toHaveLength(1);
     expect(got.records[0]!.data).toMatchObject({ title: 't-a-200' });
@@ -135,7 +171,7 @@ describe('изоляция пользователей', () => {
     expect((await pull(b)).records).toHaveLength(0);
 
     // B отправляет запись с тем же id и более новым временем: у A ничего не меняется.
-    expect(await push(b, [rec('secret', 999)])).toEqual({ applied: 1, stale: [] });
+    expect(await push(b, [rec('secret', 999)])).toMatchObject({ applied: 1, stale: [], rejected: [] });
     const aRecords = (await pull(a)).records;
     expect(aRecords).toHaveLength(1);
     expect(aRecords[0]!.updatedAt).toBe(10);

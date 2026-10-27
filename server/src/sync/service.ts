@@ -8,7 +8,7 @@ import { records, users } from '../db/schema.ts';
  * строго новее серверной (last-write-wins); остальные возвращаются как `stale`
  * (включая точное совпадение времени: повторная отправка той же записи ничего не меняет).
  */
-export async function pushRecords(db: Db, userId: string, batch: SyncRecord[]): Promise<PushResponse> {
+export async function pushRecords(db: Db, userId: string, batch: SyncRecord[]): Promise<Omit<PushResponse, 'rejected'>> {
   if (batch.length === 0) return { applied: 0, stale: [] };
 
   return db.transaction(async (tx) => {

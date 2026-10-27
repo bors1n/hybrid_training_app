@@ -14,10 +14,19 @@ export interface Transport {
 
 export const CURSOR_KEY = 'syncCursor';
 const MAX_PUSH_ROUNDS = 50;
+export const REJECTED_KEY = 'rejectedRecords';
+const REJECTED_KEEP = 20;
 
 export interface SyncResult {
   pushed: number;
   pulled: number;
+}
+
+/** Сервер не принял эти записи и не примет повторно: не держим их в очереди, но оставляем след для диагностики. */
+async function noteRejected(rejected: PushResponse['rejected'], database: SplavDB): Promise<void> {
+  console.error('Сервер отклонил записи', rejected);
+  const prev = (await getMeta<unknown[]>(REJECTED_KEY, database)) ?? [];
+  await setMeta(REJECTED_KEY, [...prev, ...rejected.map((r) => ({ ...r, at: Date.now() }))].slice(-REJECTED_KEEP), database);
 }
 
 async function pushPending(transport: Transport, database: SplavDB): Promise<number> {
@@ -36,8 +45,9 @@ async function pushPending(transport: Transport, database: SplavDB): Promise<num
     if (orphans.length > 0) await database.outbox.bulkDelete(orphans);
     if (batch.length === 0) continue;
 
-    await transport.push(batch);
+    const response = await transport.push(batch);
     pushed += batch.length;
+    if (response.rejected.length > 0) await noteRejected(response.rejected, database);
 
     // Строку убираем из очереди, только если её не меняли во время отправки.
     await database.transaction('rw', [database.outbox, ...new Set(batch.map((b) => database.rows(b.collection)))], async () => {

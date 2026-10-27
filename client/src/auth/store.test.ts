@@ -3,6 +3,7 @@ import type { User } from '@splav/shared';
 import { clearLocalData, db, getMeta, setMeta } from '../data/db.ts';
 import { AuthError, NetworkError } from '../sync/engine.ts';
 import { saveRecord } from '../sync/records.ts';
+import { session, template } from '../test/fixtures.ts';
 
 vi.mock('./api.ts', () => ({
   authApi: { me: vi.fn(), logout: vi.fn(), requestCode: vi.fn(), verifyCode: vi.fn() },
@@ -29,7 +30,7 @@ describe('init', () => {
   });
 
   it('401 → экран входа, локальные данные не трогаем', async () => {
-    await saveRecord('sessions', { id: 'a' });
+    await saveRecord('sessions', session('a'));
     vi.mocked(authApi.me).mockRejectedValue(new AuthError('x'));
     await useAuth.getState().init();
     expect(useAuth.getState().status).toBe('anon');
@@ -53,7 +54,7 @@ describe('init', () => {
 describe('completeLogin', () => {
   it('тот же пользователь: данные и очередь остаются', async () => {
     await setMeta('user', alex);
-    await saveRecord('sessions', { id: 'a' });
+    await saveRecord('sessions', session('a'));
     await useAuth.getState().completeLogin(alex);
     expect(await db.rows('sessions').count()).toBe(1);
     expect(await db.outbox.count()).toBe(1);
@@ -61,7 +62,7 @@ describe('completeLogin', () => {
 
   it('другой пользователь: чужие данные удаляются', async () => {
     await setMeta('user', alex);
-    await saveRecord('sessions', { id: 'a' });
+    await saveRecord('sessions', session('a'));
     await useAuth.getState().completeLogin(bob);
     expect(await db.rows('sessions').count()).toBe(0);
     expect(await db.outbox.count()).toBe(0);
@@ -73,7 +74,7 @@ describe('completeLogin', () => {
 describe('logout', () => {
   it('очищает локальные данные и выходит', async () => {
     await setMeta('user', alex);
-    await saveRecord('sessions', { id: 'a' });
+    await saveRecord('sessions', session('a'));
     vi.mocked(authApi.logout).mockResolvedValue();
     useAuth.setState({ status: 'authed', user: alex });
     await useAuth.getState().logout();

@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable, type Table } from 'dexie';
-import { COLLECTIONS, type Collection } from '@splav/shared';
+import type { Collection } from '@splav/shared';
 
 export interface MetaRow {
   key: string;
@@ -30,11 +30,24 @@ export class SplavDB extends Dexie {
   constructor(name = 'splav') {
     super(name);
     this.version(1).stores({ meta: 'key' });
-    // Индексы коллекций (дата, тип и т. п.) добавит этап 1.
     this.version(2).stores({
       meta: 'key',
       outbox: 'key',
-      ...Object.fromEntries(COLLECTIONS.map((c) => [c, 'id, updatedAt'])),
+      sessions: 'id, updatedAt',
+      templates: 'id, updatedAt',
+      queues: 'id, updatedAt',
+      complexQueue: 'id, updatedAt',
+      complexes: 'id, updatedAt',
+      exercises: 'id, updatedAt',
+      exerciseNotes: 'id, updatedAt',
+      exerciseAliases: 'id, updatedAt',
+      settings: 'id, updatedAt',
+    });
+    // Поля deletedAt не индексируются: null не может быть ключом Dexie, удалённые отсеиваются в коде.
+    this.version(3).stores({
+      sessions: 'id, date, updatedAt',
+      exerciseNotes: 'id, exerciseId, updatedAt',
+      exerciseAliases: 'id, exerciseId, updatedAt',
     });
   }
 

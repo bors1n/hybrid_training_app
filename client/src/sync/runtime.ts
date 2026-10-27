@@ -1,3 +1,4 @@
+import { ensureSeed } from '../seed/install.ts';
 import { createSyncController, type SyncController } from './controller.ts';
 import { httpTransport } from './http.ts';
 import { onLocalWrite } from './records.ts';
@@ -18,7 +19,21 @@ export function triggerSync(): void {
  * старт, возврат в сеть, возврат в приложение, раз в минуту пока оно открыто, 2 с после записи.
  */
 export function startSync(onUnauth: () => void): () => void {
-  const c = createSyncController({ transport: httpTransport, onStatus: setSyncStatus, onUnauth });
+  let seeded = false;
+  const c: SyncController = createSyncController({
+    transport: httpTransport,
+    onStatus: (patch) => {
+      setSyncStatus(patch);
+      // Начальные данные создаём только после первой успешной синхронизации: так серверные записи в приоритете.
+      if (patch.lastSyncAt !== undefined && !seeded) {
+        seeded = true;
+        void ensureSeed().then((created) => {
+          if (created > 0) void c.trigger();
+        });
+      }
+    },
+    onUnauth,
+  });
   controller = c;
   let afterWrite: ReturnType<typeof setTimeout> | undefined;
 
