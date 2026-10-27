@@ -1,11 +1,14 @@
-import type { ReactElement } from 'react';
+import { useEffect, type ReactElement } from 'react';
 import { BrowserRouter, Outlet, Route, Routes } from 'react-router';
+import { useAuth } from '../auth/store.ts';
 import { TabBar } from '../components/TabBar.tsx';
+import { LoginScreen } from '../features/auth/LoginScreen.tsx';
 import { LibraryScreen } from '../features/library/LibraryScreen.tsx';
 import { PlanScreen } from '../features/plan/PlanScreen.tsx';
 import { ProgressScreen } from '../features/progress/ProgressScreen.tsx';
 import { TodayScreen } from '../features/today/TodayScreen.tsx';
 import { WorkoutScreen } from '../features/workout/WorkoutScreen.tsx';
+import { startSync } from '../sync/runtime.ts';
 import { ProfileProvider } from './profile.tsx';
 
 function TabsLayout(): ReactElement {
@@ -17,7 +20,9 @@ function TabsLayout(): ReactElement {
   );
 }
 
-export function App(): ReactElement {
+function Authed(): ReactElement {
+  const markUnauthenticated = useAuth((s) => s.markUnauthenticated);
+  useEffect(() => startSync(markUnauthenticated), [markUnauthenticated]);
   return (
     <BrowserRouter>
       <ProfileProvider>
@@ -33,4 +38,16 @@ export function App(): ReactElement {
       </ProfileProvider>
     </BrowserRouter>
   );
+}
+
+export function App(): ReactElement | null {
+  const status = useAuth((s) => s.status);
+  const init = useAuth((s) => s.init);
+  useEffect(() => {
+    void init();
+  }, [init]);
+
+  if (status === 'loading') return <div className="splash" aria-busy="true" />;
+  if (status === 'anon') return <LoginScreen />;
+  return <Authed />;
 }

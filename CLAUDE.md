@@ -6,14 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 SPLAV — PWA на русском для iPhone: журнал гибридных тренировок (сила, кардио, функциональные комплексы и мобильность в одном месте) с аккаунтом и синхронизацией. После MVP в этом же репозитории появится медиасайт Hybrid Training Russia на Astro.
 
-Работа идёт по этапам из `docs/implementation_plan.md`: 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 (деплой) → сайт С0–С3. Этап 0 (каркас) готов; текущее состояние — в README.md, принятые решения — в DECISIONS.md.
+Работа идёт по этапам из `docs/implementation_plan.md`: 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 (деплой) → сайт С0–С3. Этапы 0 (каркас) и 0.5 (аккаунт и синхронизация) готовы; текущее состояние — в README.md, принятые решения — в DECISIONS.md.
 
 ## Команды
 
 ```bash
 npm install
 npm run dev          # сервер :8787 + клиент :5173 (Vite проксирует /api)
-npm test             # Vitest по всем пакетам (projects)
+npm test             # Vitest по всем пакетам (projects: shared, design, client, server, tests)
 npx vitest run client/src/data/db.test.ts   # один файл
 npx vitest run -t "название теста"          # один тест
 npm run typecheck    # tsc --noEmit по пакетам
@@ -21,6 +21,8 @@ npm run build        # design → shared → client (PWA) → server
 npm run build -w design   # пересобрать tokens.css после правки tokens.json
 npm run preview:phone     # сборка + vite preview :4173 для туннеля на iPhone
 ```
+
+Сквозные тесты (клиентская синхронизация против настоящего сервера) — в `tests/e2e/`, запуск: `npx vitest run --project e2e`. Код входа в dev печатается в консоль сервера (`npm run dev`); база — PGlite в `server/.data/` (при сбое удалить папку).
 
 Клиент импортирует токены как `@splav/design/tokens.css` (файл генерируется, в git не лежит). Если стили пропали — запусти `npm run build -w design`. Пути в TS-импортах пишутся с расширением `.ts`.
 
@@ -62,6 +64,7 @@ npm run preview:phone     # сборка + vite preview :4173 для тунне�
   - на клиенте `outbox` с ключом `collection:id`; `user_id` берётся только из сессии.
 - Каталог упражнений RepDB статичен и лежит в бандле. Синхронизируются только свои упражнения, заметки и сопоставления. У seed-записей детерминированные id (`seed:*`), чтобы первый вход с двух устройств не плодил дубли.
 - Следующий шаблон и комплекс вычисляются из истории завершённых тренировок, а не хранятся счётчиком.
+- Клиентский слой синхронизации: `client/src/sync/` — `records.ts` (`saveRecord`/`deleteRecord`/`applyRemote`: всё, что меняет данные, обязано идти через них, иначе запись не попадёт в `outbox`), `engine.ts` (push → pull), `controller.ts` (состояния и single-flight), `runtime.ts` (браузерные триггеры). Аккаунт: `client/src/auth/store.ts`. Сервер: `server/src/{auth,sync,db}/`.
 - Клиент и API на одном origin: в dev `/api` проксирует Vite, в проде — Caddy. Сессия — httpOnly-cookie.
 
 ## Данные и форматы

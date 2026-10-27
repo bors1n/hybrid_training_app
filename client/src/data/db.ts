@@ -1,16 +1,45 @@
-import Dexie, { type EntityTable } from 'dexie';
+import Dexie, { type EntityTable, type Table } from 'dexie';
+import { COLLECTIONS, type Collection } from '@splav/shared';
 
 export interface MetaRow {
   key: string;
   value: unknown;
 }
 
+/** Общая форма синхронизируемой записи; остальные поля зависят от коллекции (схемы — этап 1). */
+export interface Row {
+  id: string;
+  updatedAt: number;
+  deletedAt: number | null;
+  [field: string]: unknown;
+}
+
+/** Очередь неотправленных изменений. Ключ `collection:id` схлопывает повторные правки одной записи. */
+export interface OutboxRow {
+  key: string;
+  collection: Collection;
+  id: string;
+}
+
+export const outboxKey = (collection: Collection, id: string): string => `${collection}:${id}`;
+
 export class SplavDB extends Dexie {
   meta!: EntityTable<MetaRow, 'key'>;
+  outbox!: EntityTable<OutboxRow, 'key'>;
 
   constructor(name = 'splav') {
     super(name);
     this.version(1).stores({ meta: 'key' });
+    // Индексы коллекций (дата, тип и т. п.) добавит этап 1.
+    this.version(2).stores({
+      meta: 'key',
+      outbox: 'key',
+      ...Object.fromEntries(COLLECTIONS.map((c) => [c, 'id, updatedAt'])),
+    });
+  }
+
+  rows(collection: Collection): Table<Row, string> {
+    return this.table(collection);
   }
 }
 
@@ -22,4 +51,15 @@ export async function getMeta<T>(key: string, database: SplavDB = db): Promise<T
 
 export async function setMeta(key: string, value: unknown, database: SplavDB = db): Promise<void> {
   await database.meta.put({ key, value });
+}
+
+export async function deleteMeta(key: string, database: SplavDB = db): Promise<void> {
+  await database.meta.delete(key);
+}
+
+/** Полная очистка локальных данных (выход из аккаунта, смена пользователя). */
+export async function clearLocalData(database: SplavDB = db): Promise<void> {
+  await database.transaction('rw', database.tables, async () => {
+    await Promise.all(database.tables.map((t) => t.clear()));
+  });
 }
