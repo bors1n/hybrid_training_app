@@ -1,0 +1,23 @@
+---
+import { RUBRICS, rubricPath, type RubricKey } from '../lib/articles.ts';
+
+interface Props {
+  /** Выбранная рубрика; null — «Все». */
+  current?: RubricKey | null;
+}
+const { current = null } = Astro.props;
+---
+
+<nav class="rubrics" aria-label="Рубрики">
+  <a href="/articles/" class:list={['rubrics__item', { 'rubrics__item--on': current === null }]} aria-current={current === null ? 'page' : undefined}>Все</a>
+  {RUBRICS.map((r) => (
+    <a href={rubricPath(r.key)} class:list={['rubrics__item', { 'rubrics__item--on': current === r.key }]} aria-current={current === r.key ? 'page' : undefined}>{r.label}</a>
+  ))}
+</nav>
+
+<style>
+  .rubrics { display: flex; flex-wrap: wrap; gap: 8px; font-weight: 500; font-size: 14px; }
+  .rubrics__item { min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 999px; background: var(--surface); color: var(--ink); text-decoration: none; }
+  .rubrics__item:hover { background: var(--line); color: var(--ink); }
+  .rubrics__item--on, .rubrics__item--on:hover { background: var(--night); color: #fff; }
+</style>

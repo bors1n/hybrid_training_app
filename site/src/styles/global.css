@@ -39,3 +39,17 @@ h1, h2, h3, p { overflow-wrap: break-word; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: 12px; top: -60px; z-index: 10; padding: 10px 16px; background: var(--sky); color: var(--night); border-radius: 999px; font-weight: 600; text-decoration: none; }
 .skip:focus { top: 12px; }
+
+/* Плавность: прокрутка к якорям, переходы ссылок и кнопок, появление блоков при прокрутке.
+   Всё включается только при обычных настройках движения; без JavaScript контент виден сразу. */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  a, .btn { transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0s), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+  }
+  html.js [data-reveal].is-in { opacity: 1; transform: none; will-change: auto; }
+}

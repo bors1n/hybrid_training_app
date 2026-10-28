@@ -1,12 +1,14 @@
 ---
-import ArticleCard from '../components/ArticleCard.astro';
 import Button from '../components/Button.astro';
 import HtrAvatar from '../components/HtrAvatar.astro';
 import SplavWordmark from '../components/SplavWordmark.astro';
 import Sticker from '../components/Sticker.astro';
-import TrackBand from '../components/TrackBand.astro';
+import RaceTrack from '../components/RaceTrack.astro';
 import { SITE } from '../config.ts';
 import Base from '../layouts/Base.astro';
+import { loadArticles } from '../lib/collection.ts';
+import RubricNav from '../components/RubricNav.astro';
+import ArticleList from '../components/ArticleList.astro';
 
 const basics = [
   { dots: ['#1D46E8', '#3091D8'], tag: 'Баланс', title: '2–3 силовых и 2–3 кардио в неделю', text: 'Ни железо, ни бег не доминируют. Отдельные тренировки могут сочетать оба режима.' },
@@ -14,13 +16,7 @@ const basics = [
   { dots: ['#7D8796'], tag: 'Восстановление', title: 'Тяжёлые дни разводим', text: 'Спринт во вторник и присед в пятницу лучше, чем спринт и присед подряд. Техника важнее скорости.' },
 ];
 
-// TODO (этап С2): карточки берутся из коллекции статей, а не из этого списка.
-const rubrics = ['Все', 'Программы', 'Бег', 'Силовые', 'Комплексы', 'Восстановление'];
-const fresh = [
-  { rubric: 'Программы', title: 'Цикл из трёх тренировок: Т1 → Т2 → Т3', photoNote: 'становая тяга', readingMin: 8 },
-  { rubric: 'Бег', title: 'Зона 2: темп 8:20–8:45 и почему он работает', photoNote: 'утренняя пробежка', readingMin: 6 },
-  { rubric: 'Комплексы', title: 'AMRAP, EMOM и Табата: как читать комплекс', photoNote: 'SkiErg', readingMin: 7 },
-];
+const fresh = (await loadArticles()).slice(0, 3);
 
 const splavPoints = [
   { color: '#1D46E8', text: 'Любая тренировка: зал, площадка, бег, вело, комплексы' },
@@ -51,12 +47,12 @@ const splavPoints = [
       </div>
     </section>
 
-    <TrackBand
+    <RaceTrack
       label="Формула гибридной недели"
       stats={[
         { value: '2–3', label: 'Силовых в неделю' },
         { value: '2–3', label: 'Кардио в неделю' },
-        { value: '60–70%', label: 'Пульса в зоне 2', accent: true },
+        { value: '60–70%', label: 'Пульса в зоне 2' },
         { value: '12–16', label: 'Недель на первый цикл' },
       ]}
     />
@@ -84,13 +80,9 @@ const splavPoints = [
   <section class="section wrap" aria-labelledby="fresh-title">
     <div class="section__row">
       <h2 id="fresh-title" class="h2">Свежие статьи</h2>
-      <nav class="rubrics" aria-label="Рубрики">
-        {rubrics.map((r, i) => <a href="/articles/" class:list={['rubrics__item', { 'rubrics__item--on': i === 0 }]} aria-current={i === 0 ? 'page' : undefined}>{r}</a>)}
-      </nav>
+      <RubricNav current={null} />
     </div>
-    <div class="cards">
-      {fresh.map((a) => <ArticleCard href="/articles/" rubric={a.rubric} title={a.title} photoNote={a.photoNote} readingMin={a.readingMin} />)}
-    </div>
+    <ArticleList articles={fresh} empty="Статей пока нет. Первые появятся совсем скоро." />
   </section>
 
   <section class="section wrap" aria-labelledby="splav-title">
@@ -166,12 +158,6 @@ const splavPoints = [
   .basic__title { margin: 0; font: 600 22px/1.2 var(--font-display); }
   .basic__text { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.5; }
 
-  .rubrics { display: flex; flex-wrap: wrap; gap: 8px; font-weight: 500; font-size: 14px; }
-  .rubrics__item { min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 999px; background: var(--surface); color: var(--ink); text-decoration: none; }
-  .rubrics__item:hover { background: var(--line); color: var(--ink); }
-  .rubrics__item--on { background: var(--night); color: #fff; }
-  .rubrics__item--on:hover { background: var(--night); color: #fff; }
-  .cards { display: flex; flex-wrap: wrap; gap: 24px; }
 
   .splav { background: var(--surface); border-radius: 28px; padding: clamp(28px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
   .splav__text { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 22px; align-items: flex-start; }

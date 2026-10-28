@@ -1,5 +1,25 @@
 ---
-import StubPage from '../../components/StubPage.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import RubricNav from '../../components/RubricNav.astro';
+import Base from '../../layouts/Base.astro';
+import { loadArticles } from '../../lib/collection.ts';
+
+const articles = await loadArticles();
 ---
 
-<StubPage title="Статьи" label="Рубрики" text="Раздел наполняется: здесь будут статьи о программах, беге, силовых, комплексах и восстановлении." />
+<Base title="Статьи" description="Программы, бег, силовые, комплексы и восстановление: разборы гибридных тренировок." headerOnNight={false}>
+  <section class="page wrap">
+    <div class="page__head">
+      <span class="label">Рубрики</span>
+      <h1 class="page__title">Статьи</h1>
+    </div>
+    <RubricNav current={null} />
+    <ArticleList articles={articles} empty="Статей пока нет. Первые появятся совсем скоро." />
+  </section>
+</Base>
+
+<style>
+  .page { padding-block: 56px 96px; display: flex; flex-direction: column; gap: 28px; }
+  .page__head { display: flex; flex-direction: column; gap: 12px; }
+  .page__title { margin: 0; font: 800 clamp(34px, 5vw, 64px) / 1 var(--font-display); letter-spacing: -0.03em; }
+</style>

@@ -2,13 +2,15 @@ import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
 import { FOOTER_NAV, NAV } from './config.ts';
 import About from './pages/about/index.astro';
-import Articles from './pages/articles/index.astro';
+import ArticleList from './components/ArticleList.astro';
+import RubricNav from './components/RubricNav.astro';
+
 import Index from './pages/index.astro';
 import Splav from './pages/splav/index.astro';
 
-async function render(component: Parameters<AstroContainer['renderToString']>[0], path = '/') {
+async function render(component: Parameters<AstroContainer['renderToString']>[0], path = '/', props?: Record<string, unknown>) {
   const container = await AstroContainer.create();
-  return container.renderToString(component, { request: new Request(`http://localhost${path}`) });
+  return container.renderToString(component, { request: new Request(`http://localhost${path}`), props });
 }
 
 describe('главная страница', () => {
@@ -30,7 +32,7 @@ describe('главная страница', () => {
 
   it('меню ведёт только на существующие страницы сайта', () => {
     const internal = [...NAV, ...FOOTER_NAV].map((n) => n.href).filter((h) => h.startsWith('/'));
-    for (const href of internal) expect(['/articles/', '/splav/', '/about/', '/articles/?rubric=complexes']).toContain(href);
+    for (const href of internal) expect(['/articles/', '/splav/', '/about/', '/rubrics/complexes/']).toContain(href);
   });
 
   it('все картинки-логотипы доступны скринридеру: названия вместо пустых ссылок', async () => {
@@ -41,9 +43,38 @@ describe('главная страница', () => {
   });
 });
 
+describe('рубрики и список статей', () => {
+  it('«Все» выбрана по умолчанию; у каждой рубрики своя ссылка', async () => {
+    const html = await render(RubricNav, '/articles/', { current: null });
+    expect(html.match(/aria-current="page"/g)).toHaveLength(1);
+    expect(html).toMatch(/aria-current="page"[^>]*>Все</);
+    for (const href of ['/rubrics/programs/', '/rubrics/running/', '/rubrics/strength/', '/rubrics/complexes/', '/rubrics/recovery/']) expect(html).toContain(`href="${href}"`);
+  });
+
+  it('текущая рубрика отмечена, «Все» — нет', async () => {
+    const html = await render(RubricNav, '/rubrics/running/', { current: 'running' });
+    expect(html).toMatch(/aria-current="page"[^>]*>Бег</);
+    expect(html).not.toMatch(/aria-current="page"[^>]*>Все</);
+  });
+
+  it('карточки ведут на страницы статей и показывают время чтения', async () => {
+    const html = await render(ArticleList, '/', { articles: [{ slug: 'a-b', title: 'Заголовок', rubric: 'running', readingMin: 6 }], empty: 'пусто' });
+    expect(html).toContain('href="/articles/a-b/"');
+    expect(html).toContain('Заголовок');
+    expect(html).toContain('6 мин чтения');
+    expect(html).toContain('>Бег<');
+    expect(html).not.toContain('пусто');
+  });
+
+  it('без статей — пояснение вместо пустого места', async () => {
+    const html = await render(ArticleList, '/', { articles: [], empty: 'В рубрике «Бег» пока нет статей.' });
+    expect(html).toContain('В рубрике «Бег» пока нет статей.');
+    expect(html).not.toContain('class="card');
+  });
+});
+
 describe('страницы-заглушки', () => {
   it.each([
-    ['Статьи', Articles, '/articles/'],
     ['SPLAV', Splav, '/splav/'],
     ['О проекте', About, '/about/'],
   ] as const)('%s: заголовок, ссылка на главную, текущий пункт меню', async (title, component, path) => {

@@ -1,0 +1,115 @@
+---
+import { gridToPaths, rasterizeStrip, type Sprite } from '../lib/pixelArt.ts';
+import { CYCLIST, FRAMES, RUNNER, SKIER } from '../lib/sprites.ts';
+
+interface Stat {
+  value: string;
+  label: string;
+}
+interface Props {
+  label: string;
+  /** Факты недели: на экране вместо них бегут спортсмены, но для скринридера и поиска они остаются. */
+  stats: Stat[];
+}
+const { label, stats } = Astro.props;
+
+const SCALE = 3;
+/** `seconds` — проход полосы целиком, `cycle` — полный шаг (8 кадров): у каждого свой темп. */
+const lanes: { sprite: Sprite; seconds: number; cycle: number }[] = [
+  { sprite: RUNNER, seconds: 11, cycle: 0.64 },
+  { sprite: SKIER, seconds: 9, cycle: 0.96 },
+  { sprite: CYCLIST, seconds: 6.5, cycle: 0.56 },
+];
+const START_PERCENT = 8.33;
+// Первый проход начинается со стартовой черты и короче полного круга на долю пути до неё.
+const firstPass = (seconds: number): number => Math.round(seconds * (1 - START_PERCENT / 100) * 100) / 100;
+
+const rendered = lanes.map((lane) => {
+  const width = lane.sprite.w * SCALE;
+  return {
+    ...lane,
+    width,
+    height: lane.sprite.h * SCALE,
+    stripWidth: width * FRAMES,
+    paths: gridToPaths(rasterizeStrip(lane.sprite)),
+  };
+});
+---
+
+<section class="track" aria-label={label}>
+  {
+    rendered.map((lane) => (
+      <div class="track__lane">
+        <div class="track__mover" style={`--w:${lane.width}px;--first:${firstPass(lane.seconds)}s;--loop:${lane.seconds}s`} aria-hidden="true">
+          <div class="track__window" style={`width:${lane.width}px;height:${lane.height}px`}>
+            <svg
+              class="track__strip"
+              width={lane.stripWidth}
+              height={lane.height}
+              viewBox={`0 0 ${lane.sprite.w * FRAMES} ${lane.sprite.h}`}
+              shape-rendering="crispEdges"
+              focusable="false"
+              style={`--strip:${lane.stripWidth}px;--cycle:${lane.cycle}s`}
+            >
+              {lane.paths.map((p) => <path d={p.d} fill={p.color} />)}
+            </svg>
+          </div>
+        </div>
+      </div>
+    ))
+  }
+  <span class="track__start" aria-hidden="true"></span>
+  <dl class="sr-only">
+    {stats.map((s) => (<><dt>{s.label}</dt><dd>{s.value}</dd></>))}
+  </dl>
+</section>
+
+<script>
+  // Анимация стоит на паузе, пока полоса вне экрана: меньше работы для видеокарты и батареи.
+  const track = document.querySelector<HTMLElement>('.track');
+  if (track && 'IntersectionObserver' in window) {
+    new IntersectionObserver((entries) => {
+      for (const e of entries) track.classList.toggle('is-paused', !e.isIntersecting);
+    }).observe(track);
+  }
+</script>
+
+<style>
+  .track { position: relative; overflow: hidden; border-top: 3px solid var(--sky); }
+  .track__lane { position: relative; height: 108px; border-bottom: 2px solid var(--sky); container-type: inline-size; }
+  .track__lane:last-of-type { border-bottom-width: 3px; }
+  .track__start { position: absolute; top: 0; bottom: 0; left: 8.33%; width: 10px; background: var(--on-night); opacity: 0.9; }
+  .track__mover {
+    position: absolute;
+    left: 0;
+    bottom: 1px;
+    width: var(--w);
+    line-height: 0;
+    will-change: transform;
+    transform: translateX(8.33cqw);
+    animation: first var(--first) linear 1 forwards, loop var(--loop) linear var(--first) infinite;
+  }
+  .track__window { overflow: hidden; }
+  /* Лента из 8 кадров сдвигается рывками на ширину кадра: так «шагает» пиксельная анимация. */
+  /* max-width: none — иначе общее правило `svg { max-width: 100% }` сжимает ленту до ширины одного кадра. */
+  .track__strip { display: block; max-width: none; flex: none; will-change: transform; animation: strip var(--cycle) steps(8) infinite; }
+  .track.is-paused .track__mover, .track.is-paused .track__strip { animation-play-state: paused; }
+
+  @keyframes first {
+    from { transform: translateX(8.33vw); transform: translateX(8.33cqw); }
+    to { transform: translateX(100vw); transform: translateX(100cqw); }
+  }
+  @keyframes loop {
+    from { transform: translateX(calc(var(--w) * -1)); }
+    to { transform: translateX(100vw); transform: translateX(100cqw); }
+  }
+  @keyframes strip {
+    to { transform: translateX(calc(var(--strip) * -1)); }
+  }
+
+  /* Без анимации (системная настройка «уменьшить движение»): спортсмены стоят у старта, первый кадр. */
+  @media (prefers-reduced-motion: reduce) {
+    .track__mover { animation: none; transform: translateX(calc(8.33cqw + 12px)); }
+    .track__strip { animation: none; }
+  }
+</style>

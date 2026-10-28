@@ -1,0 +1,28 @@
+---
+import type { ArticleView } from '../lib/collection.ts';
+import { rubricLabel } from '../lib/articles.ts';
+import ArticleCard from './ArticleCard.astro';
+
+interface Props {
+  articles: Pick<ArticleView, 'slug' | 'title' | 'rubric' | 'readingMin'>[];
+  empty: string;
+}
+const { articles, empty } = Astro.props;
+---
+
+{
+  articles.length === 0 ? (
+    <p class="empty">{empty}</p>
+  ) : (
+    <div class="grid">
+      {articles.map((a) => <ArticleCard href={`/articles/${a.slug}/`} rubric={rubricLabel(a.rubric)} title={a.title} readingMin={a.readingMin} />)}
+    </div>
+  )
+}
+
+<style>
+  .grid { display: flex; flex-wrap: wrap; gap: 24px; }
+  /* Одна-две карточки не растягиваем на всю строку: ширина как у остальных. */
+  .grid :global(.card) { flex: 0 1 calc((100% - 48px) / 3); min-width: min(300px, 100%); }
+  .empty { margin: 0; padding: 28px; border: 1px dashed var(--line-strong); border-radius: 16px; color: var(--ink-muted); font-size: 17px; }
+</style>

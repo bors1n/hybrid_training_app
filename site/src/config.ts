@@ -20,7 +20,7 @@ export const NAV: NavItem[] = [
 
 export const FOOTER_NAV: NavItem[] = [
   { href: '/articles/', label: 'Статьи' },
-  { href: '/articles/?rubric=complexes', label: 'Комплексы' },
+  { href: '/rubrics/complexes/', label: 'Комплексы' },
   { href: '/splav/', label: 'SPLAV' },
   { href: SITE.instagramUrl, label: 'Инстаграм' },
 ];
