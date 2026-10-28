@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 SPLAV — PWA на русском для iPhone: журнал гибридных тренировок (сила, кардио, функциональные комплексы и мобильность в одном месте) с аккаунтом и синхронизацией. После MVP в этом же репозитории появится медиасайт Hybrid Training Russia на Astro.
 
-Работа идёт по этапам из `docs/implementation_plan.md`: 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 (деплой) → сайт С0–С3. Этапы 0 (каркас), 0.5 (аккаунт и синхронизация), 1 (модель и справочник), 2 (журнал), 3 (импорт и экспорт) и 4 (шаблоны и очередь) готовы; текущее состояние — в README.md, принятые решения — в DECISIONS.md.
+Работа идёт по этапам из `docs/implementation_plan.md`: 0 → 0.5 → 1 → 2 → 3 → 4 → 5 → 6 (деплой) → сайт С0–С3. Этапы 0 (каркас), 0.5 (аккаунт и синхронизация), 1 (модель и справочник), 2 (журнал), 3 (импорт и экспорт), 4 (шаблоны и очередь) и 5 (прогресс) готовы; текущее состояние — в README.md, принятые решения — в DECISIONS.md.
 
 ## Команды
 
@@ -71,6 +71,7 @@ npm run preview:phone     # сборка + vite preview :4173 для тунне�
 - Клиентский слой синхронизации: `client/src/sync/` — `records.ts` (`saveRecord`/`deleteRecord`/`applyRemote`: всё, что меняет данные, обязано идти через них, иначе запись не попадёт в `outbox`), `engine.ts` (push → pull), `controller.ts` (состояния и single-flight), `runtime.ts` (браузерные триггеры). Аккаунт: `client/src/auth/store.ts`. Сервер: `server/src/{auth,sync,db}/`.
 - Журнал (`client/src/features/workout/`): тренировка редактируется через чистые функции `domain/sessionEdit.ts` (каждая правка пересчитывает тип по блокам), а `useSessionDraft` держит копию в состоянии и пишет её через `saveRecord` с задержкой 300 мс и принудительно при уходе/скрытии вкладки. Подход считается выполненным (`done`), когда в него ввели значение; в итоги и «прошлый результат» идут только выполненные. Итоги (`summary.ts`), прошлый результат (`lastPerformance.ts`), результаты комплексов (`complexResults.ts`) — чистые функции над записями, ничего из этого не хранится.
 - Импорт (`client/src/domain/importCsv.ts`) — чистая функция `buildImport(table, opts)`: строки шаблона → тренировки и отчёт (ошибки, предупреждения, новые и неоднозначные упражнения). Ничего не пишет; запись — `data/importService.ts` (`applyImport`), экран — `features/profile/ImportScreen.tsx`. Таблица (`domain/csvText.ts`) общая для CSV и Excel (`data/xlsxFile.ts`, грузится лениво). Экспорт — `domain/exportCsv.ts`; инвариант: импорт ∘ экспорт = тождество (тест). Копия шаблона `client/public/import_template.csv` должна совпадать с `docs/import_template.csv` (тест).
+- Прогресс (`client/src/features/progress/`): всё считают чистые функции в `domain/` — `strengthMetrics.ts` (серии по типу нагрузки, Эпли ≤12 повторов), `cardioMetrics.ts` (группы Бег/Вело/Другое, темп только `role: main`), `balanceMetrics.ts` (недели, минуты, теплокарта, серия недель), `complexMetrics.ts`, `weeks.ts` (неделя с понедельника, даты строками без часовых поясов). Графики — Recharts в отдельном куске (`charts.tsx`, грузится лениво через `ChartBox.tsx`); в jsdom-тестах проверяются плитки и таблицы, не SVG графиков.
 - Клиент и API на одном origin: в dev `/api` проксирует Vite, в проде — Caddy. Сессия — httpOnly-cookie.
 
 ## Данные и форматы

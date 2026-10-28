@@ -6,6 +6,7 @@ import './styles/base.css';
 import './styles/journal.css';
 import './styles/import.css';
 import './styles/plan.css';
+import './styles/progress.css';
 import './styles/htr.css';
 import { App } from './app/App.tsx';
 import { requestPersistentStorage } from './app/storage.ts';
