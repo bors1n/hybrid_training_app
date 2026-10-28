@@ -1,0 +1,35 @@
+---
+interface Props {
+  href: string;
+  /** sky — на ночном фоне, cobalt — на светлом, outline — контурная на ночном, ghost — контурная на светлом. */
+  variant?: 'sky' | 'cobalt' | 'outline' | 'ghost';
+  size?: 'md' | 'lg';
+  class?: string;
+}
+const { href, variant = 'cobalt', size = 'md', class: extra } = Astro.props;
+---
+
+<a href={href} class:list={['btn', `btn--${variant}`, `btn--${size}`, extra]}><slot /></a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 26px;
+    border-radius: 999px;
+    font: 600 16px/1.2 var(--font-text);
+    text-decoration: none;
+    border: 2px solid transparent;
+  }
+  .btn--lg { min-height: 56px; padding: 0 28px; font-size: 17px; }
+  .btn--sky { background: var(--sky); color: var(--night); }
+  .btn--sky:hover { color: var(--night); background: #ffffff; }
+  .btn--cobalt { background: var(--cobalt); color: #fff; }
+  .btn--cobalt:hover { color: #fff; background: var(--night); }
+  .btn--outline { border-color: var(--on-night); color: var(--on-night); }
+  .btn--outline:hover { color: var(--night); background: var(--on-night); }
+  .btn--ghost { border-color: var(--ink); color: var(--ink); background: var(--paper); }
+  .btn--ghost:hover { background: var(--ink); color: var(--paper); }
+</style>

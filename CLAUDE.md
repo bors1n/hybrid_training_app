@@ -21,6 +21,8 @@ npm run typecheck    # tsc --noEmit по пакетам
 npm run build        # design → shared → client (PWA) → server
 npm run build -w design   # пересобрать tokens.css после правки tokens.json
 npm run preview:phone     # сборка + vite preview :4173 для туннеля на iPhone
+npm run dev:site          # сайт (Astro) на :4321
+npx vitest run --project site   # тесты сайта (Astro Container API)
 ```
 
 Сквозные тесты (клиентская синхронизация против настоящего сервера) — в `tests/e2e/`, запуск: `npx vitest run --project e2e`. Код входа в dev печатается в консоль сервера (`npm run dev`); база — PGlite в `server/.data/` (при сбое удалить папку).
@@ -59,7 +61,7 @@ npm run preview:phone     # сборка + vite preview :4173 для тунне�
 
 ## Архитектура (целевая)
 
-- npm workspaces: `shared/` (Zod-схемы — единственный источник типов через `z.infer`), `client/` (React, Vite, vite-plugin-pwa, Zustand, Dexie), `server/` (Fastify, Drizzle), `design/` (`tokens.json` из артефакта → `tokens.css`), позже `site/` (Astro).
+- npm workspaces: `shared/` (Zod-схемы — единственный источник типов через `z.infer`), `client/` (React, Vite, vite-plugin-pwa, Zustand, Dexie), `server/` (Fastify, Drizzle), `design/` (`tokens.json` из артефакта → `tokens.css`), `site/` (Astro, статический сайт Hybrid Training Russia: шапка/подвал и компоненты в `src/components`, страницы в `src/pages`, внешние адреса — в `src/config.ts`; тёмная тема системы сайт не меняет).
 - Синхронизация:
   - на сервере одна таблица `records(user_id, collection, id, data jsonb, updated_at, deleted_at, seq)`;
   - pull — по серверному курсору `seq` (`GET /api/sync?since=`), а не по часам клиента; push — пачкой (`POST /api/sync`);

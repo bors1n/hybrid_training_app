@@ -1,0 +1,218 @@
+---
+import ArticleCard from '../components/ArticleCard.astro';
+import Button from '../components/Button.astro';
+import HtrAvatar from '../components/HtrAvatar.astro';
+import SplavWordmark from '../components/SplavWordmark.astro';
+import Sticker from '../components/Sticker.astro';
+import TrackBand from '../components/TrackBand.astro';
+import { SITE } from '../config.ts';
+import Base from '../layouts/Base.astro';
+
+const basics = [
+  { dots: ['#1D46E8', '#3091D8'], tag: 'Баланс', title: '2–3 силовых и 2–3 кардио в неделю', text: 'Ни железо, ни бег не доминируют. Отдельные тренировки могут сочетать оба режима.' },
+  { dots: ['#3091D8'], tag: 'Аэробная база', title: 'Кардио в основном в зоне 2', text: '60–70% от максимального пульса: можно говорить фразами, а выносливость растёт неделя за неделей.' },
+  { dots: ['#7D8796'], tag: 'Восстановление', title: 'Тяжёлые дни разводим', text: 'Спринт во вторник и присед в пятницу лучше, чем спринт и присед подряд. Техника важнее скорости.' },
+];
+
+// TODO (этап С2): карточки берутся из коллекции статей, а не из этого списка.
+const rubrics = ['Все', 'Программы', 'Бег', 'Силовые', 'Комплексы', 'Восстановление'];
+const fresh = [
+  { rubric: 'Программы', title: 'Цикл из трёх тренировок: Т1 → Т2 → Т3', photoNote: 'становая тяга', readingMin: 8 },
+  { rubric: 'Бег', title: 'Зона 2: темп 8:20–8:45 и почему он работает', photoNote: 'утренняя пробежка', readingMin: 6 },
+  { rubric: 'Комплексы', title: 'AMRAP, EMOM и Табата: как читать комплекс', photoNote: 'SkiErg', readingMin: 7 },
+];
+
+const splavPoints = [
+  { color: '#1D46E8', text: 'Любая тренировка: зал, площадка, бег, вело, комплексы' },
+  { color: '#3091D8', text: 'Шаблоны и очередь Т1 → Т2 → Т3 без привязки к дням недели' },
+  { color: '#E2591A', text: 'Прогресс по силе, темпу и результатам комплексов' },
+  { color: '#7D8796', text: 'Импорт старых записей из таблицы' },
+];
+---
+
+<Base>
+  <Fragment slot="hero">
+    <section class="hero wrap">
+      <div class="hero__text">
+        <span class="hero__kicker">{SITE.tagline}</span>
+        <h1 class="hero__title">
+          Сила, <Sticker>темп</Sticker><br />и&nbsp;выносли&shy;вость
+        </h1>
+        <p class="hero__lead">Зал, бег и функциональные комплексы в одной программе. Как тренироваться тяжело и прогрессировать во всём, не загоняя себя.</p>
+        <div class="hero__actions">
+          <Button href="/articles/" variant="sky" size="lg">Начать программу</Button>
+          <Button href="/splav/" variant="outline" size="lg">Приложение SPLAV</Button>
+        </div>
+      </div>
+      <div class="hero__photo">
+        <svg viewBox="0 0 400 540" preserveAspectRatio="none" aria-hidden="true"><g stroke="#323844" stroke-width="2"><path d="M0 108 H400"></path><path d="M0 216 H400"></path><path d="M0 324 H400"></path><path d="M0 432 H400"></path></g><rect x="56" y="0" width="6" height="540" fill="#323844"></rect></svg>
+        <span class="hero__digit" aria-hidden="true">3</span>
+        <span class="hero__note">[Фото: спринт на дорожке стадиона, своя съёмка, естественный цвет или ч/б]</span>
+      </div>
+    </section>
+
+    <TrackBand
+      label="Формула гибридной недели"
+      stats={[
+        { value: '2–3', label: 'Силовых в неделю' },
+        { value: '2–3', label: 'Кардио в неделю' },
+        { value: '60–70%', label: 'Пульса в зоне 2', accent: true },
+        { value: '12–16', label: 'Недель на первый цикл' },
+      ]}
+    />
+  </Fragment>
+
+  <section class="section wrap" aria-labelledby="basics-title">
+    <div class="section__head">
+      <span class="label">Основы</span>
+      <h2 id="basics-title" class="h2">Что такое гибридная тренировка</h2>
+    </div>
+    <div class="basics">
+      {basics.map((b) => (
+        <article class="basic">
+          <span class="basic__tag">
+            {b.dots.map((c, i) => <span class="basic__dot" style={`background:${c}${i > 0 ? ';margin-left:-4px' : ''}`}></span>)}
+            {b.tag}
+          </span>
+          <h3 class="basic__title">{b.title}</h3>
+          <p class="basic__text">{b.text}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="fresh-title">
+    <div class="section__row">
+      <h2 id="fresh-title" class="h2">Свежие статьи</h2>
+      <nav class="rubrics" aria-label="Рубрики">
+        {rubrics.map((r, i) => <a href="/articles/" class:list={['rubrics__item', { 'rubrics__item--on': i === 0 }]} aria-current={i === 0 ? 'page' : undefined}>{r}</a>)}
+      </nav>
+    </div>
+    <div class="cards">
+      {fresh.map((a) => <ArticleCard href="/articles/" rubric={a.rubric} title={a.title} photoNote={a.photoNote} readingMin={a.readingMin} />)}
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="splav-title">
+    <div class="splav">
+      <div class="splav__text">
+        <div class="splav__brand">
+          <SplavWordmark />
+          <span class="splav__soon">Скоро</span>
+        </div>
+        <h2 id="splav-title" class="splav__title">Силовые и кардио в одном дневнике</h2>
+        <ul class="splav__list">
+          {splavPoints.map((p) => <li><span class="splav__bullet" style={`background:${p.color}`}></span>{p.text}</li>)}
+        </ul>
+        <Button href="/splav/" variant="cobalt">Узнать о SPLAV</Button>
+      </div>
+      <div class="splav__phone-wrap" aria-hidden="true">
+        <div class="phone">
+          <div class="phone__top"><span class="phone__name">Тренировка 2</span><span class="phone__cycle">ЦИКЛ 3</span></div>
+          <div class="phone__card">
+            <div class="phone__row"><span class="phone__ex">Становая</span><span class="phone__pill"><span class="phone__pdot" style="background:#1D46E8"></span>Сила</span></div>
+            <span class="phone__prev">Прошлый раз: 60 кг — 15, 15, 15</span>
+            <div class="phone__grid">
+              <span class="phone__cell phone__cell--on">60 кг</span><span class="phone__cell phone__cell--on">15 повт</span>
+              <span class="phone__cell">60 кг</span><span class="phone__cell">— повт</span>
+            </div>
+          </div>
+          <div class="phone__card phone__card--pace">
+            <div class="phone__pace"><span class="phone__small">ТЕМП · БЕГ</span><span class="phone__big">7:46<span class="phone__unit"> /км</span></span></div>
+            <span class="phone__pill"><span class="phone__pdot" style="background:#3091D8"></span>Кардио</span>
+          </div>
+          <span class="phone__finish">Завершить тренировку</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--last wrap" aria-labelledby="insta-title">
+    <div class="insta">
+      <div class="insta__who">
+        <HtrAvatar />
+        <div class="insta__text">
+          <h2 id="insta-title" class="insta__title">Карусели каждую неделю</h2>
+          <p class="insta__lead">Программы, комплексы и разборы тренировок в инстаграме {SITE.instagramHandle}</p>
+        </div>
+      </div>
+      <Button href={SITE.instagramUrl} variant="cobalt">Подписаться</Button>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { display: flex; flex-wrap: wrap; align-items: stretch; gap: 48px; padding-block: 40px 72px; }
+  .hero__text { flex: 1 1 540px; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
+  .hero__kicker { font: 500 13px/1.3 var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night-muted); }
+  .hero__title { margin: 0; font: 800 clamp(44px, 7.4vw, 112px) / 0.92 var(--font-display); letter-spacing: -0.035em; }
+  .hero__lead { margin: 0; max-width: 520px; font-size: 19px; line-height: 1.55; color: var(--on-night-soft); }
+  .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+  .hero__photo { flex: 1 1 360px; min-width: 0; position: relative; min-height: 540px; border-radius: 28px; background: var(--night-panel); overflow: hidden; display: flex; align-items: flex-end; }
+  .hero__photo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hero__digit { position: absolute; top: 20px; right: 28px; font: 800 150px/1 var(--font-display); color: var(--sky); letter-spacing: -0.05em; }
+  .hero__note { position: relative; margin: 28px; padding: 10px 16px 12px; border-radius: 14px; background: var(--night); color: var(--on-night-muted); font-weight: 500; font-size: 14px; line-height: 1.4; }
+
+  .section { padding-top: 88px; display: flex; flex-direction: column; gap: 32px; }
+  .section--last { padding-bottom: 88px; }
+  .section__head { display: flex; flex-direction: column; gap: 12px; }
+  .section__row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .h2 { margin: 0; font: 700 clamp(28px, 3.8vw, 48px) / 1.02 var(--font-display); letter-spacing: -0.02em; }
+
+  .basics { display: flex; flex-wrap: wrap; gap: 20px; }
+  .basic { flex: 1 1 300px; min-width: 0; border: 1px solid var(--line); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .basic__tag { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; font: 500 12px/1.3 var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; }
+  .basic__dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+  .basic__title { margin: 0; font: 600 22px/1.2 var(--font-display); }
+  .basic__text { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.5; }
+
+  .rubrics { display: flex; flex-wrap: wrap; gap: 8px; font-weight: 500; font-size: 14px; }
+  .rubrics__item { min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 999px; background: var(--surface); color: var(--ink); text-decoration: none; }
+  .rubrics__item:hover { background: var(--line); color: var(--ink); }
+  .rubrics__item--on { background: var(--night); color: #fff; }
+  .rubrics__item--on:hover { background: var(--night); color: #fff; }
+  .cards { display: flex; flex-wrap: wrap; gap: 24px; }
+
+  .splav { background: var(--surface); border-radius: 28px; padding: clamp(28px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
+  .splav__text { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 22px; align-items: flex-start; }
+  .splav__brand { display: flex; align-items: center; gap: 14px; }
+  .splav__soon { padding: 4px 12px 5px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 2px var(--night) inset; font-weight: 600; font-size: 14px; transform: rotate(3deg); }
+  .splav__title { margin: 0; font: 700 clamp(26px, 3.4vw, 44px) / 1.05 var(--font-display); letter-spacing: -0.02em; }
+  .splav__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 18px; line-height: 1.4; }
+  .splav__list li { display: flex; gap: 12px; align-items: baseline; }
+  .splav__bullet { flex: none; width: 11px; height: 11px; border-radius: 999px; }
+  .splav__phone-wrap { flex: 1 1 320px; min-width: 0; display: flex; justify-content: center; }
+  .phone { width: 290px; max-width: 100%; border-radius: 40px; border: 8px solid var(--night); background: #fff; padding: 20px 14px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .phone__top { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
+  .phone__name { font: 600 18px var(--font-display); }
+  .phone__cycle { font: 500 11px var(--font-data); letter-spacing: 0.08em; color: var(--ink-muted); }
+  .phone__card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .phone__card--pace { flex-direction: row; justify-content: space-between; align-items: center; }
+  .phone__row { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+  .phone__ex { font-weight: 600; font-size: 16px; }
+  .phone__pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 999px; background: var(--surface); font-size: 11px; }
+  .phone__pdot { width: 7px; height: 7px; border-radius: 999px; }
+  .phone__prev { font-size: 12px; color: var(--ink-muted); }
+  .phone__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; font: 500 13px var(--font-data); }
+  .phone__cell { border: 1.5px solid var(--line-strong); border-radius: 10px; padding: 9px 10px; }
+  .phone__cell--on { border: 1px solid var(--line); background: var(--surface); }
+  .phone__pace { display: flex; flex-direction: column; gap: 2px; }
+  .phone__small { font: 500 11px var(--font-data); letter-spacing: 0.08em; color: var(--ink-muted); }
+  .phone__big { font: 600 28px var(--font-data); letter-spacing: -0.02em; }
+  .phone__unit { font-size: 13px; color: var(--ink-muted); font-weight: 500; }
+  .phone__finish { display: flex; align-items: center; justify-content: center; min-height: 46px; border-radius: 999px; background: var(--cobalt); color: #fff; font-weight: 600; font-size: 15px; }
+
+  .insta { border: 1px solid var(--line); border-radius: 28px; padding: clamp(24px, 4vw, 44px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; }
+  .insta__who { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; min-width: 0; }
+  .insta__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .insta__title { margin: 0; font: 700 clamp(22px, 2.6vw, 34px) / 1.1 var(--font-display); letter-spacing: -0.02em; }
+  .insta__lead { margin: 0; font-size: 17px; color: var(--ink-muted); }
+
+  @media (max-width: 640px) {
+    .hero { padding-block: 24px 48px; gap: 32px; }
+    .hero__photo { min-height: 360px; }
+    .hero__digit { font-size: 110px; }
+    .section { padding-top: 56px; }
+    .section--last { padding-bottom: 56px; }
+  }
+</style>

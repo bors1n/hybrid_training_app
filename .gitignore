@@ -8,3 +8,4 @@ client/public/media/repdb/
 .env.*
 !.env.example
 client/src/seed/generated/
+.astro/

@@ -1,0 +1,41 @@
+@import '@splav/design/tokens.css';
+@import '@fontsource/unbounded/cyrillic-600.css';
+@import '@fontsource/unbounded/cyrillic-700.css';
+@import '@fontsource/unbounded/cyrillic-800.css';
+@import '@fontsource/unbounded/latin-600.css';
+@import '@fontsource/unbounded/latin-700.css';
+@import '@fontsource/unbounded/latin-800.css';
+@import '@fontsource/golos-text/cyrillic-400.css';
+@import '@fontsource/golos-text/cyrillic-500.css';
+@import '@fontsource/golos-text/cyrillic-600.css';
+@import '@fontsource/golos-text/latin-400.css';
+@import '@fontsource/golos-text/latin-500.css';
+@import '@fontsource/golos-text/latin-600.css';
+@import '@fontsource/jetbrains-mono/cyrillic-500.css';
+@import '@fontsource/jetbrains-mono/cyrillic-600.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
+
+/* Сайт всегда светлый с ночными разделами, как в макете; тёмная тема системы не меняет его. */
+:root {
+  --site-max: 1240px;
+  --site-pad: max(20px, 4vw);
+  --night-panel: #22262E;
+  --night-track: #323844;
+  --on-night-soft: #C9CFD8;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font-text); line-height: 1.5; overflow-x: clip; }
+img, svg { max-width: 100%; }
+a { color: var(--cobalt); }
+a:hover { color: var(--ink); }
+:focus-visible { outline: 3px solid var(--focus-ring, #1D46E8); outline-offset: 3px; }
+h1, h2, h3, p { overflow-wrap: break-word; }
+
+.wrap { max-width: var(--site-max); margin: 0 auto; padding-inline: var(--site-pad); }
+.label { font: 500 13px/1.3 var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: 12px; top: -60px; z-index: 10; padding: 10px 16px; background: var(--sky); color: var(--night); border-radius: 999px; font-weight: 600; text-decoration: none; }
+.skip:focus { top: 12px; }

@@ -1,0 +1,47 @@
+---
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE } from '../config.ts';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** На главной шапка лежит на ночном первом экране, на остальных страницах — на собственной ночной полосе. */
+  headerOnNight?: boolean;
+}
+const { title, description = 'Зал, бег и функциональные комплексы в одной программе.', headerOnNight = true } = Astro.props;
+const fullTitle = title ? `${title} — ${SITE.name}` : `${SITE.name}: ${SITE.tagline.toLowerCase()}`;
+const path = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="ru" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#15181E" />
+    <title>{fullTitle}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <a class="skip" href="#content">К содержимому</a>
+    {
+      headerOnNight ? (
+        <div class="night-top">
+          <Header current={path} />
+          <slot name="hero" />
+        </div>
+      ) : (
+        <div class="night-top"><Header current={path} /></div>
+      )
+    }
+    <main id="content"><slot /></main>
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  .night-top { background: var(--night); color: var(--on-night); }
+</style>

@@ -1,0 +1,16 @@
+---
+/** Наклейка: одно слово в заголовке, голубая, наклон −5° (дизайн-система). */
+---
+
+<span class="sticker"><slot /></span>
+
+<style>
+  .sticker {
+    display: inline-block;
+    padding: 0 0.28em 0.08em;
+    border-radius: 999px;
+    background: var(--sky);
+    color: var(--night);
+    transform: rotate(-5deg);
+  }
+</style>

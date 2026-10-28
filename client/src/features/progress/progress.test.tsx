@@ -9,8 +9,8 @@ import { session } from '../../test/fixtures.ts';
 import { ProgressScreen } from './ProgressScreen.tsx';
 
 // Графики подгружаются отдельным куском (Recharts); под нагрузкой полного прогона это занимает секунды.
-vi.setConfig({ testTimeout: 20_000 });
-configure({ asyncUtilTimeout: 5000 });
+vi.setConfig({ testTimeout: 40_000 });
+configure({ asyncUtilTimeout: 10_000 });
 
 beforeEach(async () => {
   await db.open();

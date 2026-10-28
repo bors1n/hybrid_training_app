@@ -1,0 +1,31 @@
+---
+interface Props {
+  href: string;
+  rubric: string;
+  title: string;
+  /** Подпись-заглушка на месте фото, пока своих снимков нет. */
+  photoNote?: string;
+  readingMin: number;
+}
+const { href, rubric, title, photoNote, readingMin } = Astro.props;
+---
+
+<a href={href} class="card">
+  <div class="card__cover">
+    <span class="card__rubric">{rubric}</span>
+    {photoNote ? <span class="card__note">[Фото: {photoNote}]</span> : null}
+  </div>
+  <h3 class="card__title">{title}</h3>
+  <span class="card__meta">{readingMin} мин чтения</span>
+</a>
+
+<style>
+  .card { flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 12px; color: var(--ink); text-decoration: none; }
+  .card:hover { color: var(--ink); }
+  .card:hover .card__title { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .card__cover { aspect-ratio: 4 / 5; border-radius: 28px; background: var(--night); display: flex; flex-direction: column; justify-content: space-between; padding: 18px; }
+  .card__rubric { align-self: flex-start; padding: 4px 12px 5px; border-radius: 999px; background: var(--sky); color: var(--night); font-weight: 600; font-size: 13px; }
+  .card__note { color: var(--on-night-muted); font-weight: 500; font-size: 13px; }
+  .card__title { margin: 0; font: 600 21px/1.2 var(--font-display); }
+  .card__meta { color: var(--ink-muted); font-size: 13px; }
+</style>

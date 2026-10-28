@@ -1,0 +1,13 @@
+---
+interface Props {
+  size?: number;
+}
+const { size = 96 } = Astro.props;
+---
+
+<svg width={size} height={size} viewBox="0 0 240 240" role="img" aria-label="Аватар HTR">
+  <circle cx="120" cy="120" r="120" fill="#15181E"></circle>
+  <rect x="22" y="62" width="196" height="116" rx="58" fill="none" stroke="#8FD0FF" stroke-width="5"></rect>
+  <rect x="36" y="76" width="168" height="88" rx="44" fill="#1D46E8"></rect>
+  <text x="120" y="135" text-anchor="middle" font-family="Unbounded, 'Arial Black', sans-serif" font-weight="700" font-size="40" letter-spacing="-1" fill="#FFFFFF">HTR</text>
+</svg>
