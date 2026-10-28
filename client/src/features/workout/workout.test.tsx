@@ -10,6 +10,7 @@ import { saveRecord } from '../../sync/records.ts';
 import { session } from '../../test/fixtures.ts';
 import { ProgressScreen } from '../progress/ProgressScreen.tsx';
 import { TodayScreen } from '../today/TodayScreen.tsx';
+import { ConditioningScreen } from './ConditioningScreen.tsx';
 import { WorkoutScreen } from './WorkoutScreen.tsx';
 
 /** Тесты с упражнениями RepDB пропускаются, если каталог не собран (npm run seed:media). */
@@ -28,6 +29,7 @@ function renderApp(initial = '/') {
         <Route path="/" element={<TodayScreen />} />
         <Route path="/progress" element={<ProgressScreen />} />
         <Route path="/workout/:id" element={<WorkoutScreen />} />
+        <Route path="/workout/:id/complex/:blockId" element={<ConditioningScreen />} />
       </Routes>
     </MemoryRouter>,
   );
@@ -124,7 +126,7 @@ describe('внесение тренировки с нуля (как «Трени
     fill('Заметка к кардио', 'зона 2', within(bike));
 
     // Итог
-    fireEvent.click(screen.getByRole('button', { name: 'RPE тренировки 8' }));
+    fireEvent.change(screen.getByLabelText('RPE тренировки'), { target: { value: '8' } });
 
     // Подход 2 — копия, он не отмечен: при завершении приложение спросит
     click('Завершить');
@@ -360,14 +362,20 @@ describe('комплексы', () => {
     fireEvent.change(within(dialog).getByLabelText('Поиск комплекса'), { target: { value: '#005' } });
     fireEvent.click(await within(dialog).findByRole('button', { name: /#005/ }));
 
-    const card = within(await screen.findByRole('region', { name: /Блок: AMRAP 15 мин, вес тела/ }));
-    expect(card.getByText('КОМПЛЕКС #005')).toBeTruthy();
+    const summary = within(await screen.findByRole('region', { name: /Блок: AMRAP 15 мин, вес тела/ }));
+    expect(summary.getByText(/#005 · AMRAP 15 мин, вес тела/)).toBeTruthy();
+    click('Открыть', summary);
+    const card = within(await screen.findByRole('region', { name: 'Результат' }));
+    expect(screen.getByText('КОМПЛЕКС #005')).toBeTruthy();
     for (let i = 0; i < 9; i++) fireEvent.click(card.getByRole('button', { name: 'Плюс раунд' }));
     fireEvent.click(card.getByRole('button', { name: 'RPE комплекса 8' }));
     await savedWhere((s) => s.blocks[0]?.type === 'conditioning' && s.blocks[0].result.rounds === 9 && s.blocks[0].rpe === 8);
     const [first] = await sessions();
     expect(first!.blocks[0]).toMatchObject({ complexId: '#005', format: 'AMRAP', timeCapMin: 15, result: { rounds: 9 }, type: 'conditioning' });
     expect(first!.type).toBe('conditioning');
+    click('Записать результат');
+    expect(await screen.findByLabelText('Название тренировки')).toBeTruthy();
+    expect(within(screen.getByRole('region', { name: /Блок: AMRAP 15 мин, вес тела/ })).getByText('Результат: 9 раундов')).toBeTruthy();
 
     // Завершаем и начинаем следующую: «9 раундов» рядом с новой попыткой
     click('Завершить');
@@ -378,7 +386,9 @@ describe('комплексы', () => {
     fireEvent.change(within(dialog2).getByLabelText('Поиск комплекса'), { target: { value: '#005' } });
     fireEvent.click(await within(dialog2).findByRole('button', { name: /#005/ }));
     const next = within(await screen.findByRole('region', { name: /Блок: AMRAP 15 мин, вес тела/ }));
-    expect(next.getByText(/Прошлый раз .*: 9 раундов · рекорд 9 раундов/)).toBeTruthy();
+    expect(next.getByText(/Рекорд: 9 раундов · прошлый раз/)).toBeTruthy();
+    click('Открыть', next);
+    expect(await screen.findByText(/Рекорд 9 раундов/)).toBeTruthy();
   }, 30_000);
 
   it('комплекс на время: время и «не уложился»', async () => {
@@ -389,7 +399,8 @@ describe('комплексы', () => {
     const dialog = await screen.findByRole('dialog', { name: 'Комплекс' });
     fireEvent.change(within(dialog).getByLabelText('Поиск комплекса'), { target: { value: '#007' } });
     fireEvent.click(await within(dialog).findByRole('button', { name: /#007/ }));
-    const card = within(await screen.findByRole('region', { name: /Блок: Чиппер/ }));
+    click('Открыть', within(await screen.findByRole('region', { name: /Блок: Чиппер/ })));
+    const card = within(await screen.findByRole('region', { name: 'Результат' }));
     fill('Время результата', '17:30', card);
     await savedWhere((s) => s.blocks[0]?.type === 'conditioning' && s.blocks[0].result.timeSec === 1050);
     fireEvent.click(card.getByLabelText('Не уложился'));
@@ -517,9 +528,11 @@ describe('записи из workouts_history.md', () => {
     fill('Название тренировки', 'Push day');
     await addBlock('Комплекс');
     click(/Свой комплекс/, within(await screen.findByRole('dialog', { name: 'Комплекс' })));
-    const card = within(await screen.findByRole('region', { name: 'Блок: Комплекс' }));
-    fill('Название комплекса', 'SkiErg 500 + гребля 500', card);
-    fill('Лимит времени, мин', '20', card);
+    click('Открыть', within(await screen.findByRole('region', { name: 'Блок: Комплекс' })));
+    const card = within(await screen.findByRole('region', { name: 'Результат' }));
+    fill('Название комплекса', 'SkiErg 500 + гребля 500');
+    fireEvent.click(screen.getByText('Параметры комплекса'));
+    fill('Лимит времени, мин', '20');
     for (let i = 0; i < 3; i++) fireEvent.click(card.getByRole('button', { name: 'Плюс раунд' }));
     fill('Повторы сверху', '7', card);
     fireEvent.click(card.getByRole('button', { name: 'RPE комплекса 8' }));

@@ -8,6 +8,7 @@ import { PlanScreen } from '../features/plan/PlanScreen.tsx';
 import { TemplateEditor } from '../features/plan/TemplateEditor.tsx';
 import { ProgressScreen } from '../features/progress/ProgressScreen.tsx';
 import { TodayScreen } from '../features/today/TodayScreen.tsx';
+import { ConditioningScreen } from '../features/workout/ConditioningScreen.tsx';
 import { WorkoutScreen } from '../features/workout/WorkoutScreen.tsx';
 import { startSync } from '../sync/runtime.ts';
 import { ProfileProvider } from './profile.tsx';
@@ -38,6 +39,7 @@ function Authed(): ReactElement {
             <Route path="library" element={<LibraryScreen />} />
           </Route>
           <Route path="workout/:id" element={<WorkoutScreen />} />
+          <Route path="workout/:id/complex/:blockId" element={<ConditioningScreen />} />
           <Route path="template/:id" element={<TemplateEditor />} />
           <Route path="import" element={<Suspense fallback={<div className="fullscreen" aria-busy="true" />}><ImportScreen /></Suspense>} />
         </Routes>

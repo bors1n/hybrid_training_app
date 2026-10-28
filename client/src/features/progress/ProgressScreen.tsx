@@ -5,7 +5,10 @@ import { useSessions } from '../workout/useSessions.ts';
 import { BalanceTab } from './BalanceTab.tsx';
 import { CardioTab } from './CardioTab.tsx';
 import { ComplexTab } from './ComplexTab.tsx';
+import { todayKey } from '../../domain/history.ts';
 import { HistoryList } from './HistoryList.tsx';
+import { RegularityCard } from './RegularityCard.tsx';
+import { WeekBalanceCard } from './WeekBalanceCard.tsx';
 import { StrengthTab } from './StrengthTab.tsx';
 
 const TABS = [
@@ -40,6 +43,12 @@ export function ProgressScreen(): ReactElement {
         {sessions !== undefined && tab === 'complex' ? <ComplexTab sessions={live} /> : null}
         {sessions !== undefined && tab === 'balance' ? <BalanceTab sessions={live} /> : null}
       </div>
+      {sessions !== undefined && live.length > 0 ? (
+        <>
+          <WeekBalanceCard sessions={live} today={todayKey()} />
+          <RegularityCard sessions={live} today={todayKey()} />
+        </>
+      ) : null}
       <HistoryList />
     </>
   );

@@ -81,6 +81,7 @@ button { font: inherit; color: inherit; }
 .login__title { margin: 0; max-width: 260px; font: 600 24px/1.2 var(--font-display); }
 .login__sticker { display: inline-block; transform: rotate(-5deg); padding: 2px 10px; border-radius: 10px; background: #8FD0FF; color: #15181E; }
 .login__lead { margin: 0; max-width: 280px; font-size: 15px; line-height: 1.45; color: #C9CFD8; }
+.login__hint { margin: 6px 0 0; font-size: 12px; line-height: 1.4; color: #9AA4B2; text-align: center; }
 .login__form { margin-top: auto; display: flex; flex-direction: column; gap: 10px; }
 .login__label { display: flex; flex-direction: column; gap: 6px; font: 500 11px/16px var(--font-data); letter-spacing: 0.08em; color: #9AA4B2; }
 .login__input {

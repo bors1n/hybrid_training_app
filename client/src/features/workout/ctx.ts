@@ -10,6 +10,8 @@ export interface WorkoutCtx {
   catalog: ReadonlyMap<string, CatalogExercise>;
   catalogList: readonly CatalogExercise[];
   update: (fn: (s: SessionDraft) => SessionDraft) => void;
+  /** Дописать несохранённые правки в базу (перед уходом на другой экран, который читает эту тренировку). */
+  flush: () => Promise<void>;
 }
 
 export function exerciseName(ctx: Pick<WorkoutCtx, 'catalog'>, exerciseId: string): string {

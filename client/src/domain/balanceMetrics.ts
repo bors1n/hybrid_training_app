@@ -75,11 +75,14 @@ export interface HeatDay {
   future: boolean;
 }
 
+/** Теплокарта показывает полгода: 26 недель. */
+export const HEATMAP_WEEKS = 26;
+
 /**
- * Теплокарта за год: колонки — недели (от старых к новым), в каждой семь дней с понедельника.
+ * Теплокарта: колонки — недели (от старых к новым), в каждой семь дней с понедельника.
  * Последняя колонка — текущая неделя.
  */
-export function heatmap(sessions: readonly S[], today: string, weeks = 53): HeatDay[][] {
+export function heatmap(sessions: readonly S[], today: string, weeks = HEATMAP_WEEKS): HeatDay[][] {
   const counts = new Map<string, number>();
   for (const s of live(sessions)) counts.set(s.date, (counts.get(s.date) ?? 0) + 1);
   return lastWeeks(today, weeks).map((monday) =>

@@ -7,14 +7,20 @@ import { sessionDurationMin } from '../domain/summary.ts';
 
 const blocksWord = (n: number): string => (n === 1 ? 'блок' : n >= 2 && n <= 4 ? 'блока' : 'блоков');
 
-/** Строка тренировки в списках: название, дата, длительность, тип. */
-export function SessionRow({ session: s, onOpen }: { session: SessionRecord; onOpen: () => void }): ReactElement {
+const BLOCK_LABELS = { strength: 'сила', cardio: 'кардио', conditioning: 'комплекс', mobility: 'мобильность' } as const;
+const BLOCK_COLOR = { strength: 'var(--strength)', cardio: 'var(--cardio)', conditioning: 'var(--conditioning)', mobility: 'var(--mobility)' } as const;
+
+/**
+ * Строка тренировки в списках: название, дата, длительность и тип.
+ * `variant="dots"` (история) — вместо подписи типа цветные точки по видам блоков и RPE в подзаголовке.
+ */
+export function SessionRow({ session: s, onOpen, variant = 'chip' }: { session: SessionRecord; onOpen: () => void; variant?: 'chip' | 'dots' }): ReactElement {
   const duration = sessionDurationMin(s);
   const inProgress = s.finishedAt === undefined;
   const sub = [
     formatDateShort(s.date, todayKey()),
     duration !== null && !inProgress ? `${duration} мин` : null,
-    `${s.blocks.length} ${blocksWord(s.blocks.length)}`,
+    variant === 'dots' ? (s.rpe !== undefined ? `RPE ${s.rpe}` : null) : `${s.blocks.length} ${blocksWord(s.blocks.length)}`,
     inProgress ? 'не завершена' : null,
   ]
     .filter(Boolean)
@@ -26,10 +32,16 @@ export function SessionRow({ session: s, onOpen }: { session: SessionRecord; onO
         <span className="session-row__title">{s.title}</span>
         <span className="session-row__sub">{sub}</span>
       </span>
-      <span className="tag-pill">
-        <span className="dot" style={{ background: sessionTypeColorVar(s.type) }} />
-        {SESSION_TYPE_LABELS[s.type]}
-      </span>
+      {variant === 'dots' ? (
+        <span className="dots" role="img" aria-label={`Блоки: ${[...new Set(s.blocks.map((b) => b.type))].map((t) => BLOCK_LABELS[t]).join(', ') || 'нет'}`}>
+          {[...new Set(s.blocks.map((b) => b.type))].map((t) => <span key={t} className="dot" style={{ background: BLOCK_COLOR[t] }} />)}
+        </span>
+      ) : (
+        <span className="tag-pill">
+          <span className="dot" style={{ background: sessionTypeColorVar(s.type) }} />
+          {SESSION_TYPE_LABELS[s.type]}
+        </span>
+      )}
     </button>
   );
 }

@@ -24,11 +24,12 @@ export function BarsBox({ title, hint, ...props }: BarsProps & { title: string; 
 }
 
 /** Плитка с одной цифрой. */
-export function Stat({ label, value, sub }: { label: string; value: string; sub?: string }): ReactElement {
+/** `accent` — оранжевое значение: рекорд. */
+export function Stat({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: boolean }): ReactElement {
   return (
     <div className="pg-stat">
       <span className="sheet__label">{label}</span>
-      <span className="pg-stat__value">{value}</span>
+      <span className={`pg-stat__value${accent ? ' pg-stat__value--record' : ''}`}>{value}</span>
       {sub ? <span className="pg-stat__sub">{sub}</span> : null}
     </div>
   );

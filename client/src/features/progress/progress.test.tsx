@@ -60,14 +60,15 @@ describe('Прогресс: сила', () => {
     fireEvent.change(picker, { target: { value: squat.value } });
 
     const normal = await screen.findByRole('region', { name: /: Обычный вес$/ });
-    expect(within(normal).getByText('1ПМ РАСЧЁТНЫЙ')).toBeTruthy();
-    expect(within(normal).getByText('99,2 кг')).toBeTruthy(); // 85 × (1 + 5/30)
-    expect(within(normal).getByText('8')).toBeTruthy(); // средний RPE: подходы с RPE 8, 8
+    expect(within(normal).getByText('РАСЧЁТНЫЙ 1ПМ')).toBeTruthy();
+    expect(within(normal).getByText('99,2')).toBeTruthy(); // 85 × (1 + 5/30)
+    expect(normal.textContent).toContain('РЕКОРД85 кг × 5');
+    expect(normal.textContent).toContain('СР. RPE8'); // средний RPE: подходы с RPE 8, 8
     expect(within(normal).getByRole('table', { name: /Лучший подход по повторам/ }).textContent).toContain('85 кг');
 
     fireEvent.change(picker, { target: { value: 'splav:pullup' } });
     const added = await screen.findByRole('region', { name: /: С отягощением$/ });
-    expect(within(added).queryByText('1ПМ РАСЧЁТНЫЙ')).toBeNull();
+    expect(within(added).queryByText('РАСЧЁТНЫЙ 1ПМ')).toBeNull();
     expect(screen.queryByRole('region', { name: /: Обычный вес$/ })).toBeNull();
     expect(within(added).getAllByText(/\+?10 кг/).length).toBeGreaterThan(0);
 
@@ -157,8 +158,10 @@ describe('Прогресс: баланс', () => {
     tab('Баланс');
     await waitFor(() => expect(screen.getByText('НЕДЕЛЬ ПОДРЯД')).toBeTruthy());
     expect(screen.getByText('недели с тренировками')).toBeTruthy();
-    expect(screen.getByRole('img', { name: 'Теплокарта: 2 тренировки за год' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Тренировки по дням за 6 месяцев: 2 тренировки' })).toBeTruthy();
     expect(screen.getByRole('figure', { name: 'Тренировки по неделям' })).toBeTruthy();
     expect(screen.getByRole('figure', { name: 'Минуты по неделям' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Баланс недели' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Регулярность' })).toBeTruthy();
   });
 });

@@ -16,7 +16,9 @@ import {
   type Kind,
   type MuscleGroup,
 } from '../../domain/catalogFilter.ts';
+import { frequentExercises } from '../../domain/exerciseHeadline.ts';
 import { HAS_REPDB_CATALOG } from '../../seed/catalog.ts';
+import { useSessions } from '../workout/useSessions.ts';
 import { ExerciseSheet } from './ExerciseSheet.tsx';
 import { NewExerciseSheet } from './NewExerciseSheet.tsx';
 import { useCatalog } from './useCatalog.ts';
@@ -36,8 +38,24 @@ function subtitle(e: CatalogExercise): string {
   return [g[0] ?? KIND_LABELS[e.kind], EQUIPMENT_LABELS[e.equipment]].join(' · ');
 }
 
+function ExerciseRow({ e, stat, onOpen }: { e: CatalogExercise; stat?: string | null; onOpen: () => void }): ReactElement {
+  return (
+    <li>
+      <button type="button" className="ex-row" onClick={onOpen}>
+        <Thumb e={e} />
+        <span className="ex-row__text">
+          <span className="ex-row__name">{e.name}</span>
+          <span className="ex-row__sub">{stat ? `${subtitle(e)} · ${stat}` : subtitle(e)}</span>
+        </span>
+        {e.isCustom ? <span className="ex-row__badge">своё</span> : <span className="dot" style={{ background: kindColorVar(e.kind) }} />}
+      </button>
+    </li>
+  );
+}
+
 export function LibraryScreen(): ReactElement {
   const catalog = useCatalog();
+  const sessions = useSessions();
   const [filter, setFilter] = useState<CatalogFilter>(EMPTY_FILTER);
   const [limit, setLimit] = useState(PAGE);
   const [selected, setSelected] = useState<CatalogExercise | null>(null);
@@ -55,6 +73,13 @@ export function LibraryScreen(): ReactElement {
   const toggle = <K extends keyof CatalogFilter>(key: K, value: CatalogFilter[K]): void =>
     patch({ [key]: filter[key] === value ? EMPTY_FILTER[key] : value } as Partial<CatalogFilter>);
   const active = filter.kind || filter.group || filter.equipment || filter.onlyCustom || filter.query;
+  const frequent = useMemo(() => {
+    const byId = new Map(catalog.map((e) => [e.id, e]));
+    return frequentExercises(sessions ?? []).flatMap((f) => {
+      const e = byId.get(f.exerciseId);
+      return e ? [{ e, headline: f.headline }] : [];
+    });
+  }, [catalog, sessions]);
 
   return (
     <>
@@ -98,22 +123,24 @@ export function LibraryScreen(): ReactElement {
         ))}
       </div>
 
+      {!active && frequent.length > 0 ? (
+        <section aria-label="Часто делаешь">
+          <p className="lib-count">Часто делаешь</p>
+          <ul className="ex-list">
+            {frequent.map(({ e, headline }) => (
+              <ExerciseRow key={e.id} e={e} stat={headline} onOpen={() => setSelected(e)} />
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <p className="lib-count" role="status">
         {found.length === catalog.length ? 'Все упражнения' : `Найдено: ${found.length}`}
       </p>
 
       <ul className="ex-list">
         {found.slice(0, limit).map((e) => (
-          <li key={e.id}>
-            <button type="button" className="ex-row" onClick={() => setSelected(e)}>
-              <Thumb e={e} />
-              <span className="ex-row__text">
-                <span className="ex-row__name">{e.name}</span>
-                <span className="ex-row__sub">{subtitle(e)}</span>
-              </span>
-              {e.isCustom ? <span className="ex-row__badge">своё</span> : <span className="dot" style={{ background: kindColorVar(e.kind) }} />}
-            </button>
-          </li>
+          <ExerciseRow key={e.id} e={e} onOpen={() => setSelected(e)} />
         ))}
       </ul>
 

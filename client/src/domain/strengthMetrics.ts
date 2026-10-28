@@ -157,3 +157,31 @@ export function trainedExercises(sessions: readonly S[]): ExerciseUsage[] {
     .map(([exerciseId, v]) => ({ exerciseId, sessions: v.ids.size, lastDate: v.last }))
     .sort((a, b) => b.lastDate.localeCompare(a.lastDate) || b.sessions - a.sessions || a.exerciseId.localeCompare(b.exerciseId));
 }
+
+export interface SetRef {
+  weightKg: number;
+  reps: number;
+  date: string;
+}
+
+/** Рекордный подход серии: наибольший расчётный 1ПМ (≤ 12 повторов), иначе наибольший вес. Ничья — более ранний. */
+export function recordSet(series: ExerciseSeries): SetRef | null {
+  let best: { ref: SetRef; score: number } | null = null;
+  for (const s of series.sessions) {
+    for (const x of s.sets) {
+      if (x.weightKg === undefined || x.reps === undefined) continue;
+      const score = series.load === 'normal' && x.reps >= 1 && x.reps <= E1RM_MAX_REPS ? epley(x.weightKg, x.reps) : x.weightKg;
+      if (best === null || score > best.score) best = { ref: { weightKg: x.weightKg, reps: x.reps, date: s.date }, score };
+    }
+  }
+  return best?.ref ?? null;
+}
+
+/** Главный подход последней тренировки серии: самый тяжёлый, при равенстве — с большим числом повторов. */
+export function lastTopSet(series: ExerciseSeries): SetRef | null {
+  const last = series.sessions.at(-1);
+  if (!last) return null;
+  const sets = last.sets.filter((x): x is SetEntry & { weightKg: number; reps: number } => x.weightKg !== undefined && x.reps !== undefined);
+  const top = sets.sort((a, b) => b.weightKg - a.weightKg || b.reps - a.reps)[0];
+  return top ? { weightKg: top.weightKg, reps: top.reps, date: last.date } : null;
+}

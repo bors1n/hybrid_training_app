@@ -106,6 +106,7 @@ export function LoginScreen(): ReactElement {
             <button type="submit" className="htr-btn htr-btn--night login__btn" disabled={busy || email.trim() === ''}>
               {busy ? 'Отправляем…' : 'Получить код'}
             </button>
+            <p className="login__hint">Есть таблица с тренировками? После входа загрузи её через CSV в профиле.</p>
           </form>
         ) : (
           <form className="login__form" onSubmit={verify} noValidate>

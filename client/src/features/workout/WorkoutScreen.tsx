@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
-import { ConfirmButton, NumberField, RpePicker } from '../../components/fields.tsx';
+import { ConfirmButton, NumberField, RpeSlider } from '../../components/fields.tsx';
 import { todayKey } from '../../domain/history.ts';
 import {
   dropPendingSets,
@@ -12,10 +12,12 @@ import {
 } from '../../domain/sessionEdit.ts';
 import { SESSION_TYPE_LABELS, sessionTypeColorVar } from '../../domain/sessionType.ts';
 import { countPendingSets, sessionDurationMin, summarize } from '../../domain/summary.ts';
+import { queueState } from '../../domain/queue.ts';
 import { dropEmptyBlocks } from '../../domain/templateSession.ts';
 import { formatDecimal, formatDuration } from '../../domain/units.ts';
 import { deleteRecord } from '../../sync/records.ts';
 import { useCatalog } from '../library/useCatalog.ts';
+import { useQueues } from '../plan/usePlanData.ts';
 import { AddBlockSheet } from './AddBlockSheet.tsx';
 import { CardioCard } from './CardioCard.tsx';
 import { ConditioningCard } from './ConditioningCard.tsx';
@@ -44,6 +46,7 @@ export function WorkoutScreen(): ReactElement {
   const location = useLocation();
   const { draft, status, update, flush, saveError } = useSessionDraft(id);
   const sessions = useSessions();
+  const queues = useQueues();
   const catalogList = useCatalog();
   const catalog = useMemo(() => new Map(catalogList.map((e) => [e.id, e])), [catalogList]);
   const [adding, setAdding] = useState(false);
@@ -67,9 +70,12 @@ export function WorkoutScreen(): ReactElement {
 
   const today = todayKey();
   const finished = isFinished(draft);
-  const ctx: WorkoutCtx = { sessionId: draft.id, date: draft.date, sessions: sessions ?? [], catalog, catalogList, update };
+  const ctx: WorkoutCtx = { sessionId: draft.id, date: draft.date, sessions: sessions ?? [], catalog, catalogList, update, flush };
   const summary = summarize(draft);
   const autoDuration = sessionDurationMin({ startedAt: draft.startedAt, finishedAt: draft.finishedAt ?? Date.now() });
+  // Номер цикла показываем, пока тренировка из очереди идёт: у завершённой он уже мог смениться.
+  const queue = draft.queueId && !finished ? queues?.find((q) => q.id === draft.queueId) : undefined;
+  const cycle = queue ? queueState(queue, (sessions ?? []).filter((s) => s.id !== draft.id))?.cycle : undefined;
   const showClock = !finished && draft.startedAt !== undefined && draft.date === today;
 
   async function complete(mode: 'keep' | 'mark' | 'drop'): Promise<void> {
@@ -135,7 +141,7 @@ export function WorkoutScreen(): ReactElement {
           </label>
           <span className="wk-meta">
             <span className="dot" style={{ background: sessionTypeColorVar(draft.type) }} />
-            {SESSION_TYPE_LABELS[draft.type]} · {summary.doneSets}/{summary.totalSets} подходов · {draft.blocks.length} {draft.blocks.length === 1 ? 'блок' : 'блока'}
+            {cycle !== undefined ? `Цикл ${cycle} · ` : ''}{SESSION_TYPE_LABELS[draft.type]} · {summary.doneSets}/{summary.totalSets} подходов · {draft.blocks.length} {draft.blocks.length === 1 ? 'блок' : 'блока'}
           </span>
         </div>
       </header>
@@ -189,7 +195,7 @@ export function WorkoutScreen(): ReactElement {
 
           <div className="field-col">
             <span className="sheet__label">RPE ВСЕЙ ТРЕНИРОВКИ</span>
-            <RpePicker label="RPE тренировки" value={draft.rpe} onChange={(v) => update((s) => updateSession(s, { rpe: v }))} />
+            <RpeSlider label="RPE тренировки" value={draft.rpe} onChange={(v) => update((s) => updateSession(s, { rpe: v }))} />
           </div>
 
           <label className="field-col">

@@ -149,3 +149,65 @@ select {
 .history__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin: var(--space-6) 0 var(--space-3); }
 .history__title { margin: 0; font: 700 22px/28px var(--font-display); }
 .history__search { margin-bottom: var(--space-2); }
+
+/* Ползунок RPE всей тренировки (Workout.dc.html) */
+.rpe-slider { display: flex; flex-direction: column; gap: 6px; position: relative; }
+.rpe-slider input[type='range'] { -webkit-appearance: none; appearance: none; width: 100%; height: 36px; background: transparent; margin: 0; cursor: pointer; }
+.rpe-slider input[type='range']::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(to right, var(--cobalt) var(--fill), var(--surface) var(--fill)); }
+.rpe-slider input[type='range']::-moz-range-track { height: 8px; border-radius: 999px; background: var(--surface); }
+.rpe-slider input[type='range']::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--cobalt); }
+.rpe-slider input[type='range']::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -10px; border-radius: 999px; background: var(--paper); border: 3px solid var(--cobalt); box-sizing: border-box; }
+.rpe-slider input[type='range']::-moz-range-thumb { width: 22px; height: 22px; border-radius: 999px; background: var(--paper); border: 3px solid var(--cobalt); }
+.rpe-slider--unset input[type='range']::-webkit-slider-runnable-track { background: var(--surface); }
+.rpe-slider--unset input[type='range']::-webkit-slider-thumb { border-color: var(--line-strong); }
+.rpe-slider input[type='range']:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; border-radius: 8px; }
+.rpe-slider__scale { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--ink-muted); }
+.rpe-slider__now { font: 600 12px var(--font-data); color: var(--ink); }
+.rpe-slider__reset { align-self: flex-start; }
+
+/* Суперсет по макету: компактные строки и полоска кругов */
+.ss-item { display: flex; flex-direction: column; gap: var(--space-2); border-bottom: 1px solid var(--line); padding-bottom: var(--space-2); }
+.ss-item:last-of-type { border-bottom: none; }
+.ss-item__head { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); width: 100%; min-height: 52px; padding: 0; border: none; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.ss-item__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ss-item__name { font: 600 16px/22px var(--font-text); }
+.ss-item__prev { font-size: 12px; color: var(--ink-muted); }
+.ss-item__now { flex: none; font: 600 15px var(--font-data); color: var(--ink-muted); }
+.ss-item__now.is-done { color: var(--ink); }
+.ss-rounds { display: flex; gap: 6px; }
+.ss-rounds span { flex: 1; height: 6px; border-radius: 999px; background: var(--line); }
+.ss-rounds span.is-done { background: var(--cobalt); }
+
+/* Комплекс в тренировке: тёмная карточка-сводка (Workout.dc.html) */
+.cx-sum { display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
+.cx-sum__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cx-sum__title { font: 600 17px/22px var(--font-display); overflow-wrap: anywhere; }
+.cx-sum__sub { font-size: 12px; color: var(--on-night-muted); }
+.cx-sum__open { flex: none; min-height: 44px; padding: 0 var(--space-4); border: none; border-radius: var(--radius-pill); background: var(--conditioning); color: #15181E; font: 600 14px var(--font-text); cursor: pointer; }
+
+/* Экран комплекса (WorkoutComplex.dc.html): тёмный, без таймера */
+.cxs { background: var(--night); color: var(--on-night); padding: 0; }
+.cxs__track { position: absolute; left: 0; top: 0; width: 100%; height: 300px; pointer-events: none; }
+.cxs__body { position: relative; min-height: 100%; box-sizing: border-box; padding: calc(var(--space-3) + env(safe-area-inset-top)) var(--space-4) calc(var(--space-6) + env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: var(--space-4); max-width: 640px; margin: 0 auto; }
+.cxs__bar { display: flex; justify-content: space-between; align-items: center; gap: var(--space-2); }
+.cxs__crumb { font: 500 11px/16px var(--font-data); letter-spacing: 0.08em; color: var(--on-night-muted); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cxs__spacer { width: 40px; flex: none; }
+.cxs__head { display: flex; flex-direction: column; gap: 6px; }
+.cxs__kind { display: inline-flex; align-items: center; gap: 6px; font: 500 11px/16px var(--font-data); letter-spacing: 0.08em; color: var(--conditioning); }
+.cxs__title { width: 100%; border: none; background: transparent; color: var(--on-night); font: 800 30px/1.05 var(--font-display); padding: 0; overflow-wrap: anywhere; }
+.cxs__title:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+.cxs__sub { font-size: 14px; color: var(--on-night-muted); }
+.cxs__moves { list-style: none; margin: 0; padding: 0; }
+.cxs__moves li { padding: 11px 0; border-bottom: 1px solid #2A3140; font-size: 15px; }
+.cxs__moves li:last-child { border-bottom: none; }
+.cxs__params { color: var(--on-night-muted); font-size: 13px; }
+.cxs__params summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; }
+.cxs__params .sheet__label { color: var(--on-night-muted); }
+.cxs__result { background: var(--paper); color: var(--ink); border-radius: var(--radius-md); padding: var(--space-4) 14px; display: flex; flex-direction: column; gap: var(--space-3); }
+.cxs__result .sheet__label { color: var(--ink-muted); }
+.cxs__result-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); }
+.cxs__record { font-size: 12px; color: var(--ink-muted); text-align: right; }
+.cxs__rounds { align-items: center; text-align: center; }
+.cxs__actions { margin-top: auto; display: flex; gap: var(--space-2); }
+.cxs__save { flex: 1; min-height: 52px; font-size: 16px; }
+.block:has(.ss-rounds) { border-left: 4px solid var(--cobalt); }

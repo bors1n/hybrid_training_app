@@ -127,6 +127,51 @@ export function RpePicker({ value, onChange, label = 'RPE' }: RpePickerProps): R
   );
 }
 
+const RPE_WORDS = ['легко', 'легко', 'легко', 'умеренно', 'умеренно', 'умеренно', 'тяжело', 'тяжело', 'очень тяжело', 'предел'] as const;
+
+interface RpeSliderProps {
+  value: number | undefined;
+  onChange: (value: number | undefined) => void;
+  label?: string;
+}
+
+/**
+ * Ползунок RPE 1–10 для всей тренировки (как на макете). Пока значение не выбрано, ползунок «пустой»:
+ * выбрать его можно касанием или стрелками, а «Сбросить» возвращает пустое значение — RPE необязателен.
+ */
+export function RpeSlider({ value, onChange, label = 'RPE' }: RpeSliderProps): ReactElement {
+  const shown = value ?? 1;
+  const commit = (el: HTMLInputElement): void => {
+    // Касание самого левого положения не вызывает change: выбираем явно.
+    if (value === undefined) onChange(Number(el.value));
+  };
+  return (
+    <div className={`rpe-slider${value === undefined ? ' rpe-slider--unset' : ''}`}>
+      <input
+        type="range"
+        min={1}
+        max={10}
+        step={1}
+        value={shown}
+        aria-label={label}
+        aria-valuetext={value === undefined ? 'не указан' : `${value}, ${RPE_WORDS[value - 1]}`}
+        style={{ ['--fill' as string]: `${((shown - 1) / 9) * 100}%` }}
+        onChange={(e) => onChange(Number(e.currentTarget.value))}
+        onPointerUp={(e) => commit(e.currentTarget)}
+        onKeyUp={(e) => commit(e.currentTarget)}
+      />
+      <div className="rpe-slider__scale">
+        <span>1 · легко</span>
+        <span className="rpe-slider__now">{value === undefined ? 'не указан' : `${value} · ${RPE_WORDS[value - 1]}`}</span>
+        <span>10 · предел</span>
+      </div>
+      {value !== undefined ? (
+        <button type="button" className="link-btn rpe-slider__reset" onClick={() => onChange(undefined)}>Сбросить</button>
+      ) : null}
+    </div>
+  );
+}
+
 interface ConfirmButtonProps {
   label: string;
   confirmLabel?: string;

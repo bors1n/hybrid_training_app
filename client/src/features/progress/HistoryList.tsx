@@ -65,7 +65,7 @@ export function HistoryList(): ReactElement {
         <ul className="ex-list">
           {shown.slice(0, limit).map((s) => (
             <li key={s.id}>
-              <SessionRow session={s} onOpen={() => navigate(`/workout/${s.id}`)} />
+              <SessionRow variant="dots" session={s} onOpen={() => navigate(`/workout/${s.id}`)} />
             </li>
           ))}
         </ul>

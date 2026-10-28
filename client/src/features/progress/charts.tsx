@@ -29,24 +29,34 @@ interface CommonProps {
   format?: (v: number) => string;
   /** Ось вниз: лучше — меньше (темп). */
   reversed?: boolean;
+  /** Последняя точка крупнее и оранжевая: свежий результат (как на макете). */
+  highlightLast?: boolean;
 }
 
 function legend(series: Series[]): ReactElement | undefined {
   return series.length > 1 ? <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize: 12 }} /> : undefined;
 }
 
-export function TrendChart({ data, xKey, series, height = 180, format, reversed }: CommonProps): ReactElement {
+export function TrendChart({ data, xKey, series, height = 180, format, reversed, highlightLast }: CommonProps): ReactElement {
   const fmt = format ? (v: unknown): string => (typeof v === 'number' ? format(v) : String(v)) : undefined;
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
         <CartesianGrid stroke="var(--line)" vertical={false} />
-        <XAxis dataKey={xKey} tick={AXIS} tickLine={false} axisLine={TICK_LINE} interval="preserveStartEnd" />
+        <XAxis dataKey={xKey} tick={AXIS} tickLine={false} axisLine={TICK_LINE} interval="preserveStartEnd" minTickGap={32} />
         <YAxis tick={AXIS} tickLine={false} axisLine={false} width={44} domain={['auto', 'auto']} reversed={reversed} tickFormatter={fmt} />
         <Tooltip {...TOOLTIP} formatter={fmt} />
         {legend(series)}
         {series.map((s) => (
-          <Line key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={s.color} strokeWidth={2.5} dot={{ r: 3, fill: s.color }} activeDot={{ r: 5 }} connectNulls isAnimationActive={false} />
+          <Line key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={s.color} strokeWidth={2.5} dot={(p: { cx?: number; cy?: number; index?: number }) => {
+              const { cx, cy, index } = p;
+              if (cx === undefined || cy === undefined) return <g key={index} />;
+              return highlightLast && index === data.length - 1 ? (
+                <circle key={index} cx={cx} cy={cy} r={6} style={{ fill: 'var(--conditioning)', stroke: 'var(--paper)', strokeWidth: 2 }} />
+              ) : (
+                <circle key={index} cx={cx} cy={cy} r={3.5} style={{ fill: s.color }} />
+              );
+            }} activeDot={{ r: 5 }} connectNulls isAnimationActive={false} />
         ))}
       </LineChart>
     </ResponsiveContainer>
@@ -59,7 +69,7 @@ export function BarsChart({ data, xKey, series, height = 180, format, stacked }:
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
         <CartesianGrid stroke="var(--line)" vertical={false} />
-        <XAxis dataKey={xKey} tick={AXIS} tickLine={false} axisLine={TICK_LINE} interval="preserveStartEnd" />
+        <XAxis dataKey={xKey} tick={AXIS} tickLine={false} axisLine={TICK_LINE} interval="preserveStartEnd" minTickGap={32} />
         <YAxis tick={AXIS} tickLine={false} axisLine={false} width={44} allowDecimals={false} tickFormatter={fmt} />
         <Tooltip {...TOOLTIP} cursor={{ fill: 'var(--surface)' }} formatter={fmt} />
         {legend(series)}

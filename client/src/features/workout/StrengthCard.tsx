@@ -140,6 +140,51 @@ function ItemEditor({ block, itemIndex, ctx }: ItemProps): ReactElement {
   );
 }
 
+/** Строка суперсета по макету: название, прошлый результат, подход текущего круга; по нажатию раскрывается ввод. */
+function SupersetRow({ block, itemIndex, round, ctx }: ItemProps & { round: number }): ReactElement {
+  const [open, setOpen] = useState(false);
+  const item = block.items[itemIndex]!;
+  const name = exerciseName(ctx, item.exerciseId);
+  const last = useMemo(
+    () => lastPerformance(item.exerciseId, ctx.sessions, { excludeSessionId: ctx.sessionId, onOrBefore: ctx.date }),
+    [item.exerciseId, ctx.sessions, ctx.sessionId, ctx.date],
+  );
+  const current = item.sets[round];
+  const lastTop = last?.sets[last.sets.length - 1];
+  return (
+    <div className="ss-item">
+      <button type="button" className="ss-item__head" aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+        <span className="ss-item__text">
+          <span className="ss-item__name">{String.fromCharCode(65)}{itemIndex + 1} · {name}</span>
+          <span className="ss-item__prev">
+            {lastTop ? `Прошлый: ${formatSet(lastTop)}${lastTop.rpe !== undefined ? ` · RPE ${lastTop.rpe}` : ''}` : 'Раньше не выполнялось'}
+          </span>
+        </span>
+        <span className={`ss-item__now${current?.done ? ' is-done' : ''}`}>{current ? formatSet(current) : '–'}</span>
+      </button>
+      {open ? <ItemEditor block={block} itemIndex={itemIndex} ctx={ctx} /> : null}
+    </div>
+  );
+}
+
+function SupersetBody({ block, ctx }: { block: StrengthBlock; ctx: WorkoutCtx }): ReactElement {
+  const rounds = Math.max(...block.items.map((i) => i.sets.length));
+  const roundDone = (r: number): boolean => block.items.every((i) => i.sets[r]?.done);
+  const firstOpen = Array.from({ length: rounds }, (_, r) => r).find((r) => !roundDone(r));
+  const round = firstOpen ?? rounds - 1;
+  return (
+    <>
+      {block.items.map((_, i) => (
+        <SupersetRow key={i} block={block} itemIndex={i} round={round} ctx={ctx} />
+      ))}
+      <div className="ss-rounds" role="img" aria-label={`Круг ${round + 1} из ${rounds}`}>
+        {Array.from({ length: rounds }, (_, r) => <span key={r} className={roundDone(r) ? 'is-done' : ''} />)}
+      </div>
+      <span className="item__hint">Круг {round + 1} из {rounds} · нажми на упражнение, чтобы внести подход</span>
+    </>
+  );
+}
+
 export function StrengthCard({ block, index, count, ctx }: CardProps): ReactElement {
   const [picking, setPicking] = useState(false);
   const rounds = Math.max(...block.items.map((i) => i.sets.length));
@@ -156,9 +201,11 @@ export function StrengthCard({ block, index, count, ctx }: CardProps): ReactElem
       onMove={(d) => ctx.update((s) => moveBlock(s, block.id, d))}
       onRemove={() => ctx.update((s) => removeBlock(s, block.id))}
     >
-      {block.items.map((_, i) => (
-        <ItemEditor key={i} block={block} itemIndex={i} ctx={ctx} />
-      ))}
+      {block.superset ? (
+        <SupersetBody block={block} ctx={ctx} />
+      ) : (
+        block.items.map((_, i) => <ItemEditor key={i} block={block} itemIndex={i} ctx={ctx} />)
+      )}
 
       <div className="item__actions">
         <button type="button" className="pill-btn" onClick={() => setPicking(true)}>

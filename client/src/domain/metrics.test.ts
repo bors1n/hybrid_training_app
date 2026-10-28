@@ -2,7 +2,7 @@ import type { Block, SessionRecord, SetEntry } from '@splav/shared';
 import { describe, expect, it } from 'vitest';
 import { heatLevel, heatmap, sessionMinutes, weekStreak, weeklyBalance } from './balanceMetrics.ts';
 import { cardioBests, cardioEntries, cardioGroup, paceSeries, shownPace, weeklyCardio } from './cardioMetrics.ts';
-import { epley, exerciseSeries, trainedExercises, weeklyTonnage } from './strengthMetrics.ts';
+import { epley, exerciseSeries, lastTopSet, recordSet, trainedExercises, weeklyTonnage } from './strengthMetrics.ts';
 import { addDays, daysBetween, formatDayMonth, lastWeeks, weekStart } from './weeks.ts';
 
 let n = 0;
@@ -120,6 +120,28 @@ describe('сила: расчётный 1ПМ и серии', () => {
   });
 });
 
+describe('сила: рекорд и последний подход', () => {
+  const sessions = [
+    ses('2026-10-06', [strength('sq', [set(90, 6)])]), // 1ПМ 108
+    ses('2026-10-20', [strength('sq', [set(87.5, 8), set(85, 8), set(40, 20)])]), // 1ПМ 110,8
+  ];
+  const [normal] = exerciseSeries('sq', sessions);
+
+  it('рекорд — подход с наибольшим расчётным 1ПМ, а не самый тяжёлый', () => {
+    expect(recordSet(normal!)).toEqual({ weightKg: 87.5, reps: 8, date: '2026-10-20' });
+  });
+  it('последний — самый тяжёлый подход последней тренировки', () => {
+    expect(lastTopSet(normal!)).toEqual({ weightKg: 87.5, reps: 8, date: '2026-10-20' });
+  });
+  it('у отягощения рекорд — по весу; без веса и повторов — null', () => {
+    const [added] = exerciseSeries('p', [ses('2026-10-20', [strength('p', [set(10, 5, { load: 'added' }), set(12.5, 3, { load: 'added' })])])]);
+    expect(recordSet(added!)).toMatchObject({ weightKg: 12.5, reps: 3 });
+    const [bare] = exerciseSeries('b', [ses('2026-10-20', [strength('b', [set(undefined, 12)])])]);
+    expect(recordSet(bare!)).toBeNull();
+    expect(lastTopSet(bare!)).toBeNull();
+  });
+});
+
 describe('кардио', () => {
   it('группы: бег = улица + дорожка, вело = велосипед + велотренажёр', () => {
     expect(['run', 'treadmill', 'bike', 'indoor_bike', 'skierg', 'row', 'stairs', 'walk', 'other'].map((m) => cardioGroup(m as never))).toEqual([
@@ -221,9 +243,9 @@ describe('баланс и регулярность', () => {
     expect(weeks[1]!.sessions.conditioning).toBe(1);
   });
 
-  it('теплокарта: 53 недели по 7 дней, последняя колонка — текущая неделя, будущее помечено', () => {
+  it('теплокарта: 26 недель по 7 дней, последняя колонка — текущая неделя, будущее помечено', () => {
     const map = heatmap([ses('2026-10-27', []), ses('2026-10-27', []), ses('2026-10-19', [])], today);
-    expect(map).toHaveLength(53);
+    expect(map).toHaveLength(26);
     expect(map.every((w) => w.length === 7)).toBe(true);
     const last = map.at(-1)!;
     expect(last[0]!.date).toBe('2026-10-26');
