@@ -5,11 +5,11 @@ import { RUBRIC_KEYS } from './lib/articles.ts';
 
 const articles = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/articles' }),
-  schema: z.object({
+  schema: ({ image }) => z.object({
     title: z.string().min(1).max(120),
     rubric: z.enum(RUBRIC_KEYS),
-    /** Путь к обложке относительно корня сайта (`/covers/…`); без неё карточка рисуется на ночном фоне. */
-    cover: z.string().startsWith('/').optional(),
+    /** Картинка рядом со статьёй (`./имя_cover.jpg`); без неё карточка рисуется на ночном фоне. */
+    cover: image().optional(),
     date: z.coerce.date(),
     /** Вводный абзац: показывается в списке и под заголовком. */
     lead: z.string().min(1).max(400),

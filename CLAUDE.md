@@ -62,7 +62,7 @@ npx vitest run --project site   # тесты сайта (Astro Container API)
 
 ## Архитектура (целевая)
 
-- npm workspaces: `shared/` (Zod-схемы — единственный источник типов через `z.infer`), `client/` (React, Vite, vite-plugin-pwa, Zustand, Dexie), `server/` (Fastify, Drizzle), `design/` (`tokens.json` из артефакта → `tokens.css`), `site/` (Astro, статический сайт Hybrid Training Russia: шапка/подвал и компоненты в `src/components`, страницы в `src/pages`, внешние адреса — в `src/config.ts`; статьи — Markdown в `src/content/articles/` (frontmatter: title, rubric, date, lead, cover?, readingTime?, draft?; схема в `src/content.config.ts`, рубрики и чистые функции в `src/lib/articles.ts`); тёмная тема системы сайт не меняет).
+- npm workspaces: `shared/` (Zod-схемы — единственный источник типов через `z.infer`), `client/` (React, Vite, vite-plugin-pwa, Zustand, Dexie), `server/` (Fastify, Drizzle), `design/` (`tokens.json` из артефакта → `tokens.css`), `site/` (Astro, статический сайт Hybrid Training Russia: шапка/подвал и компоненты в `src/components`, страницы в `src/pages`, внешние адреса — в `src/config.ts`; картинки страниц — `src/assets/` через `astro:assets`; статьи — Markdown в `src/content/articles/` (frontmatter: title, rubric, date, lead, cover? (`image()`: путь к файлу рядом с `.md`), readingTime?, draft?; схема в `src/content.config.ts`, рубрики и чистые функции в `src/lib/articles.ts`); тёмная тема системы сайт не меняет).
 - Синхронизация:
   - на сервере одна таблица `records(user_id, collection, id, data jsonb, updated_at, deleted_at, seq)`;
   - pull — по серверному курсору `seq` (`GET /api/sync?since=`), а не по часам клиента; push — пачкой (`POST /api/sync`);

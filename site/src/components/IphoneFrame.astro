@@ -1,0 +1,26 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+}
+const { src, alt } = Astro.props;
+---
+
+<div class="iphone">
+  <div class="iphone__screen">
+    <Image src={src} alt={alt} widths={[300, 600]} sizes="300px" />
+    <span class="iphone__island" aria-hidden="true"></span>
+  </div>
+</div>
+
+<style>
+  /* Корпус iPhone целиком на CSS: экран 390 × 844, чёрная рамка, «остров» сверху, кнопки сбоку. */
+  .iphone { position: relative; width: min(300px, 100%); padding: 11px; border-radius: 54px; background: var(--night); box-shadow: 0 0 0 2px var(--line-strong), 0 24px 48px rgba(21, 24, 30, 0.22); }
+  .iphone::before { content: ''; position: absolute; left: -3px; top: 110px; width: 3px; height: 54px; border-radius: 2px 0 0 2px; background: var(--night); }
+  .iphone::after { content: ''; position: absolute; right: -3px; top: 140px; width: 3px; height: 82px; border-radius: 0 2px 2px 0; background: var(--night); }
+  .iphone__screen { position: relative; aspect-ratio: 390 / 844; border-radius: 44px; overflow: hidden; background: #fff; }
+  .iphone__screen :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+  .iphone__island { position: absolute; top: 10px; left: 50%; width: 31%; height: 22px; transform: translateX(-50%); border-radius: 999px; background: var(--night); }
+</style>

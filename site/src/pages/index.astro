@@ -1,6 +1,10 @@
 ---
+import { Image } from 'astro:assets';
 import Button from '../components/Button.astro';
+import heroPhoto from '../assets/home/hero.jpg';
+import splavScreen from '../assets/splav/screen.png';
 import HtrAvatar from '../components/HtrAvatar.astro';
+import IphoneFrame from '../components/IphoneFrame.astro';
 import SplavWordmark from '../components/SplavWordmark.astro';
 import Sticker from '../components/Sticker.astro';
 import RaceTrack from '../components/RaceTrack.astro';
@@ -44,9 +48,7 @@ const splavPoints = [
         </div>
       </div>
       <div class="hero__photo">
-        <svg viewBox="0 0 400 540" preserveAspectRatio="none" aria-hidden="true"><g stroke="#323844" stroke-width="2"><path d="M0 108 H400"></path><path d="M0 216 H400"></path><path d="M0 324 H400"></path><path d="M0 432 H400"></path></g><rect x="56" y="0" width="6" height="540" fill="#323844"></rect></svg>
-        <span class="hero__digit" aria-hidden="true">3</span>
-        <span class="hero__note">[Фото: спринт на дорожке стадиона, своя съёмка, естественный цвет или ч/б]</span>
+        <Image src={heroPhoto} alt="Бегун на вечерней тренировке" widths={[480, 800, 1200]} sizes="(max-width: 900px) 100vw, 40vw" loading="eager" fetchpriority="high" />
       </div>
     </section>
 
@@ -101,23 +103,8 @@ const splavPoints = [
         </ul>
         <Button href="/splav/" variant="cobalt">Узнать о SPLAV</Button>
       </div>
-      <div class="splav__phone-wrap" aria-hidden="true">
-        <div class="phone">
-          <div class="phone__top"><span class="phone__name">Тренировка 2</span><span class="phone__cycle">ЦИКЛ 3</span></div>
-          <div class="phone__card">
-            <div class="phone__row"><span class="phone__ex">Становая</span><span class="phone__pill"><span class="phone__pdot" style="background:#1D46E8"></span>Сила</span></div>
-            <span class="phone__prev">Прошлый раз: 60 кг — 15, 15, 15</span>
-            <div class="phone__grid">
-              <span class="phone__cell phone__cell--on">60 кг</span><span class="phone__cell phone__cell--on">15 повт</span>
-              <span class="phone__cell">60 кг</span><span class="phone__cell">— повт</span>
-            </div>
-          </div>
-          <div class="phone__card phone__card--pace">
-            <div class="phone__pace"><span class="phone__small">ТЕМП · БЕГ</span><span class="phone__big">7:46<span class="phone__unit"> /км</span></span></div>
-            <span class="phone__pill"><span class="phone__pdot" style="background:#3091D8"></span>Кардио</span>
-          </div>
-          <span class="phone__finish">Завершить тренировку</span>
-        </div>
+      <div class="splav__phone-wrap">
+        <IphoneFrame src={splavScreen} alt="Экран «Прогресс» в приложении SPLAV" />
       </div>
     </div>
   </section>
@@ -143,10 +130,8 @@ const splavPoints = [
   .hero__title { margin: 0; font: 800 clamp(44px, 7.4vw, 112px) / 0.92 var(--font-display); letter-spacing: -0.035em; }
   .hero__lead { margin: 0; max-width: 520px; font-size: 19px; line-height: 1.55; color: var(--on-night-soft); }
   .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
-  .hero__photo { flex: 1 1 360px; min-width: 0; position: relative; min-height: 540px; border-radius: 28px; background: var(--night-panel); overflow: hidden; display: flex; align-items: flex-end; }
-  .hero__photo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .hero__digit { position: absolute; top: 20px; right: 28px; font: 800 150px/1 var(--font-display); color: var(--sky); letter-spacing: -0.05em; }
-  .hero__note { position: relative; margin: 28px; padding: 10px 16px 12px; border-radius: 14px; background: var(--night); color: var(--on-night-muted); font-weight: 500; font-size: 14px; line-height: 1.4; }
+  .hero__photo { flex: 1 1 360px; min-width: 0; position: relative; min-height: 540px; border-radius: 28px; background: var(--night-panel); overflow: hidden; }
+  .hero__photo :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 55% 40%; }
 
   .section { padding-top: 88px; display: flex; flex-direction: column; gap: 32px; }
   .section--last { padding-bottom: 88px; }
@@ -171,25 +156,6 @@ const splavPoints = [
   .splav__list li { display: flex; gap: 12px; align-items: baseline; }
   .splav__bullet { flex: none; width: 11px; height: 11px; border-radius: 999px; }
   .splav__phone-wrap { flex: 1 1 320px; min-width: 0; display: flex; justify-content: center; }
-  .phone { width: 290px; max-width: 100%; border-radius: 40px; border: 8px solid var(--night); background: #fff; padding: 20px 14px 24px; display: flex; flex-direction: column; gap: 12px; }
-  .phone__top { display: flex; justify-content: space-between; align-items: center; padding: 0 4px; }
-  .phone__name { font: 600 18px var(--font-display); }
-  .phone__cycle { font: 500 11px var(--font-data); letter-spacing: 0.08em; color: var(--ink-muted); }
-  .phone__card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-  .phone__card--pace { flex-direction: row; justify-content: space-between; align-items: center; }
-  .phone__row { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
-  .phone__ex { font-weight: 600; font-size: 16px; }
-  .phone__pill { display: inline-flex; align-items: center; gap: 5px; padding: 4px 9px; border-radius: 999px; background: var(--surface); font-size: 11px; }
-  .phone__pdot { width: 7px; height: 7px; border-radius: 999px; }
-  .phone__prev { font-size: 12px; color: var(--ink-muted); }
-  .phone__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; font: 500 13px var(--font-data); }
-  .phone__cell { border: 1.5px solid var(--line-strong); border-radius: 10px; padding: 9px 10px; }
-  .phone__cell--on { border: 1px solid var(--line); background: var(--surface); }
-  .phone__pace { display: flex; flex-direction: column; gap: 2px; }
-  .phone__small { font: 500 11px var(--font-data); letter-spacing: 0.08em; color: var(--ink-muted); }
-  .phone__big { font: 600 28px var(--font-data); letter-spacing: -0.02em; }
-  .phone__unit { font-size: 13px; color: var(--ink-muted); font-weight: 500; }
-  .phone__finish { display: flex; align-items: center; justify-content: center; min-height: 46px; border-radius: 999px; background: var(--cobalt); color: #fff; font-weight: 600; font-size: 15px; }
 
   .insta { border: 1px solid var(--line); border-radius: 28px; padding: clamp(24px, 4vw, 44px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; }
   .insta__who { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; min-width: 0; }
@@ -200,7 +166,6 @@ const splavPoints = [
   @media (max-width: 640px) {
     .hero { padding-block: 24px 48px; gap: 32px; }
     .hero__photo { min-height: 360px; }
-    .hero__digit { font-size: 110px; }
     .section { padding-top: 56px; }
     .section--last { padding-bottom: 56px; }
   }

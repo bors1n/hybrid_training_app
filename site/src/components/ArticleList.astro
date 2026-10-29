@@ -4,7 +4,7 @@ import { rubricLabel } from '../lib/articles.ts';
 import ArticleCard from './ArticleCard.astro';
 
 interface Props {
-  articles: Pick<ArticleView, 'slug' | 'title' | 'rubric' | 'readingMin'>[];
+  articles: Pick<ArticleView, 'slug' | 'title' | 'rubric' | 'readingMin' | 'cover'>[];
   empty: string;
 }
 const { articles, empty } = Astro.props;
@@ -15,7 +15,7 @@ const { articles, empty } = Astro.props;
     <p class="empty">{empty}</p>
   ) : (
     <div class="grid">
-      {articles.map((a) => <ArticleCard href={`/articles/${a.slug}/`} rubric={rubricLabel(a.rubric)} title={a.title} readingMin={a.readingMin} />)}
+      {articles.map((a) => <ArticleCard href={`/articles/${a.slug}/`} rubric={rubricLabel(a.rubric)} title={a.title} cover={a.cover} readingMin={a.readingMin} />)}
     </div>
   )
 }

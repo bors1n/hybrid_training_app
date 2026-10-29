@@ -38,6 +38,13 @@ describe('главная страница', () => {
     expect(html.match(/class="basic[ "]/g)).toHaveLength(6);
   });
 
+  it('фото первого экрана и скриншот приложения в рамке iPhone — картинки с описанием', async () => {
+    const html = await render(Index);
+    expect(html).toMatch(/<img[^>]*alt="Бегун на вечерней тренировке"/);
+    expect(html).toMatch(/<img[^>]*alt="Экран «Прогресс» в приложении SPLAV"/);
+    expect(html).toContain('iphone__island');
+  });
+
   it('меню ведёт только на существующие страницы сайта', () => {
     const internal = [...NAV, ...FOOTER_NAV].map((n) => n.href).filter((h) => h.startsWith('/'));
     for (const href of internal) expect(['/articles/', '/splav/', '/about/', '/rubrics/complexes/']).toContain(href);
@@ -72,6 +79,15 @@ describe('рубрики и список статей', () => {
     expect(html).toContain('6 мин чтения');
     expect(html).toContain('>Бег<');
     expect(html).not.toContain('пусто');
+  });
+
+  it('обложка рисуется картинкой, без обложки остаётся ночной фон', async () => {
+    const cover = { src: '/cover.jpg', width: 1080, height: 1350, format: 'jpg' };
+    const base = { slug: 'a-b', title: 'Заголовок', rubric: 'running', readingMin: 6 };
+    const withCover = await render(ArticleList, '/', { articles: [{ ...base, cover }], empty: 'пусто' });
+    expect(withCover).toContain('<img');
+    const without = await render(ArticleList, '/', { articles: [base], empty: 'пусто' });
+    expect(without).not.toContain('<img');
   });
 
   it('без статей — пояснение вместо пустого места', async () => {

@@ -1,3 +1,4 @@
+import type { ImageMetadata } from 'astro';
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { newestFirst, readingMinutes, type RubricKey } from './articles.ts';
 
@@ -6,7 +7,7 @@ export interface ArticleView {
   title: string;
   rubric: RubricKey;
   lead: string;
-  cover?: string;
+  cover?: ImageMetadata;
   date: Date;
   readingMin: number;
   entry: CollectionEntry<'articles'>;
