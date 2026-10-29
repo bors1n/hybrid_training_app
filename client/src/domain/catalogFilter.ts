@@ -118,11 +118,9 @@ export function muscleGroups(e: Pick<CatalogExercise, 'muscles'>): MuscleGroup[]
   return [...groups];
 }
 
-/** Цвет типа: сила, свой вес и кор — цвет силы; кардио и мобильность — свои. */
-export function kindColorVar(kind: Kind): string {
-  if (kind === 'cardio') return 'var(--cardio)';
-  if (kind === 'mobility') return 'var(--mobility)';
-  return 'var(--strength)';
+/** Цвет вида: у каждого свой токен; комплекс — цвет типа «комплекс». */
+export function kindColorVar(kind: Kind | 'complex'): string {
+  return { strength: 'var(--strength)', bodyweight: 'var(--bodyweight)', cardio: 'var(--cardio)', core: 'var(--core)', mobility: 'var(--mobility)', complex: 'var(--conditioning)' }[kind];
 }
 
 export interface CatalogFilter {

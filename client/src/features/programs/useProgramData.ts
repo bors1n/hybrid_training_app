@@ -2,7 +2,9 @@ import { ComplexQueueRecordSchema, ComplexRecordSchema, ProgramRecordSchema, Que
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { SETTINGS_ID } from '../../data/programService.ts';
+import { buildComplexLibrary } from '../../domain/complexLibrary.ts';
 import { activeProgram } from '../../domain/programs.ts';
+import { WODS } from '../../seed/wods.ts';
 import { listRecords } from '../../sync/records.ts';
 import type { z } from 'zod';
 
@@ -24,10 +26,13 @@ export function useQueues(): QueueRecord[] | undefined {
   return useMemo(() => parseAll(rows, QueueRecordSchema as z.ZodType<QueueRecord>)?.sort((a, b) => a.id.localeCompare(b.id)), [rows]);
 }
 
-/** Библиотека комплексов по возрастанию номера. */
+/** Библиотека комплексов: записи пользователя (автор, свои) и статичная библиотека sportkuznica; порядок — см. `buildComplexLibrary`. */
 export function useComplexes(): ComplexRecord[] | undefined {
   const rows = useLiveQuery(() => listRecords('complexes'), []);
-  return useMemo(() => parseAll(rows, ComplexRecordSchema as z.ZodType<ComplexRecord>)?.sort((a, b) => a.id.localeCompare(b.id)), [rows]);
+  return useMemo(() => {
+    const own = parseAll(rows, ComplexRecordSchema as z.ZodType<ComplexRecord>);
+    return own && buildComplexLibrary(own, WODS);
+  }, [rows]);
 }
 
 export function useComplexQueues(): ComplexQueueRecord[] | undefined {

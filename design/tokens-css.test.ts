@@ -14,6 +14,8 @@ describe('buildTokensCss', () => {
     expect(css).toContain('--cardio: #3091D8;');
     expect(css).toContain('--conditioning: #E2591A;');
     expect(css).toContain('--mobility: #7D8796;');
+    expect(css).toContain('--bodyweight: #7A4FD6;');
+    expect(css).toContain('--core: #148F7E;');
   });
   it('радиусы, отступы и шрифты', () => {
     expect(css).toContain('--radius-pill: 999px;');

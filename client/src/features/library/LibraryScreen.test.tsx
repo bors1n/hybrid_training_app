@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { clearLocalData, db } from '../../data/db.ts';
 import { HAS_REPDB_CATALOG } from '../../seed/catalog.ts';
+import { ensureSeed } from '../../seed/install.ts';
 import { LibraryScreen } from './LibraryScreen.tsx';
 
 beforeEach(async () => {
@@ -166,5 +167,37 @@ describe('своё упражнение', () => {
     type('мой тест');
     await waitFor(() => expect(screen.getByText(/Ничего не найдено/)).toBeTruthy());
     expect((await db.rows('exercises').toArray())[0]?.deletedAt).not.toBeNull();
+  });
+});
+
+describe('экран «Каталог»: комплексы', () => {
+  it('чип «Комплексы» показывает комплексы вместо упражнений; ряды мышц и оборудования скрыты, есть формат', async () => {
+    await ensureSeed();
+    render(<LibraryScreen />);
+    fireEvent.click(screen.getByRole('button', { name: 'Комплексы' }));
+    const list = await screen.findByRole('list', { name: 'Комплексы' });
+    await waitFor(() => expect(within(list).getAllByRole('button').length).toBeGreaterThanOrEqual(24));
+    expect(screen.queryByRole('group', { name: 'Мышцы' })).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Оборудование' })).toBeNull();
+    expect(screen.getByRole('group', { name: 'Формат' })).toBeTruthy();
+    expect(screen.getByText(/\d+ комплексов/)).toBeTruthy();
+  });
+
+  it('поиск по названию и фильтр по формату; карточка комплекса открывается', async () => {
+    await ensureSeed();
+    render(<LibraryScreen />);
+    fireEvent.click(screen.getByRole('button', { name: 'Комплексы' }));
+    await screen.findByRole('list', { name: 'Комплексы' });
+    fireEvent.change(search(), { target: { value: 'AMRAP 20 мин' } });
+    const author = await within(screen.getByRole('list', { name: 'Комплексы' })).findByText(/#002/);
+    fireEvent.click(author.closest('button')!);
+    expect(await screen.findByRole('dialog', { name: 'Комплекс #002' })).toBeTruthy();
+  });
+
+  it('возврат к упражнениям: другой тип выключает режим комплексов', async () => {
+    render(<LibraryScreen />);
+    fireEvent.click(screen.getByRole('button', { name: 'Комплексы' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Все' }));
+    expect(await screen.findByRole('group', { name: 'Мышцы' })).toBeTruthy();
   });
 });

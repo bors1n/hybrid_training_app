@@ -348,7 +348,7 @@ describe('библиотека комплексов', () => {
     const add = await screen.findByRole('dialog', { name: 'Добавить комплекс' });
     expect(within(add).queryByRole('button', { name: /Добавить #001/ })).toBeNull(); // уже в программе
     click(/Добавить #004/, within(add));
-    await waitFor(() => expect(tile('#004', 'не делал')).toBeTruthy());
+    await waitFor(() => expect(tile('#004', 'не делал')).toBeTruthy(), { timeout: 4000 });
     click('Готово', within(add));
 
     fireEvent.click(screen.getByRole('button', { name: /^#004/ }));

@@ -4,6 +4,7 @@ import { useAuth } from '../auth/store.ts';
 import { exportAllJson, exportAllSessionsCsv, saveTextFile, type SaveOutcome } from '../data/exportService.ts';
 import { todayKey } from '../domain/history.ts';
 import { REPDB_ATTRIBUTION, REPDB_URL } from '../seed/catalog.ts';
+import { HAS_WODS, WOD_SOURCE_NAME, WOD_SOURCE_URL } from '../seed/wods.ts';
 import { triggerSync } from '../sync/runtime.ts';
 import { syncLabel, useSyncStatus } from '../sync/status.ts';
 
@@ -110,6 +111,11 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
           <p className="sheet__credit">
             <a href={REPDB_URL} target="_blank" rel="noreferrer">{REPDB_ATTRIBUTION}</a>
           </p>
+          {HAS_WODS ? (
+            <p className="sheet__credit">
+              Комплексы библиотеки: <a href={WOD_SOURCE_URL} target="_blank" rel="noreferrer">{WOD_SOURCE_NAME}</a>
+            </p>
+          ) : null}
         </details>
 
         {confirming ? (

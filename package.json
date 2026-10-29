@@ -16,6 +16,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p shared && tsc --noEmit -p design && tsc --noEmit -p client && tsc --noEmit -p server && tsc --noEmit -p tests && npm run check -w site",
     "seed:media": "node scripts/repdb/build.mjs",
+    "seed:wods": "node scripts/wods/build.mjs",
     "preview:phone": "npm run build -w client && npm run preview -w client",
     "dev:site": "npm run dev -w site"
   },

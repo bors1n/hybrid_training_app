@@ -13,6 +13,7 @@ SPLAV — PWA на русском для iPhone: журнал гибридных
 ```bash
 npm install
 npm run seed:media   # один раз: каталог RepDB + картинки (не в git; без него в каталоге только упражнения автора)
+npm run seed:wods    # один раз: библиотека комплексов sportkuznica.com → client/src/seed/generated/wods.json (не в git; без неё только комплексы автора и свои)
 npm run dev          # сервер :8787 + клиент :5173 (Vite проксирует /api)
 npm test             # Vitest по всем пакетам (projects: shared, design, client, server, tests)
 npx vitest run client/src/data/db.test.ts   # один файл
@@ -69,6 +70,7 @@ npx vitest run --project site   # тесты сайта (Astro Container API)
   - на клиенте `outbox` с ключом `collection:id`; `user_id` берётся только из сессии.
 - Каталог упражнений RepDB статичен и лежит в бандле. Синхронизируются только свои упражнения, заметки и сопоставления. Seed (шаблоны, очереди, комплексы) создаёт `ensureSeed` после первой синхронизации с `updatedAt = 1` и детерминированными id (`seed:*`, комплексы — `#001`…), чтобы первый вход с двух устройств не плодил дубли.
 - Записи проверяются схемами из `shared/src/schemas` дважды: `saveRecord` на клиенте (бросает) и сервер (отклоняет по одной, `rejected` в ответе push). Новая коллекция или поле = схема в `shared`, запись в `RECORD_SCHEMAS`, индекс в `client/src/data/db.ts` (новая версия Dexie).
+- Комплексы: `domain/complexLibrary.ts` склеивает записи `complexes` (автор `#…`, свои `own:…`) со статичной библиотекой (`wod:…`, `seed/wods.ts`, только чтение); читать комплексы нужно через `useComplexes`/`buildComplexLibrary`, а не напрямую из таблицы.
 - Программы: коллекция `programs` (`queueId` + `complexQueueId` → существующие `queues` и `complexQueue`); активная — `settings.activeProgramId` (`domain/programs.ts`, `activeProgram`), без неё базовая `seed:program:basic`. Экраны — `client/src/features/programs/` (`ProgramsScreen` список, `ProgramScreen` одна программа); «Сегодня» берёт очередь активной программы. Очереди могут быть пустыми; `startTemplateWorkout(templateId, { queueId })` называет очередь явно.
 - Следующий шаблон и комплекс вычисляются из истории завершённых тренировок, а не хранятся счётчиком.
 - Клиентский слой синхронизации: `client/src/sync/` — `records.ts` (`saveRecord`/`deleteRecord`/`applyRemote`: всё, что меняет данные, обязано идти через них, иначе запись не попадёт в `outbox`), `engine.ts` (push → pull), `controller.ts` (состояния и single-flight), `runtime.ts` (браузерные триггеры). Аккаунт: `client/src/auth/store.ts`. Сервер: `server/src/{auth,sync,db}/`.
@@ -86,11 +88,12 @@ npx vitest run --project site   # тесты сайта (Astro Container API)
 ## Ограничения
 
 - Медиа openGym (Gym visual) использовать нельзя. Картинки — RepDB free с видимой подписью «Exercise data by RepDB (repdb.co)» в «О приложении» и на экране упражнения; датасет отдельно не распространять. Слой медиа заменяемый (`media.source`, `media.license`).
+- Комплексы sportkuznica.com (`client/src/seed/generated/wods.json`) в git не добавлять: тексты принадлежат сайту; в приложении ссылка на источник. Скрипт ходит не чаще 1 запроса в секунду.
 - Каталог RepDB (`client/src/seed/generated/`, `client/public/media/repdb/`) и всё производное от него в git не добавлять: лицензия запрещает распространять набор данных. Проверенные вручную русские названия и сопоставления (`programExercises.ts`, `ownExercises.ts`) — наши, они в git.
 - SheetJS ставить с cdn.sheetjs.com: пакет `xlsx` в npm устарел.
 - Данные о программе и комплексах — только из документов.
 - Новые зависимости — только с обоснованием в отчёте этапа.
-- Цвета — только CSS-токены (тёмная тема по системной настройке). Цвета типов везде одни: сила `cobalt`, кардио `cardio`, комплекс `conditioning` (он же рекорд; не больше одного оранжевого элемента на экране), мобильность `mobility`.
+- Цвета — только CSS-токены (тёмная тема по системной настройке). Цвета типов везде одни: сила `cobalt`, кардио `cardio`, комплекс `conditioning` (он же рекорд; не больше одного оранжевого элемента на экране), мобильность `mobility`; виды упражнений в каталоге: свой вес `bodyweight`, кор `core` (`kindColorVar`).
 
 ## Порядок работы
 

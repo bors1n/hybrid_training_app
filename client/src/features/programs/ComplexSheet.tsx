@@ -1,7 +1,8 @@
 import { FORMATS, type ComplexQueueRecord, type ComplexRecord, type SessionRecord } from '@splav/shared';
 import { useMemo, useState, type ReactElement } from 'react';
 import { ConfirmButton, NumberField } from '../../components/fields.tsx';
-import { removeComplexFromProgram } from '../../data/programService.ts';
+import { complexSourceUrl, isReadOnlyComplex } from '../../domain/complexLibrary.ts';
+import { addComplexToProgram, removeComplexFromProgram } from '../../data/programService.ts';
 import { attempts, bestAttempt, formatResult } from '../../domain/complexResults.ts';
 import { todayKey } from '../../domain/history.ts';
 import { formatDateShort } from '../../domain/lastPerformance.ts';
@@ -117,7 +118,11 @@ export function ComplexSheet({ complex: c, sessions, queue, queuePosition, isNex
                 {isNext ? 'Уже следующий' : 'Сделать следующим'}
               </button>
             ) : null}
-            <button type="button" className="htr-btn htr-btn--secondary" onClick={() => setEditing(true)}>Изменить</button>
+            {queue && !queue.order.includes(c.id) ? (
+              <button type="button" className="htr-btn htr-btn--secondary" onClick={() => void addComplexToProgram(queue.id, c.id).then(onClose)}>Добавить в программу</button>
+            ) : null}
+            {isReadOnlyComplex(c.id) ? null : <button type="button" className="htr-btn htr-btn--secondary" onClick={() => setEditing(true)}>Изменить</button>}
+            {complexSourceUrl(c.id) ? <p className="item__hint">Источник: <a href={complexSourceUrl(c.id)!} target="_blank" rel="noreferrer">sportkuznica.com</a></p> : null}
             {queue?.order.includes(c.id) ? (
               <ConfirmButton
                 label="Убрать из программы"

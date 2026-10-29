@@ -1,4 +1,6 @@
 import { ComplexQueueRecordSchema, ComplexRecordSchema, ProgramRecordSchema, QueueRecordSchema, TemplateRecordSchema } from '@splav/shared';
+import { buildComplexLibrary } from '../domain/complexLibrary.ts';
+import { WODS } from '../seed/wods.ts';
 import { todayKey } from '../domain/history.ts';
 import { complexQueueState } from '../domain/queue.ts';
 import { queueRemoveTemplate } from '../domain/queueEdit.ts';
@@ -44,10 +46,10 @@ export async function startTemplateWorkout(
   const program = queue ? programs.find((p) => p.queueId === queue.id) : undefined;
   const cq = (program ? cqs.find((c) => c.id === program.complexQueueId) : undefined) ?? cqs.sort((a, b) => a.id.localeCompare(b.id))[0];
   const next = cq ? complexQueueState(cq, sessions) : null;
-  const complexes = (await listRecords('complexes', database)).flatMap((r) => {
+  const complexes = buildComplexLibrary((await listRecords('complexes', database)).flatMap((r) => {
     const p = ComplexRecordSchema.safeParse(r);
     return p.success ? [p.data] : [];
-  });
+  }), WODS);
   const nextComplex = next ? (complexes.find((c) => c.id === next.complexId) ?? null) : null;
 
   const draft = sessionFromTemplate(template.data, {

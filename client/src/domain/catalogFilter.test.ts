@@ -76,7 +76,9 @@ describe('вспомогательные', () => {
   });
   it('цвет типа: сила — cobalt, кардио и мобильность — свои', () => {
     expect(kindColorVar('strength')).toBe('var(--strength)');
-    expect(kindColorVar('core')).toBe('var(--strength)');
+    expect(kindColorVar('core')).toBe('var(--core)');
+    expect(kindColorVar('bodyweight')).toBe('var(--bodyweight)');
+    expect(kindColorVar('complex')).toBe('var(--conditioning)');
     expect(kindColorVar('cardio')).toBe('var(--cardio)');
     expect(kindColorVar('mobility')).toBe('var(--mobility)');
   });
