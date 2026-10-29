@@ -8,9 +8,9 @@ export function queueAddTemplate(q: QueueDraft, templateId: string): QueueDraft 
   return q.templateIds.includes(templateId) ? q : { ...q, templateIds: [...q.templateIds, templateId] };
 }
 
-/** В очереди остаётся хотя бы один шаблон. */
+/** Очередь может опустеть: программа начинается без шаблонов. */
 export function queueRemoveTemplate(q: QueueDraft, index: number): QueueDraft {
-  if (q.templateIds.length <= 1) return q;
+  if (index < 0 || index >= q.templateIds.length) return q;
   return { ...q, templateIds: q.templateIds.filter((_, i) => i !== index) };
 }
 
@@ -22,13 +22,10 @@ export function queueMoveTemplate(q: QueueDraft, index: number, direction: -1 | 
   return { ...q, templateIds: ids };
 }
 
-/** «Начать с…» и «Новый цикл»: позиция задаётся вручную и действует до первой завершённой тренировки очереди. */
+/** «Начать с…»: позиция задаётся вручную и действует до первой завершённой тренировки очереди. */
 export function queueSetPosition(q: QueueDraft, position: number, now: number): QueueDraft {
-  return { ...q, override: { position: Math.max(0, Math.min(position, q.templateIds.length - 1)), setAt: now } };
+  return { ...q, override: { position: Math.max(0, Math.min(position, Math.max(q.templateIds.length - 1, 0))), setAt: now } };
 }
-
-/** «Новый цикл» — следующая тренировка снова первая. */
-export const queueNewCycle = (q: QueueDraft, now: number): QueueDraft => queueSetPosition(q, 0, now);
 
 /**
  * «Сделать следующим» для комплекса. Комплекса нет в очереди (например, короткий #004) — он вставляется

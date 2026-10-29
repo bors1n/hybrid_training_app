@@ -2,11 +2,13 @@ import type { z } from 'zod';
 import type { Collection } from '../sync.ts';
 import { ExerciseAliasRecordSchema, ExerciseNoteRecordSchema, ExerciseRecordSchema } from './exercise.ts';
 import { ComplexQueueRecordSchema, ComplexRecordSchema, QueueRecordSchema, SettingsRecordSchema } from './queue.ts';
+import { ProgramRecordSchema } from './program.ts';
 import { SessionRecordSchema } from './session.ts';
 import { TemplateRecordSchema } from './template.ts';
 
 export * from './common.ts';
 export * from './exercise.ts';
+export * from './program.ts';
 export * from './queue.ts';
 export * from './session.ts';
 export * from './template.ts';
@@ -18,6 +20,7 @@ export const RECORD_SCHEMAS = {
   queues: QueueRecordSchema,
   complexQueue: ComplexQueueRecordSchema,
   complexes: ComplexRecordSchema,
+  programs: ProgramRecordSchema,
   exercises: ExerciseRecordSchema,
   exerciseNotes: ExerciseNoteRecordSchema,
   exerciseAliases: ExerciseAliasRecordSchema,

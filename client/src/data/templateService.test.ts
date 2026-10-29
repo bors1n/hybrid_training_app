@@ -34,6 +34,18 @@ async function finish(id: string, at: number) {
 }
 
 describe('запуск тренировки из шаблона', () => {
+  it('очередь можно назвать явно; очередь комплексов берётся у программы этой очереди', async () => {
+    await saveRecord('queues', { id: 'own:q', title: 'Своя', templateIds: [T1] }, { database });
+    await saveRecord('complexQueue', { id: 'own:cq', order: ['#007'] }, { database });
+    await saveRecord('programs', { id: 'own:p', title: 'Своя', queueId: 'own:q', complexQueueId: 'own:cq' }, { database });
+    const id = await startTemplateWorkout(T1, { queueId: 'own:q', database });
+    const row = (await database.rows('sessions').get(id))!;
+    expect(row).toMatchObject({ queueId: 'own:q', queueSlot: 0 });
+    // Т1 нет ни в одной очереди с таким id — очередь не проставляется
+    const out = await startTemplateWorkout(T2, { queueId: 'own:q', database });
+    expect((await database.rows('sessions').get(out))).not.toHaveProperty('queueId');
+  });
+
   it('тренировка из очереди: шаблон, очередь и слот; не завершена; корректна по схеме', async () => {
     const id = await startTemplateWorkout(T2, { now: new Date(2026, 9, 27, 9, 0).getTime(), database });
     const row = (await database.rows('sessions').get(id))!;
@@ -122,13 +134,12 @@ describe('шаблоны: создание и удаление', () => {
     expect((await loadSessions(database)).map((s) => s.id)).toContain(done);
   });
 
-  it('единственный шаблон очереди удалить нельзя', async () => {
+  it('последний шаблон очереди удалить можно: очередь остаётся пустой', async () => {
     await deleteTemplate(T2, database);
     await deleteTemplate(T3, database);
-    const r = await deleteTemplate(T1, database);
-    expect(r).toMatchObject({ ok: false });
-    expect(r.ok ? '' : r.reason).toMatch(/единственный шаблон в очереди/);
-    expect((await database.rows('templates').get(T1))?.deletedAt).toBeNull();
+    expect(await deleteTemplate(T1, database)).toEqual({ ok: true });
+    expect((await queueRow()).templateIds).toEqual([]);
+    expect(queueState(await queueRow(), await loadSessions(database))).toBeNull();
   });
 
   it('шаблон вне очереди удаляется без побочных эффектов', async () => {

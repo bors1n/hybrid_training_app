@@ -5,7 +5,7 @@ import { SplavDB, getMeta } from '../data/db.ts';
 import { deleteRecord, listRecords, saveRecord } from '../sync/records.ts';
 import { buildCatalog, CATALOG, CATALOG_BY_ID, HAS_REPDB_CATALOG, type GeneratedExercise } from './catalog.ts';
 import { COMPLEX_QUEUE_ORDER, COMPLEXES } from './complexes.ts';
-import { COMPLEX_QUEUE_ID, ensureSeed, SEED_META_KEY, SEED_UPDATED_AT, seedRecords } from './install.ts';
+import { COMPLEX_QUEUE_ID, ensureSeed, SEED_META_KEY, SEED_UPDATED_AT, SEED_VERSION, seedRecords } from './install.ts';
 import { OWN_EXERCISES } from './ownExercises.ts';
 import { PROGRAM_EXERCISES } from './programExercises.ts';
 import { TEMPLATES } from './templates.ts';
@@ -284,7 +284,7 @@ describe('ensureSeed', () => {
     expect(await database.outbox.count()).toBe(seedRecords().length);
     const t1 = await database.rows('templates').get('seed:template:t1');
     expect(t1?.updatedAt).toBe(SEED_UPDATED_AT);
-    expect(await getMeta(SEED_META_KEY, database)).toBe(1);
+    expect(await getMeta(SEED_META_KEY, database)).toBe(SEED_VERSION);
   });
 
   it('повторный вызов ничего не делает', async () => {

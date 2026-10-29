@@ -1,11 +1,12 @@
 import { lazy, Suspense, useEffect, type ReactElement } from 'react';
-import { BrowserRouter, Outlet, Route, Routes } from 'react-router';
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router';
 import { useAuth } from '../auth/store.ts';
 import { TabBar } from '../components/TabBar.tsx';
 import { LoginScreen } from '../features/auth/LoginScreen.tsx';
 import { LibraryScreen } from '../features/library/LibraryScreen.tsx';
-import { PlanScreen } from '../features/plan/PlanScreen.tsx';
-import { TemplateEditor } from '../features/plan/TemplateEditor.tsx';
+import { ProgramScreen } from '../features/programs/ProgramScreen.tsx';
+import { ProgramsScreen } from '../features/programs/ProgramsScreen.tsx';
+import { TemplateEditor } from '../features/programs/TemplateEditor.tsx';
 import { ProgressScreen } from '../features/progress/ProgressScreen.tsx';
 import { TodayScreen } from '../features/today/TodayScreen.tsx';
 import { ConditioningScreen } from '../features/workout/ConditioningScreen.tsx';
@@ -34,7 +35,9 @@ function Authed(): ReactElement {
         <Routes>
           <Route element={<TabsLayout />}>
             <Route index element={<TodayScreen />} />
-            <Route path="plan" element={<PlanScreen />} />
+            <Route path="programs" element={<ProgramsScreen />} />
+            <Route path="programs/:id" element={<ProgramScreen />} />
+            <Route path="plan" element={<Navigate to="/programs" replace />} />
             <Route path="progress" element={<ProgressScreen />} />
             <Route path="library" element={<LibraryScreen />} />
           </Route>

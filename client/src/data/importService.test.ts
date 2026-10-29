@@ -158,7 +158,7 @@ describe('экспорт', () => {
     const { json, counts } = await exportAllJson(database, new Date('2026-10-27T12:00:00Z'));
     const data = JSON.parse(json);
     expect(data).toMatchObject({ app: 'SPLAV', version: 1, exportedAt: '2026-10-27T12:00:00.000Z' });
-    expect(Object.keys(data.collections).sort()).toEqual(['complexQueue', 'complexes', 'exerciseAliases', 'exerciseNotes', 'exercises', 'queues', 'sessions', 'settings', 'templates']);
+    expect(Object.keys(data.collections).sort()).toEqual(['complexQueue', 'complexes', 'exerciseAliases', 'exerciseNotes', 'exercises', 'programs', 'queues', 'sessions', 'settings', 'templates']);
     expect(data.collections.sessions.map((s: { id: string }) => s.id)).toEqual(['a']);
     expect(counts).toMatchObject({ sessions: 1, exerciseNotes: 1, templates: 0 });
   });

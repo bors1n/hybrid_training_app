@@ -49,6 +49,7 @@ export class SplavDB extends Dexie {
       exerciseNotes: 'id, exerciseId, updatedAt',
       exerciseAliases: 'id, exerciseId, updatedAt',
     });
+    this.version(4).stores({ programs: 'id, updatedAt' });
   }
 
   rows(collection: Collection): Table<Row, string> {

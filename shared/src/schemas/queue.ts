@@ -15,7 +15,7 @@ export const QueueOverrideSchema = z.object({
 export const QueueRecordSchema = z.object({
   ...syncFields,
   title: z.string().trim().min(1).max(200),
-  templateIds: z.array(z.string().min(1)).min(1).max(50),
+  templateIds: z.array(z.string().min(1)).max(50),
   override: QueueOverrideSchema.optional(),
 });
 export type QueueRecord = z.infer<typeof QueueRecordSchema>;
@@ -23,7 +23,7 @@ export type QueueRecord = z.infer<typeof QueueRecordSchema>;
 /** Порядок комплексов из библиотеки: `['#001', '#002', …]`. */
 export const ComplexQueueRecordSchema = z.object({
   ...syncFields,
-  order: z.array(z.string().min(1)).min(1).max(200),
+  order: z.array(z.string().min(1)).max(200),
   override: QueueOverrideSchema.optional(),
 });
 export type ComplexQueueRecord = z.infer<typeof ComplexQueueRecordSchema>;
@@ -46,5 +46,7 @@ export const SettingsRecordSchema = z.object({
   /** Шаг изменения веса кнопками, кг. */
   weightStepKg: z.number().positive().max(100).optional(),
   defaultRestSec: DurationSecSchema.optional(),
+  /** Активная программа: её очередь показывает «Сегодня». Нет поля — базовая (или первая). */
+  activeProgramId: z.string().min(1).optional(),
 });
 export type SettingsRecord = z.infer<typeof SettingsRecordSchema>;

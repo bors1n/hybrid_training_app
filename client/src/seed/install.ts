@@ -2,10 +2,11 @@ import type { Collection, RecordInput } from '@splav/shared';
 import { db, getMeta, setMeta, type SplavDB } from '../data/db.ts';
 import { saveRecord } from '../sync/records.ts';
 import { COMPLEX_QUEUE_ORDER, COMPLEXES } from './complexes.ts';
+import { BASIC_PROGRAM_ID } from '../domain/programs.ts';
 import { QUEUE, TEMPLATES } from './templates.ts';
 
 /** Версия набора начальных данных. Повышается, когда в seed добавляются новые записи. */
-export const SEED_VERSION = 1;
+export const SEED_VERSION = 2;
 export const SEED_META_KEY = 'seedVersion';
 /**
  * Время создания seed-записей. Минимальное: любая правка пользователя (updatedAt = «сейчас») новее,
@@ -20,13 +21,14 @@ export interface SeedRecord {
   data: { id: string } & Record<string, unknown>;
 }
 
-/** Начальные записи: шаблоны Т1–Т3, очередь, комплексы #001–#024 и их очередь. */
+/** Начальные записи: шаблоны Т1–Т3, очередь, комплексы #001–#024, их очередь и «Базовая программа». */
 export function seedRecords(): SeedRecord[] {
   return [
     ...TEMPLATES.map((data): SeedRecord => ({ collection: 'templates', data })),
     { collection: 'queues', data: QUEUE },
     ...COMPLEXES.map((data): SeedRecord => ({ collection: 'complexes', data })),
     { collection: 'complexQueue', data: { id: COMPLEX_QUEUE_ID, order: COMPLEX_QUEUE_ORDER } },
+    { collection: 'programs', data: { id: BASIC_PROGRAM_ID, title: 'Базовая программа', description: 'Т1–Т3 и библиотека комплексов #001–#024', queueId: QUEUE.id, complexQueueId: COMPLEX_QUEUE_ID } },
   ];
 }
 

@@ -7,6 +7,7 @@ export const COLLECTIONS = [
   'queues',
   'complexQueue',
   'complexes',
+  'programs',
   'exercises',
   'exerciseNotes',
   'exerciseAliases',

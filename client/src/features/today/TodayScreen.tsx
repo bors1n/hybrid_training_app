@@ -12,7 +12,7 @@ import { queueState } from '../../domain/queue.ts';
 import { MODALITY_LABELS } from '../../domain/sessionEdit.ts';
 import { formatDecimal, formatDuration, formatKm, formatPaceLabel } from '../../domain/units.ts';
 import { useCatalog } from '../library/useCatalog.ts';
-import { useQueues, useTemplates } from '../plan/usePlanData.ts';
+import { useActiveProgram, useTemplates } from '../programs/useProgramData.ts';
 import { startFreeWorkout } from '../workout/startWorkout.ts';
 import { useSessions } from '../workout/useSessions.ts';
 
@@ -28,7 +28,7 @@ export function TodayScreen(): ReactElement {
   const navigate = useNavigate();
   const sessions = useSessions();
   const templates = useTemplates();
-  const queues = useQueues();
+  const active = useActiveProgram();
   const catalogList = useCatalog();
   const catalog = useMemo(() => new Map(catalogList.map((e) => [e.id, e])), [catalogList]);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +38,7 @@ export function TodayScreen(): ReactElement {
   const inProgress = sorted.find((s) => s.finishedAt === undefined);
   const recent = sorted.filter((s) => s !== inProgress).slice(0, RECENT);
 
-  const queue = queues?.[0];
+  const queue = active?.queue;
   const state = useMemo(() => (queue && sessions ? queueState(queue, sessions) : null), [queue, sessions]);
   const template = state ? templates?.find((t) => t.id === state.templateId) : undefined;
   const lastComplex = useMemo(() => (sessions ? lastComplexAttempt(sessions) : null), [sessions]);
@@ -60,7 +60,7 @@ export function TodayScreen(): ReactElement {
   async function start(templateId: string): Promise<void> {
     setError(null);
     try {
-      navigate(`/workout/${await startTemplateWorkout(templateId)}`);
+      navigate(`/workout/${await startTemplateWorkout(templateId, queue ? { queueId: queue.id } : {})}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось начать тренировку');
     }
@@ -104,7 +104,7 @@ export function TodayScreen(): ReactElement {
           </div>
         </section>
       ) : queue && state && templates !== undefined ? (
-        <p className="stub">Следующий шаблон очереди удалён. Откройте вкладку «План» и поправьте очередь.</p>
+        <p className="stub">Следующий шаблон очереди удалён. Откройте вкладку «Программы» и поправьте очередь.</p>
       ) : null}
       {error ? <p className="login__error sheet__error" role="alert">{error}</p> : null}
 

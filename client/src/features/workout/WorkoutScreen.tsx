@@ -17,7 +17,7 @@ import { dropEmptyBlocks } from '../../domain/templateSession.ts';
 import { formatDecimal, formatDuration } from '../../domain/units.ts';
 import { deleteRecord } from '../../sync/records.ts';
 import { useCatalog } from '../library/useCatalog.ts';
-import { useQueues } from '../plan/usePlanData.ts';
+import { useQueues } from '../programs/useProgramData.ts';
 import { AddBlockSheet } from './AddBlockSheet.tsx';
 import { CardioCard } from './CardioCard.tsx';
 import { ConditioningCard } from './ConditioningCard.tsx';

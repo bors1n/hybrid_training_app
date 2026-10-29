@@ -1,4 +1,4 @@
-import { ComplexQueueRecordSchema, ComplexRecordSchema, QueueRecordSchema, TemplateRecordSchema } from '@splav/shared';
+import { ComplexQueueRecordSchema, ComplexRecordSchema, ProgramRecordSchema, QueueRecordSchema, TemplateRecordSchema } from '@splav/shared';
 import { todayKey } from '../domain/history.ts';
 import { complexQueueState } from '../domain/queue.ts';
 import { queueRemoveTemplate } from '../domain/queueEdit.ts';
@@ -11,11 +11,13 @@ import { loadSessions } from './importService.ts';
 /**
  * Создаёт тренировку из шаблона и возвращает её id. Если шаблон есть в очереди, тренировка помечается
  * очередью и слотом: её завершение сдвинет очередь. Шаблон вне очереди очередь не двигает.
- * Следующий комплекс для блока «комплекс из очереди» берётся из очереди комплексов.
+ * Очередь можно назвать явно (`queueId`, с экрана программы или из активной программы); без неё берётся первая
+ * очередь, где шаблон есть. Следующий комплекс для блока «комплекс из очереди» берётся из очереди комплексов
+ * той программы, которой принадлежит очередь (без программы — из первой очереди комплексов).
  */
 export async function startTemplateWorkout(
   templateId: string,
-  { now = Date.now(), database = db }: { now?: number; database?: SplavDB } = {},
+  { now = Date.now(), database = db, queueId }: { now?: number; database?: SplavDB; queueId?: string } = {},
 ): Promise<string> {
   const row = await database.rows('templates').get(templateId);
   const template = row && row.deletedAt === null ? TemplateRecordSchema.safeParse(row) : null;
@@ -25,13 +27,22 @@ export async function startTemplateWorkout(
     const p = QueueRecordSchema.safeParse(r);
     return p.success ? [p.data] : [];
   });
-  const queue = queues.sort((a, b) => a.id.localeCompare(b.id)).find((q) => q.templateIds.includes(templateId));
+  const sortedQueues = queues.sort((a, b) => a.id.localeCompare(b.id));
+  const queue = queueId !== undefined
+    ? sortedQueues.find((q) => q.id === queueId && q.templateIds.includes(templateId))
+    : sortedQueues.find((q) => q.templateIds.includes(templateId));
 
   const sessions = await loadSessions(database);
-  const cq = (await listRecords('complexQueue', database)).flatMap((r) => {
+  const cqs = (await listRecords('complexQueue', database)).flatMap((r) => {
     const p = ComplexQueueRecordSchema.safeParse(r);
     return p.success ? [p.data] : [];
-  })[0];
+  });
+  const programs = (await listRecords('programs', database)).flatMap((r) => {
+    const p = ProgramRecordSchema.safeParse(r);
+    return p.success ? [p.data] : [];
+  });
+  const program = queue ? programs.find((p) => p.queueId === queue.id) : undefined;
+  const cq = (program ? cqs.find((c) => c.id === program.complexQueueId) : undefined) ?? cqs.sort((a, b) => a.id.localeCompare(b.id))[0];
   const next = cq ? complexQueueState(cq, sessions) : null;
   const complexes = (await listRecords('complexes', database)).flatMap((r) => {
     const p = ComplexRecordSchema.safeParse(r);
@@ -61,8 +72,7 @@ export async function createTemplate(database: SplavDB = db): Promise<string> {
 export type DeleteTemplateResult = { ok: true } | { ok: false; reason: string };
 
 /**
- * Удаляет шаблон и убирает его из очередей. Единственный шаблон очереди удалить нельзя:
- * очередь без шаблонов бессмысленна (сначала добавьте другой). Уже сделанные тренировки остаются.
+ * Удаляет шаблон и убирает его из очередей (очередь может опустеть). Уже сделанные тренировки остаются.
  */
 export async function deleteTemplate(templateId: string, database: SplavDB = db): Promise<DeleteTemplateResult> {
   const queues = (await listRecords('queues', database)).flatMap((r) => {
@@ -70,9 +80,6 @@ export async function deleteTemplate(templateId: string, database: SplavDB = db)
     return p.success ? [p.data] : [];
   });
   const containing = queues.filter((q) => q.templateIds.includes(templateId));
-  const blocking = containing.find((q) => q.templateIds.length <= 1);
-  if (blocking) return { ok: false, reason: `Это единственный шаблон в очереди «${blocking.title}». Сначала добавьте в очередь другой.` };
-
   for (const q of containing) {
     const { updatedAt: _u, deletedAt: _d, ...draft } = q;
     await saveRecord('queues', queueRemoveTemplate(draft, q.templateIds.indexOf(templateId)), { database });

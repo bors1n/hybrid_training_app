@@ -1,6 +1,6 @@
 import { TemplateRecordSchema } from '@splav/shared';
 import { describe, expect, it } from 'vitest';
-import { complexMakeNext, queueAddTemplate, queueMoveTemplate, queueNewCycle, queueRemoveTemplate, queueSetPosition, type QueueDraft } from './queueEdit.ts';
+import { complexMakeNext, queueAddTemplate, queueMoveTemplate, queueRemoveTemplate, queueSetPosition, type QueueDraft } from './queueEdit.ts';
 import {
   addCardio,
   addFixedComplex,
@@ -149,18 +149,17 @@ describe('шаблон: редактирование', () => {
 describe('очередь: редактирование', () => {
   const q = (): QueueDraft => ({ id: 'q', title: 'Цикл', templateIds: ['t1', 't2', 't3'] });
 
-  it('добавить шаблон (без повторов), убрать (не меньше одного), переставить', () => {
+  it('добавить шаблон (без повторов), убрать (можно до пустой), переставить', () => {
     expect(queueAddTemplate(q(), 't4').templateIds).toEqual(['t1', 't2', 't3', 't4']);
     expect(queueAddTemplate(q(), 't2')).toEqual(q());
     expect(queueRemoveTemplate(q(), 1).templateIds).toEqual(['t1', 't3']);
-    expect(queueRemoveTemplate({ ...q(), templateIds: ['t1'] }, 0).templateIds).toEqual(['t1']);
+    expect(queueRemoveTemplate({ ...q(), templateIds: ['t1'] }, 0).templateIds).toEqual([]);
     expect(queueMoveTemplate(q(), 2, -1).templateIds).toEqual(['t1', 't3', 't2']);
     const same = q();
     expect(queueMoveTemplate(same, 0, -1)).toBe(same);
     expect(queueMoveTemplate(same, 2, 1)).toBe(same);
   });
-  it('«Новый цикл» и «начать с…» задают позицию с отметкой времени', () => {
-    expect(queueNewCycle(q(), 99).override).toEqual({ position: 0, setAt: 99 });
+  it('«начать с…» задаёт позицию с отметкой времени', () => {
     expect(queueSetPosition(q(), 2, 5).override).toEqual({ position: 2, setAt: 5 });
     expect(queueSetPosition(q(), 10, 5).override!.position).toBe(2);
     expect(queueSetPosition(q(), -3, 5).override!.position).toBe(0);

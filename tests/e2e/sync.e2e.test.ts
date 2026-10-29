@@ -186,6 +186,7 @@ describe('начальные данные (seed)', () => {
     for (const d of [a, b]) {
       expect(await d.rows('complexes').count()).toBe(24);
       expect(await d.rows('templates').count()).toBe(3);
+      expect(await d.rows('programs').count()).toBe(1);
     }
   });
 

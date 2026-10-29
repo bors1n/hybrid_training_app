@@ -4,7 +4,7 @@ import { CatalogIcon, HomeIcon, PlanIcon, ProgressIcon } from './Icons.tsx';
 
 const tabs = [
   { to: '/', label: 'Сегодня', icon: <HomeIcon />, end: true },
-  { to: '/plan', label: 'План', icon: <PlanIcon />, end: false },
+  { to: '/programs', label: 'Программы', icon: <PlanIcon />, end: false },
   { to: '/progress', label: 'Прогресс', icon: <ProgressIcon />, end: false },
   { to: '/library', label: 'Каталог', icon: <CatalogIcon />, end: false },
 ] as const;

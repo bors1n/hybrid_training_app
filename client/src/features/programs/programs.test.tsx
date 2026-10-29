@@ -12,7 +12,8 @@ import { saveRecord } from '../../sync/records.ts';
 import { session } from '../../test/fixtures.ts';
 import { TodayScreen } from '../today/TodayScreen.tsx';
 import { WorkoutScreen } from '../workout/WorkoutScreen.tsx';
-import { PlanScreen } from './PlanScreen.tsx';
+import { ProgramScreen } from './ProgramScreen.tsx';
+import { ProgramsScreen } from './ProgramsScreen.tsx';
 import { TemplateEditor } from './TemplateEditor.tsx';
 
 const repdb = it.skipIf(!HAS_REPDB_CATALOG);
@@ -23,12 +24,15 @@ beforeEach(async () => {
 });
 afterEach(cleanup);
 
+const BASIC = '/programs/seed:program:basic';
+
 function renderApp(initial = '/') {
   return render(
     <MemoryRouter initialEntries={[initial]}>
       <Routes>
         <Route path="/" element={<TodayScreen />} />
-        <Route path="/plan" element={<PlanScreen />} />
+        <Route path="/programs" element={<ProgramsScreen />} />
+        <Route path="/programs/:id" element={<ProgramScreen />} />
         <Route path="/workout/:id" element={<WorkoutScreen />} />
         <Route path="/template/:id" element={<TemplateEditor />} />
       </Routes>
@@ -186,10 +190,10 @@ describe('критерий приёмки: очередь Т1 → Т2', () => {
   });
 });
 
-describe('экран «План»: очередь', () => {
+describe('экран программы: очередь', () => {
   it('три дорожки, «Следующая» у первой, номер цикла', async () => {
     await ensureSeed();
-    renderApp('/plan');
+    renderApp(BASIC);
     await waitFor(() => expect(lanes()).toHaveLength(3));
     expect(laneTitles()).toEqual(['Тренировка 1', 'Тренировка 2', 'Тренировка 3']);
     expect(screen.getByText('ЦИКЛ 1')).toBeTruthy();
@@ -201,34 +205,23 @@ describe('экран «План»: очередь', () => {
   it('после Т1: у первой дорожки дата завершения, «Следующая» у второй', async () => {
     await ensureSeed();
     await finishFromTemplate('seed:template:t1', new Date(2026, 9, 20, 12).getTime());
-    renderApp('/plan');
+    renderApp(BASIC);
     await waitFor(() => expect(within(lanes()[1]!).queryByText('Следующая')).toBeTruthy());
     expect(within(lanes()[0]!).queryByText('Следующая')).toBeNull();
     expect(within(lanes()[0]!).getByText('20 окт')).toBeTruthy();
   });
 
-  it('«Новый цикл» — в два нажатия; следующей снова первая, цикл растёт; дальше очередь снова по истории', async () => {
+  it('кнопки «Новый цикл» нет; «начать с…» остаётся в редакторе очереди', async () => {
     await ensureSeed();
-    await finishFromTemplate('seed:template:t1', 10_000);
-    await finishFromTemplate('seed:template:t2', 20_000);
-    renderApp('/plan');
-    await waitFor(() => expect(within(lanes()[2]!).queryByText('Следующая')).toBeTruthy());
-
-    click('Новый цикл');
-    expect(within(lanes()[2]!).queryByText('Следующая')).toBeTruthy(); // первое нажатие только просит подтвердить
-    click('Начать с первой?');
-    await waitFor(() => expect(within(lanes()[0]!).queryByText('Следующая')).toBeTruthy());
-    expect(screen.getByText('ЦИКЛ 2')).toBeTruthy();
-    expect(lanes().some((l) => l.querySelector('.lane__date'))).toBe(false);
-
-    await finishFromTemplate('seed:template:t1', Date.now() + 10_000);
-    await waitFor(() => expect(within(lanes()[1]!).queryByText('Следующая')).toBeTruthy());
-  }, 20_000);
+    renderApp(BASIC);
+    await waitFor(() => expect(lanes()).toHaveLength(3));
+    expect(screen.queryByRole('button', { name: 'Новый цикл' })).toBeNull();
+  });
 
   it('редактор очереди: порядок, удаление, добавление, «начать с»', async () => {
     await ensureSeed();
     await saveRecord('templates', { id: 'extra', title: 'Дополнительная', blocks: [] });
-    renderApp('/plan');
+    renderApp(BASIC);
     await waitFor(() => expect(lanes()).toHaveLength(3));
     click('ИЗМЕНИТЬ');
     const dialog = await screen.findByRole('dialog', { name: 'Очередь' });
@@ -254,23 +247,23 @@ describe('экран «План»: очередь', () => {
   it('шаблоны вне очереди показаны отдельным списком', async () => {
     await ensureSeed();
     await saveRecord('templates', { id: 'extra', title: 'Дополнительная', subtitle: 'Дом', blocks: [] });
-    renderApp('/plan');
+    renderApp(BASIC);
     const list = await screen.findByRole('region', { name: 'Шаблоны вне очереди' });
     expect(within(list).getByText('Дополнительная')).toBeTruthy();
     expect(within(list).getByText(/Дом · пусто/)).toBeTruthy();
   });
 
-  it('без очереди — подсказка, но «+ Шаблон» и свободная тренировка работают', async () => {
-    renderApp('/plan');
+  it('без seed список программ пуст: подсказка, но создать программу можно', async () => {
+    renderApp('/programs');
     expect(await screen.findByText(/появятся после первой синхронизации/)).toBeTruthy();
-    expect(screen.getByRole('button', { name: '+ Шаблон' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: '+ Создать программу' })).toBeTruthy();
   });
 });
 
-describe('экран «План»: шаблон из очереди', () => {
+describe('экран программы: шаблон из очереди', () => {
   it('просмотр шаблона и запуск из него — тренировка очереди со слотом', async () => {
     await ensureSeed();
-    renderApp('/plan');
+    renderApp(BASIC);
     await waitFor(() => expect(lanes()).toHaveLength(3));
     fireEvent.click(lanes()[1]!);
     const sheet = await screen.findByRole('dialog', { name: 'Шаблон: Тренировка 2' });
@@ -285,13 +278,13 @@ describe('экран «План»: шаблон из очереди', () => {
 
   it('свободная карточка запускает свободную тренировку без очереди', async () => {
     await ensureSeed();
-    renderApp('/plan');
+    renderApp(BASIC);
     await waitFor(() => expect(lanes()).toHaveLength(3));
     fireEvent.click(lanes()[2]!);
     const sheet = await screen.findByRole('dialog', { name: 'Шаблон: Тренировка 3' });
     click('Закрыть', within(sheet));
 
-    fireEvent.click(screen.getByText('Свободная тренировка'));
+    fireEvent.click(screen.getByText('Тренировка вне очереди'));
     await screen.findByLabelText('Название тренировки');
     const [s] = await sessions();
     expect(s).not.toHaveProperty('queueId');
@@ -304,21 +297,24 @@ describe('библиотека комплексов', () => {
   const k = (complexId: string, result: object, id = 's' + complexId) =>
     session(id, { date: '2026-10-18', finishedAt: 5, type: 'conditioning', blocks: [{ type: 'conditioning', id: 'k', complexId, format: 'AMRAP', result } as never] });
 
-  it('24 плитки: #001 следующий, остальные «не делал»', async () => {
+  it('плитки комплексов очереди: #001 следующий, остальные «не делал»; #004 в очередь не входит', async () => {
     await ensureSeed();
-    renderApp('/plan');
+    renderApp(BASIC);
     await screen.findByRole('button', { name: '#001: следующий' });
-    expect(document.querySelectorAll('.cx-tile')).toHaveLength(24);
+    const order = (await db.rows('complexQueue').toArray())[0]!['order'] as string[];
+    expect(document.querySelectorAll('.cx-tile')).toHaveLength(order.length);
+    expect(order).not.toContain('#004');
+    expect(screen.queryByRole('button', { name: /^#004/ })).toBeNull();
     expect(tile('#002', 'не делал')).toBeTruthy();
     expect(tile('#024', 'не делал')).toBeTruthy();
-    expect(screen.getByText('24 · ВСЕ')).toBeTruthy();
+    expect(within(screen.getByRole('region', { name: 'Комплексы' })).getByText(String(order.length))).toBeTruthy();
   });
 
   it('результат отмечается рекордом, очередь сдвигается; тренировка с другим комплексом очередь не двигает', async () => {
     await ensureSeed();
     await saveRecord('sessions', k('#001', { rounds: 5 }));
     await saveRecord('sessions', k('#006', { rounds: 9, extraReps: 3 }));
-    renderApp('/plan');
+    renderApp(BASIC);
     await screen.findByRole('button', { name: '#002: следующий' });
     expect(tile('#001', 'рекорд 5')).toBeTruthy();
     expect(tile('#006', 'рекорд 9+3')).toBeTruthy();
@@ -330,7 +326,7 @@ describe('библиотека комплексов', () => {
     await ensureSeed();
     await saveRecord('sessions', k('#005', { rounds: 9 }, 'a'));
     await saveRecord('sessions', k('#005', { rounds: 7, extraReps: 14 }, 'b'));
-    renderApp('/plan');
+    renderApp(BASIC);
     await screen.findByRole('button', { name: /#005/ });
     fireEvent.click(screen.getByRole('button', { name: /^#005/ }));
     const dialog = await screen.findByRole('dialog', { name: 'Комплекс #005' });
@@ -344,20 +340,52 @@ describe('библиотека комплексов', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('комплекс вне очереди (#004) вставляется в очередь и становится следующим', async () => {
+  it('комплекс вне программы (#004): добавляется из библиотеки, затем становится следующим', async () => {
     await ensureSeed();
-    renderApp('/plan');
+    renderApp(BASIC);
     await screen.findByRole('button', { name: '#001: следующий' });
+    click('+ Комплекс');
+    const add = await screen.findByRole('dialog', { name: 'Добавить комплекс' });
+    expect(within(add).queryByRole('button', { name: /Добавить #001/ })).toBeNull(); // уже в программе
+    click(/Добавить #004/, within(add));
+    await waitFor(() => expect(tile('#004', 'не делал')).toBeTruthy());
+    click('Готово', within(add));
+
     fireEvent.click(screen.getByRole('button', { name: /^#004/ }));
     click('Сделать следующим', within(await screen.findByRole('dialog', { name: 'Комплекс #004' })));
     await waitFor(() => expect(screen.getByRole('button', { name: '#004: следующий' })).toBeTruthy());
-    const order = (await db.rows('complexQueue').toArray())[0]!['order'] as string[];
-    expect(order.slice(0, 3)).toEqual(['#004', '#001', '#002']);
+  });
+
+  it('«Убрать из программы» — в два нажатия; плитка пропадает, сам комплекс остаётся в библиотеке', async () => {
+    await ensureSeed();
+    renderApp(BASIC);
+    await screen.findByRole('button', { name: '#001: следующий' });
+    fireEvent.click(screen.getByRole('button', { name: /^#003/ }));
+    const dialog = await screen.findByRole('dialog', { name: 'Комплекс #003' });
+    click('Убрать из программы', within(dialog));
+    click('Убрать?', within(dialog));
+    await waitFor(() => expect(screen.queryByRole('button', { name: /^#003/ })).toBeNull());
+    expect((await db.rows('complexes').get('#003'))?.deletedAt).toBeNull();
+  });
+
+  it('свой комплекс: создаётся в «+ Комплекс» и сразу появляется в программе', async () => {
+    await ensureSeed();
+    renderApp(BASIC);
+    await screen.findByRole('button', { name: '#001: следующий' });
+    click('+ Комплекс');
+    const add = await screen.findByRole('dialog', { name: 'Добавить комплекс' });
+    click('Создать свой', within(add));
+    fill('Название комплекса', 'Мой чиппер', within(add));
+    fireEvent.change(within(add).getByLabelText('Состав комплекса'), { target: { value: '20 бурпи' } });
+    click('Создать и добавить', within(add));
+    expect(await screen.findByRole('button', { name: 'Мой чиппер: не делал' })).toBeTruthy();
+    const own = (await db.rows('complexes').toArray()).find((c) => String(c.id).startsWith('own:'))!;
+    expect(own).toMatchObject({ title: 'Мой чиппер', description: '20 бурпи' });
   });
 
   it('правка комплекса: название, формат, лимит, состав сохраняются', async () => {
     await ensureSeed();
-    renderApp('/plan');
+    renderApp(BASIC);
     await screen.findByRole('button', { name: '#001: следующий' });
     fireEvent.click(screen.getByRole('button', { name: /^#002/ }));
     const dialog = await screen.findByRole('dialog', { name: 'Комплекс #002' });
@@ -373,7 +401,8 @@ describe('библиотека комплексов', () => {
 
 describe('редактор шаблона', () => {
   async function newTemplate() {
-    renderApp('/plan');
+    await ensureSeed();
+    renderApp(BASIC);
     fireEvent.click(await screen.findByRole('button', { name: '+ Шаблон' }));
     await screen.findByLabelText('Название шаблона');
   }
@@ -491,23 +520,25 @@ describe('редактор шаблона', () => {
     expect(blocks.find((b) => b.type === 'strength')!.items![0]!.sets[0]!.weightKg).toBe(90);
   }, 20_000);
 
-  it('удаление шаблона вне очереди возвращает к плану; шаблон пропадает', async () => {
+  it('удаление шаблона вне очереди возвращает к программам; шаблон пропадает', async () => {
     await newTemplate();
+    const id = (await templateRow()).id;
     click('Удалить шаблон');
     click('Удалить насовсем?');
-    await waitFor(async () => expect((await db.rows('templates').toArray()).every((t) => t.deletedAt !== null)).toBe(true));
-    expect(await screen.findByRole('heading', { name: 'План' })).toBeTruthy();
+    await waitFor(async () => expect((await db.rows('templates').get(id))?.deletedAt).not.toBeNull());
+    expect(await screen.findByRole('heading', { name: 'Программы тренировок' })).toBeTruthy();
   });
 
-  it('единственный шаблон очереди удалить нельзя: сообщение, шаблон остаётся', async () => {
+  it('последний шаблон очереди удалить можно: очередь остаётся пустой', async () => {
     await ensureSeed();
     await saveRecord('queues', { id: 'seed:queue:cycle', title: 'Цикл', templateIds: ['seed:template:t1'] });
     renderApp('/template/seed:template:t1');
     await screen.findByLabelText('Название шаблона');
     click('Удалить шаблон');
     click('Удалить насовсем?');
-    expect((await screen.findByRole('alert')).textContent).toMatch(/единственный шаблон в очереди/);
-    expect((await db.rows('templates').get('seed:template:t1'))?.deletedAt).toBeNull();
+    expect(await screen.findByRole('heading', { name: 'Программы тренировок' })).toBeTruthy();
+    expect((await db.rows('templates').get('seed:template:t1'))?.deletedAt).not.toBeNull();
+    expect((await db.rows('queues').get('seed:queue:cycle'))!['templateIds']).toEqual([]);
   });
 
   it('несуществующий шаблон — сообщение', async () => {
@@ -533,4 +564,73 @@ describe('редактор шаблона', () => {
     expect(s).not.toHaveProperty('queueId');
     expect(s['templateId']).toBe(row.id);
   }, 20_000);
+});
+
+describe('программы: список, создание, активная', () => {
+  const programCards = () => [...document.querySelectorAll('.prog-card')] as HTMLElement[];
+
+  it('список: «Базовая программа» активная, считает тренировки и комплексы', async () => {
+    await ensureSeed();
+    renderApp('/programs');
+    await waitFor(() => expect(programCards()).toHaveLength(1));
+    const card = programCards()[0]!;
+    expect(card.textContent).toContain('Базовая программа');
+    expect(card.textContent).toContain('Активная');
+    expect(card.textContent).toContain('3 тренировки');
+    expect(card.textContent).toMatch(/\d+ комплекс/);
+  });
+
+  it('создание: пустая программа открывается; в списке появляется вторая карточка', async () => {
+    await ensureSeed();
+    renderApp('/programs');
+    await waitFor(() => expect(programCards()).toHaveLength(1));
+    click('+ Создать программу');
+    fill('Название программы', 'Осенний блок');
+    click('Создать');
+    expect(await screen.findByRole('heading', { name: 'Осенний блок' })).toBeTruthy();
+    expect(screen.getByText(/В очереди пока нет тренировок/)).toBeTruthy();
+    expect(screen.getByText(/В программе пока нет комплексов/)).toBeTruthy();
+    expect(screen.queryByText('Активная')).toBeNull();
+  });
+
+  it('«Сделать активной» меняет карточку на «Сегодня», а тренировка из неё идёт в очередь этой программы', async () => {
+    await ensureSeed();
+    await saveRecord('queues', { id: 'own:q', title: 'Своя', templateIds: ['seed:template:t3', 'seed:template:t2'] });
+    await saveRecord('complexQueue', { id: 'own:cq', order: [] });
+    await saveRecord('programs', { id: 'own:p', title: 'Своя', queueId: 'own:q', complexQueueId: 'own:cq' });
+    renderApp('/programs/own:p');
+    await waitFor(() => expect(lanes()).toHaveLength(2));
+    click('О ПРОГРАММЕ');
+    click('Сделать активной', within(await screen.findByRole('dialog', { name: 'О программе' })));
+    await waitFor(async () => expect((await db.rows('settings').get('settings'))?.['activeProgramId']).toBe('own:p'));
+  });
+
+  it('«Сегодня» берёт очередь активной программы', async () => {
+    await ensureSeed();
+    await saveRecord('queues', { id: 'own:q', title: 'Своя', templateIds: ['seed:template:t3', 'seed:template:t2'] });
+    await saveRecord('complexQueue', { id: 'own:cq', order: [] });
+    await saveRecord('programs', { id: 'own:p', title: 'Своя', queueId: 'own:q', complexQueueId: 'own:cq' });
+    await saveRecord('settings', { id: 'settings', theme: 'system', activeProgramId: 'own:p' });
+    renderApp('/');
+    const card = await next();
+    expect(within(card).getByText('Тренировка 3')).toBeTruthy();
+    click('Начать', within(card));
+    await savedWhere((s) => s.templateId === 'seed:template:t3' && s.queueId === 'own:q' && s.queueSlot === 0);
+  });
+
+  it('удаление программы возвращает к списку; активной остаётся базовая', async () => {
+    await ensureSeed();
+    await saveRecord('queues', { id: 'own:q', title: 'Своя', templateIds: [] });
+    await saveRecord('complexQueue', { id: 'own:cq', order: [] });
+    await saveRecord('programs', { id: 'own:p', title: 'Своя', queueId: 'own:q', complexQueueId: 'own:cq' });
+    renderApp('/programs/own:p');
+    await screen.findByRole('button', { name: 'О ПРОГРАММЕ' });
+    click('О ПРОГРАММЕ');
+    const dialog = await screen.findByRole('dialog', { name: 'О программе' });
+    click('Удалить программу', within(dialog));
+    click('Удалить насовсем?', within(dialog));
+    expect(await screen.findByRole('heading', { name: 'Программы тренировок' })).toBeTruthy();
+    await waitFor(() => expect(programCards()).toHaveLength(1));
+    expect(programCards()[0]!.textContent).toContain('Базовая программа');
+  });
 });
