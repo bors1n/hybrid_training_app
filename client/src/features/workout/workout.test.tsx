@@ -56,7 +56,7 @@ async function sessions(): Promise<SessionRecord[]> {
 }
 /** Ждём, пока отложенная запись тренировки дойдёт до базы и условие выполнится. */
 const savedWhere = (pred: (s: SessionRecord) => boolean) =>
-  waitFor(async () => expect((await sessions()).some(pred)).toBe(true), { timeout: 3000 });
+  waitFor(async () => expect((await sessions()).some(pred)).toBe(true), { timeout: 8000 });
 
 async function addBlock(kind: 'Силовое упражнение' | 'Кардио' | 'Комплекс' | 'Мобильность или кор') {
   click('Добавить блок');

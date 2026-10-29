@@ -1,4 +1,4 @@
 import { defineConfig } from 'vitest/config';
 export default defineConfig({
-  test: { name: 'client', include: ['src/**/*.test.{ts,tsx}'], environment: 'node', setupFiles: ['fake-indexeddb/auto'] },
+  test: { name: 'client', include: ['src/**/*.test.{ts,tsx}'], environment: 'node', setupFiles: ['fake-indexeddb/auto', './src/test/rtl-setup.ts'] },
 });

@@ -1,6 +1,7 @@
 import { useState, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 import { useAuth } from '../auth/store.ts';
+import { Avatar } from './Avatar.tsx';
 import { exportAllJson, exportAllSessionsCsv, saveTextFile, type SaveOutcome } from '../data/exportService.ts';
 import { todayKey } from '../domain/history.ts';
 import { REPDB_ATTRIBUTION, REPDB_URL } from '../seed/catalog.ts';
@@ -66,7 +67,10 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
 
         <div className="sheet__row">
           <span className="sheet__label">АККАУНТ</span>
-          <span>{user?.email ?? '—'}</span>
+          <span className="sheet__account">
+            <Avatar seed={user?.id ?? 'splav'} size={48} />
+            {user?.email ?? '—'}
+          </span>
         </div>
         <div className="sheet__row">
           <span className="sheet__label">СИНХРОНИЗАЦИЯ</span>

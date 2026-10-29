@@ -29,7 +29,10 @@ button { font: inherit; color: inherit; }
 .avatar-btn {
   width: 44px; height: 44px; border-radius: var(--radius-pill); border: none;
   background: var(--surface); color: var(--cobalt); font: 700 16px var(--font-display); cursor: pointer;
+  padding: 0; overflow: hidden; display: grid; place-items: center;
 }
+.avatar { display: block; border-radius: var(--radius-pill); }
+.sheet__account { display: flex; align-items: center; gap: 12px; }
 
 .tabbar {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));

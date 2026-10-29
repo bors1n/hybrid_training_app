@@ -15,9 +15,12 @@ interface Props {
 }
 
 /** «+ Комплекс»: выбрать из библиотеки или создать свой. */
+const PAGE = 40;
+
 export function AddComplexSheet({ complexQueueId, library, inProgram, onClose }: Props): ReactElement {
   const [mode, setMode] = useState<'pick' | 'new'>('pick');
   const [query, setQuery] = useState('');
+  const [limit, setLimit] = useState(PAGE);
   const [title, setTitle] = useState('');
   const [format, setFormat] = useState<ComplexRecord['format']>('FOR_TIME');
   const [cap, setCap] = useState<number | undefined>(undefined);
@@ -53,10 +56,10 @@ export function AddComplexSheet({ complexQueueId, library, inProgram, onClose }:
 
         {mode === 'pick' ? (
           <>
-            <input className="field" type="search" aria-label="Поиск комплекса" placeholder="Название или номер" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <input className="field" type="search" aria-label="Поиск комплекса" placeholder="Название или номер" value={query} onChange={(e) => { setQuery(e.target.value); setLimit(PAGE); }} />
             {available.length === 0 ? <p className="stub">{q ? 'Ничего не найдено.' : 'Все комплексы библиотеки уже в программе.'}</p> : null}
             <ul className="ex-list">
-              {available.map((c) => (
+              {available.slice(0, limit).map((c) => (
                 <li key={c.id}>
                   <button type="button" className="session-row" aria-label={`Добавить ${c.id} ${c.title}`} onClick={() => void add(c.id)}>
                     <span className="session-row__text">
@@ -67,6 +70,9 @@ export function AddComplexSheet({ complexQueueId, library, inProgram, onClose }:
                 </li>
               ))}
             </ul>
+            {available.length > limit ? (
+              <button type="button" className="htr-btn htr-btn--secondary" onClick={() => setLimit((n) => n + PAGE)}>Показать ещё {Math.min(PAGE, available.length - limit)}</button>
+            ) : null}
           </>
         ) : (
           <>

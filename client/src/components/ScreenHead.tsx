@@ -1,11 +1,12 @@
 import type { ReactElement } from 'react';
 import { useProfile } from '../app/profile.tsx';
 import { useAuth } from '../auth/store.ts';
+import { Avatar } from './Avatar.tsx';
 import { SyncBadge } from './SyncBadge.tsx';
 
 export function ScreenHead({ label, title }: { label?: string; title: string }): ReactElement {
   const { open } = useProfile();
-  const initial = useAuth((s) => s.user?.email.at(0)?.toUpperCase()) ?? 'А';
+  const seed = useAuth((s) => s.user?.id) ?? 'splav';
   return (
     <header className="screen-head">
       <div>
@@ -14,7 +15,7 @@ export function ScreenHead({ label, title }: { label?: string; title: string }):
       </div>
       <div className="screen-head__side">
         <SyncBadge />
-        <button type="button" className="avatar-btn" aria-label="Профиль и настройки" onClick={open}>{initial}</button>
+        <button type="button" className="avatar-btn" aria-label="Профиль и настройки" onClick={open}><Avatar seed={seed} /></button>
       </div>
     </header>
   );

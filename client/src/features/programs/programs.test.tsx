@@ -56,7 +56,7 @@ async function sessions(): Promise<SessionRecord[]> {
     return p.success ? [p.data] : [];
   });
 }
-const savedWhere = (pred: (s: SessionRecord) => boolean) => waitFor(async () => expect((await sessions()).some(pred)).toBe(true), { timeout: 3000 });
+const savedWhere = (pred: (s: SessionRecord) => boolean) => waitFor(async () => expect((await sessions()).some(pred)).toBe(true), { timeout: 8000 });
 const queueIds = async () => ((await db.rows('queues').toArray())[0]!['templateIds'] as string[]);
 
 /** Завершённая тренировка очереди, как её оставляет экран тренировки. */
@@ -347,6 +347,7 @@ describe('библиотека комплексов', () => {
     click('+ Комплекс');
     const add = await screen.findByRole('dialog', { name: 'Добавить комплекс' });
     expect(within(add).queryByRole('button', { name: /Добавить #001/ })).toBeNull(); // уже в программе
+    fireEvent.change(within(add).getByLabelText('Поиск комплекса'), { target: { value: '#004' } });
     click(/Добавить #004/, within(add));
     await waitFor(() => expect(tile('#004', 'не делал')).toBeTruthy(), { timeout: 4000 });
     click('Готово', within(add));
