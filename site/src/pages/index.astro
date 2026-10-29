@@ -11,18 +11,21 @@ import RubricNav from '../components/RubricNav.astro';
 import ArticleList from '../components/ArticleList.astro';
 
 const basics = [
-  { dots: ['#1D46E8', '#3091D8'], tag: 'Баланс', title: '2–3 силовых и 2–3 кардио в неделю', text: 'Ни железо, ни бег не доминируют. Отдельные тренировки могут сочетать оба режима.' },
-  { dots: ['#3091D8'], tag: 'Аэробная база', title: 'Кардио в основном в зоне 2', text: '60–70% от максимального пульса: можно говорить фразами, а выносливость растёт неделя за неделей.' },
-  { dots: ['#7D8796'], tag: 'Восстановление', title: 'Тяжёлые дни разводим', text: 'Спринт во вторник и присед в пятницу лучше, чем спринт и присед подряд. Техника важнее скорости.' },
+  { dots: ['#1D46E8', '#3091D8'], tag: 'Баланс', title: 'Сила и кардио', text: '2–3 силовых и 2–3 кардио в цикл. Отдельные тренировки сочетают оба режима.' },
+  { dots: ['#3091D8'], tag: 'Упражнения', title: 'Разнообразие', text: 'Вместо сплита по группам мышц — бег, гребля и SkiErg, присед, становая и жимы в одной системе.' },
+  { dots: ['#1D46E8'], tag: 'Разные нагрузки', title: 'Тяжело и мало или легко и много', text: 'Силовые дни — большие веса на малое число повторений, скоростные — спринты и лёгкие веса на много повторений. Спринты и долгие забеги.' },
+  { dots: ['#7D8796'], tag: 'Интенсивность', title: 'Продуманное чередование', text: 'Спринт во вторник и присед в пятницу лучше, чем спринт и присед подряд: нервная система успевает восстановиться.' },
+  { dots: ['#3091D8', '#1D46E8'], tag: 'Циклы', title: 'Циклы по 12–16 недель', text: 'Программы охватывают выносливость, силу и функциональные навыки, объём и интенсивность растут постепенно.' },
+  { dots: ['#7D8796'], tag: 'Восстановление', title: 'Отдых — часть программы', text: 'Сон, вода, питание и мобильность прописаны как часть плана. Техника важнее скорости, особенно на усталости.' },
 ];
 
 const fresh = (await loadArticles()).slice(0, 3);
 
 const splavPoints = [
   { color: '#1D46E8', text: 'Любая тренировка: зал, площадка, бег, вело, комплексы' },
-  { color: '#3091D8', text: 'Шаблоны и очередь Т1 → Т2 → Т3 без привязки к дням недели' },
-  { color: '#E2591A', text: 'Прогресс по силе, темпу и результатам комплексов' },
-  { color: '#7D8796', text: 'Импорт старых записей из таблицы' },
+  { color: '#3091D8', text: 'Готовые программы и каталог комплексов' },
+  { color: '#E2591A', text: 'Прогресс по силе и выносливости' },
+  { color: '#7D8796', text: 'Импорт ваших тренировок' },
 ];
 ---
 
@@ -32,12 +35,12 @@ const splavPoints = [
       <div class="hero__text">
         <span class="hero__kicker">{SITE.tagline}</span>
         <h1 class="hero__title">
-          Сила, <Sticker>темп</Sticker><br />и&nbsp;выносли&shy;вость
+          <Sticker>Hybrid</Sticker><br />Training<br />Russia
         </h1>
-        <p class="hero__lead">Зал, бег и функциональные комплексы в одной программе. Как тренироваться тяжело и прогрессировать во всём, не загоняя себя.</p>
+        <p class="hero__lead">Комьюнити увлечённых здоровыми и разнообразными тренировками</p>
         <div class="hero__actions">
-          <Button href="/articles/" variant="sky" size="lg">Начать программу</Button>
-          <Button href="/splav/" variant="outline" size="lg">Приложение SPLAV</Button>
+          <Button href="/articles/" variant="sky" size="lg">Статьи</Button>
+          <Button href="/splav/" variant="outline" size="lg">Приложение</Button>
         </div>
       </div>
       <div class="hero__photo">
@@ -92,7 +95,7 @@ const splavPoints = [
           <SplavWordmark />
           <span class="splav__soon">Скоро</span>
         </div>
-        <h2 id="splav-title" class="splav__title">Силовые и кардио в одном дневнике</h2>
+        <h2 id="splav-title" class="splav__title">Силовые и кардио в одном месте</h2>
         <ul class="splav__list">
           {splavPoints.map((p) => <li><span class="splav__bullet" style={`background:${p.color}`}></span>{p.text}</li>)}
         </ul>
@@ -124,8 +127,8 @@ const splavPoints = [
       <div class="insta__who">
         <HtrAvatar />
         <div class="insta__text">
-          <h2 id="insta-title" class="insta__title">Карусели каждую неделю</h2>
-          <p class="insta__lead">Программы, комплексы и разборы тренировок в инстаграме {SITE.instagramHandle}</p>
+          <h2 id="insta-title" class="insta__title">Комьюнити</h2>
+          <p class="insta__lead">Программы, комплексы и разборы тренировок — {SITE.instagramHandle}</p>
         </div>
       </div>
       <Button href={SITE.instagramUrl} variant="cobalt">Подписаться</Button>

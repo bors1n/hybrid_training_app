@@ -1,13 +1,14 @@
 ---
 import { FOOTER_NAV } from '../config.ts';
 import HtrLogo from './HtrLogo.astro';
+import InstagramIcon from './InstagramIcon.astro';
 ---
 
 <footer class="foot">
   <div class="foot__in wrap">
     <HtrLogo width={152} />
     <nav aria-label="Ссылки в подвале" class="foot__nav">
-      {FOOTER_NAV.map((item) => <a href={item.href}>{item.label}</a>)}
+      {FOOTER_NAV.map((item) => <a href={item.href}>{item.icon === 'instagram' ? <InstagramIcon size={16} /> : null}{item.label}</a>)}
     </nav>
     <span class="foot__copy">© 2026 Hybrid Training Russia</span>
   </div>
@@ -17,7 +18,7 @@ import HtrLogo from './HtrLogo.astro';
   .foot { background: var(--night); color: var(--on-night); }
   .foot__in { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding-block: 48px; font-size: 15px; }
   .foot__nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
-  .foot__nav a { color: var(--on-night); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; }
+  .foot__nav a { color: var(--on-night); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; }
   .foot__nav a:hover { color: var(--sky); }
   .foot__copy { color: var(--on-night-muted); }
 </style>
