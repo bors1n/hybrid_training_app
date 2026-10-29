@@ -73,13 +73,6 @@ describe('запуск тренировки из шаблона', () => {
     expect(await stateNow()).toMatchObject({ templateId: T1, cycle: 2 });
   });
 
-  it('короткая версия — меньше блоков, чем полная', async () => {
-    const full = (await database.rows('sessions').get(await startTemplateWorkout(T1, { database })))!;
-    const short = (await database.rows('sessions').get(await startTemplateWorkout(T1, { short: true, database })))!;
-    expect((short['blocks'] as unknown[]).length).toBeLessThan((full['blocks'] as unknown[]).length);
-    expect((short['blocks'] as unknown[]).length).toBe(TEMPLATES[0]!.blocks.filter((b) => b.inShort).length);
-  });
-
   it('прошлый результат подставляется в подходы', async () => {
     await saveRecord('sessions', session('old', {
       date: '2026-10-20', finishedAt: 5,

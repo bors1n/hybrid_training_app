@@ -1,7 +1,7 @@
 import type { CardioBlock, SessionRecord } from '@splav/shared';
 import { compareSessionsAsc } from './lastPerformance.ts';
 import { paceFromDistanceTime } from './units.ts';
-import { weekStart } from './weeks.ts';
+import { lastWeeks, weekStart } from './weeks.ts';
 
 type S = Pick<SessionRecord, 'id' | 'date' | 'blocks' | 'startedAt' | 'updatedAt' | 'deletedAt'>;
 
@@ -50,6 +50,11 @@ export function cardioEntries(sessions: readonly S[]): CardioEntry[] {
   return out;
 }
 
+/** Фильтр вкладки «Выносливость»: «Все» или одна группа. */
+export type CardioFilter = CardioGroup | 'all';
+
+const inFilter = (e: CardioEntry, filter: CardioFilter): boolean => filter === 'all' || e.group === filter;
+
 export interface WeeklyCardio {
   week: string;
   km: number;
@@ -60,10 +65,10 @@ export interface WeeklyCardio {
  * Км и минуты по неделям. В объёмы входят все роли (разминка и финиш тоже время на ногах),
  * в темп — только main (см. {@link paceSeries}). Недели без кардио пропускаются.
  */
-export function weeklyCardio(entries: readonly CardioEntry[], group: CardioGroup): WeeklyCardio[] {
+export function weeklyCardio(entries: readonly CardioEntry[], group: CardioFilter): WeeklyCardio[] {
   const map = new Map<string, { m: number; sec: number }>();
   for (const e of entries) {
-    if (e.group !== group) continue;
+    if (!inFilter(e, group)) continue;
     const w = weekStart(e.date);
     const cur = map.get(w) ?? { m: 0, sec: 0 };
     cur.m += e.block.distanceM ?? 0;
@@ -73,6 +78,33 @@ export function weeklyCardio(entries: readonly CardioEntry[], group: CardioGroup
   return [...map]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([week, v]) => ({ week, km: Math.round(v.m / 10) / 100, minutes: Math.round(v.sec / 60) }));
+}
+
+/** Те же объёмы на сетке из `count` последних недель: недели без кардио — нули (для графиков с линией). */
+export function weeklyCardioFilled(entries: readonly CardioEntry[], group: CardioFilter, today: string, count = 12): WeeklyCardio[] {
+  const byWeek = new Map(weeklyCardio(entries, group).map((w) => [w.week, w]));
+  return lastWeeks(today, count).map((week) => byWeek.get(week) ?? { week, km: 0, minutes: 0 });
+}
+
+export interface CardioTotals {
+  km: number;
+  minutes: number;
+  /** Число кардио-записей (блоков, в которых есть дистанция или время). */
+  count: number;
+}
+
+/** Итоги по выбранной группе за всё время; в объём входят все роли, как в {@link weeklyCardio}. */
+export function cardioTotals(entries: readonly CardioEntry[], group: CardioFilter): CardioTotals {
+  let m = 0;
+  let sec = 0;
+  let count = 0;
+  for (const e of entries) {
+    if (!inFilter(e, group)) continue;
+    m += e.block.distanceM ?? 0;
+    sec += e.block.durationSec ?? 0;
+    count += 1;
+  }
+  return { km: Math.round(m / 10) / 100, minutes: Math.round(sec / 60), count };
 }
 
 export interface PacePoint {

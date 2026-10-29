@@ -138,19 +138,14 @@ describe('упражнения', () => {
 });
 
 describe('шаблоны', () => {
-  it('блок в короткой версии по умолчанию', () => {
-    const t = TemplateRecordSchema.parse(
-      templateData('t', 1, {
-        blocks: [
-          { type: 'strength', id: 's', superset: false, inShort: true, items: [{ exerciseId: 'repdb:squat', plan: { sets: 3, repsMin: 6, repsMax: 8, weightKg: 85, load: 'normal' } }] },
-        ],
-      }),
-    );
-    expect(t.blocks[0]!.inShort).toBe(true);
+  it('старое поле inShort в записи не мешает', () => {
+    const legacyBlock = { type: 'strength', id: 's', superset: false, inShort: true, items: [{ exerciseId: 'repdb:squat', plan: { sets: 3, repsMin: 6, repsMax: 8, weightKg: 85, load: 'normal' } }] };
+    const t = TemplateRecordSchema.parse({ ...templateData('t', 1, { blocks: [] }), blocks: [legacyBlock] });
+    expect(t.blocks[0]).not.toHaveProperty('inShort');
   });
   it('нулевое число подходов не допускается', () => {
     const bad = templateData('t', 1, {
-      blocks: [{ type: 'strength', id: 's', superset: false, inShort: true, items: [{ exerciseId: 'x', plan: { sets: 0, load: 'normal' } }] }],
+      blocks: [{ type: 'strength', id: 's', superset: false, items: [{ exerciseId: 'x', plan: { sets: 0, load: 'normal' } }] }],
     });
     expect(TemplateRecordSchema.safeParse(bad).success).toBe(false);
   });

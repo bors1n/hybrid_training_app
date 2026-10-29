@@ -22,15 +22,11 @@ export const PlanItemSchema = z.object({
   note: NoteSchema.optional(),
 });
 
-/** Входит ли блок в короткую версию тренировки (кнопка «Короткая»). */
-const inShort = z.boolean().default(true);
-
 export const TemplateStrengthBlockSchema = z.object({
   type: z.literal('strength'),
   id: z.string().min(1),
   superset: z.boolean().default(false),
   items: z.array(PlanItemSchema).min(1).max(10),
-  inShort,
 });
 
 export const TemplateCardioBlockSchema = z.object({
@@ -42,7 +38,6 @@ export const TemplateCardioBlockSchema = z.object({
   durationSec: DurationSecSchema.optional(),
   durationSecMax: DurationSecSchema.optional(),
   note: NoteSchema.optional(),
-  inShort,
 });
 
 export const TemplateConditioningBlockSchema = z.object({
@@ -55,7 +50,6 @@ export const TemplateConditioningBlockSchema = z.object({
   format: ComplexFormatSchema.optional(),
   timeCapMin: z.number().min(0).max(600).optional(),
   description: z.string().max(4000).optional(),
-  inShort,
 });
 
 export const TemplateMobilityBlockSchema = z.object({
@@ -67,7 +61,6 @@ export const TemplateMobilityBlockSchema = z.object({
     .max(30),
   durationSec: DurationSecSchema.optional(),
   durationSecMax: DurationSecSchema.optional(),
-  inShort,
 });
 
 export const TemplateBlockSchema = z.discriminatedUnion('type', [

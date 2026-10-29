@@ -2,7 +2,7 @@ import { useMemo, useState, type ReactElement } from 'react';
 import { plural } from '../../domain/complexResults.ts';
 import { todayKey } from '../../domain/history.ts';
 import { formatDateShort, formatSet } from '../../domain/lastPerformance.ts';
-import { exerciseSeries, lastTopSet, recordSet, trainedExercises, weeklyTonnage, type ExerciseSeries, type LoadKind } from '../../domain/strengthMetrics.ts';
+import { exerciseSeries, lastTopSet, overallWeeklyTonnage, recordSet, strengthOverview, trainedExercises, weeklyTonnage, type ExerciseSeries, type LoadKind } from '../../domain/strengthMetrics.ts';
 import { formatDecimal, formatWeightReps } from '../../domain/units.ts';
 import { daysBetween, formatDayMonth } from '../../domain/weeks.ts';
 import type { WorkoutCtx } from '../workout/ctx.ts';
@@ -112,6 +112,30 @@ function SeriesView({ series, name }: { series: ExerciseSeries; name: string }):
   );
 }
 
+/** Общая картина по силовым за четыре недели, без привязки к упражнению. */
+function OverviewBlock({ sessions }: TabProps): ReactElement {
+  const today = todayKey();
+  const overview = useMemo(() => strengthOverview(sessions, today), [sessions, today]);
+  const weekly = useMemo(() => overallWeeklyTonnage(sessions, today, 12), [sessions, today]);
+  return (
+    <section aria-label="Силовые в целом">
+      <div className="pg-stats">
+        <Stat label="ТРЕНИРОВОК" value={String(overview.sessions)} sub="за 4 недели" />
+        <Stat label="ПОДХОДОВ" value={String(overview.sets)} sub="за 4 недели" />
+        <Stat label="ТОННАЖ" value={`${formatDecimal(overview.tonnageKg / 1000, 1)} т`} sub="за 4 недели" />
+      </div>
+      <BarsBox
+        title="Тоннаж по неделям"
+        hint=" · все упражнения, обычный вес"
+        data={weekly.map((w) => ({ x: formatDayMonth(w.week), t: Math.round(w.tonnageKg / 100) / 10 }))}
+        xKey="x"
+        series={[{ key: 't', label: 'Тонн', color: 'var(--strength)' }]}
+        format={(v) => formatDecimal(v, 1)}
+      />
+    </section>
+  );
+}
+
 export function StrengthTab({ sessions, catalog }: TabProps & { catalog: WorkoutCtx['catalog'] }): ReactElement {
   const trained = useMemo(() => trainedExercises(sessions), [sessions]);
   const [picked, setPicked] = useState<string | null>(null);
@@ -127,6 +151,7 @@ export function StrengthTab({ sessions, catalog }: TabProps & { catalog: Workout
 
   return (
     <>
+      <OverviewBlock sessions={sessions} />
       <div className="pg-picker-row">
         <label className="pg-picker">
           <span className="sr-only">Упражнение</span>

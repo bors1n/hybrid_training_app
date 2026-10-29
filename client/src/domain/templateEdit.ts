@@ -44,7 +44,7 @@ export const DEFAULT_PLAN: PlanSets = { sets: 3, load: 'normal' };
 
 export function addStrengthBlock(t: TemplateDraft, exerciseId: string, perSide = false, id: string = uuid()): TemplateDraft {
   const block: Strength = {
-    type: 'strength', id, superset: false, inShort: true,
+    type: 'strength', id, superset: false,
     items: [{ exerciseId, plan: { ...DEFAULT_PLAN, ...(perSide ? { perSide: true } : {}) } }],
   };
   return { ...t, blocks: [...t.blocks, block] };
@@ -106,7 +106,7 @@ export function removeItem(t: TemplateDraft, blockId: string, itemIndex: number)
 /* ----------------------------------- кардио ----------------------------------- */
 
 export function addCardio(t: TemplateDraft, modality: Cardio['modality'], role: Cardio['role'] = 'main', id: string = uuid()): TemplateDraft {
-  const block: Cardio = { type: 'cardio', id, modality, role, name: MODALITY_LABELS[modality], inShort: true };
+  const block: Cardio = { type: 'cardio', id, modality, role, name: MODALITY_LABELS[modality] };
   return { ...t, blocks: [...t.blocks, block] };
 }
 
@@ -129,7 +129,7 @@ export function updateCardio(t: TemplateDraft, blockId: string, patch: CardioPat
 
 /** Блок «следующий комплекс из очереди». */
 export function addQueuedComplex(t: TemplateDraft, id: string = uuid()): TemplateDraft {
-  const block: Conditioning = { type: 'conditioning', id, fromQueue: true, inShort: true };
+  const block: Conditioning = { type: 'conditioning', id, fromQueue: true };
   return { ...t, blocks: [...t.blocks, block] };
 }
 
@@ -141,8 +141,8 @@ export function addFixedComplex(
 ): TemplateDraft {
   const block: Conditioning =
     'title' in c
-      ? { type: 'conditioning', id, fromQueue: false, complexId: c.id, name: c.title, format: c.format, ...(c.timeCapMin !== undefined ? { timeCapMin: c.timeCapMin } : {}), description: c.description, inShort: true }
-      : { type: 'conditioning', id, fromQueue: false, name: c.name, format: c.format, ...(c.description ? { description: c.description } : {}), inShort: true };
+      ? { type: 'conditioning', id, fromQueue: false, complexId: c.id, name: c.title, format: c.format, ...(c.timeCapMin !== undefined ? { timeCapMin: c.timeCapMin } : {}), description: c.description }
+      : { type: 'conditioning', id, fromQueue: false, name: c.name, format: c.format, ...(c.description ? { description: c.description } : {}) };
   return { ...t, blocks: [...t.blocks, block] };
 }
 
@@ -158,7 +158,7 @@ export function updateConditioning(t: TemplateDraft, blockId: string, patch: { n
 /* --------------------------------- мобильность --------------------------------- */
 
 export function addMobility(t: TemplateDraft, exerciseId: string, id: string = uuid()): TemplateDraft {
-  const block: Mobility = { type: 'mobility', id, items: [{ exerciseId }], inShort: true };
+  const block: Mobility = { type: 'mobility', id, items: [{ exerciseId }] };
   return { ...t, blocks: [...t.blocks, block] };
 }
 
@@ -190,11 +190,6 @@ export function updateMobility(t: TemplateDraft, blockId: string, patch: { durat
 
 /* ------------------------------------ блоки ------------------------------------ */
 
-/** Входит ли блок в короткую версию («Короткая» на главном экране). */
-export function setInShort(t: TemplateDraft, blockId: string, inShort: boolean): TemplateDraft {
-  return mapBlock(t, blockId, (b) => ({ ...b, inShort }));
-}
-
 export function removeBlock(t: TemplateDraft, blockId: string): TemplateDraft {
   return { ...t, blocks: t.blocks.filter((b) => b.id !== blockId) };
 }
@@ -206,11 +201,6 @@ export function moveBlock(t: TemplateDraft, blockId: string, direction: -1 | 1):
   const blocks = [...t.blocks];
   [blocks[i], blocks[j]] = [blocks[j]!, blocks[i]!];
   return { ...t, blocks };
-}
-
-/** Короткая версия бывает, только если часть блоков в неё не входит. */
-export function shortSummary(t: Pick<TemplateDraft, 'blocks'>): { inShort: number; total: number } {
-  return { inShort: t.blocks.filter((b) => b.inShort).length, total: t.blocks.length };
 }
 
 /** «7 упражнений · кардио · комплекс» для строки очереди. */

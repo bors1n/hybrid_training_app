@@ -70,6 +70,19 @@ export function attempts(complexId: string, sessions: readonly SessionForAttempt
   return out.sort((a, b) => compareSessionsAsc(b.s, a.s)).map(({ s: _s, ...a }) => a);
 }
 
+/** Последний выполненный комплекс: любой блок с результатом, в том числе свой (без номера из библиотеки). */
+export function lastComplexAttempt(sessions: readonly SessionForAttempts[]): Attempt | null {
+  const ordered = sessions.filter((s) => s.deletedAt === null).sort((a, b) => compareSessionsAsc(b, a));
+  for (const s of ordered) {
+    for (const b of [...s.blocks].reverse()) {
+      if (b.type !== 'conditioning') continue;
+      const score = resultScore(b.format, b.result);
+      if (score !== null) return { sessionId: s.id, date: s.date, block: b, score };
+    }
+  }
+  return null;
+}
+
 /** Лучшая попытка; при равенстве — более ранняя (рекорд поставлен тогда). */
 export function bestAttempt(list: readonly Attempt[]): Attempt | null {
   let best: Attempt | null = null;

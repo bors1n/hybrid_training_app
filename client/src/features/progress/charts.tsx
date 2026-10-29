@@ -1,5 +1,5 @@
-import type { ReactElement } from 'react';
-import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useId, type ReactElement } from 'react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 /** Графики прогресса. Отдельный файл: Recharts тяжёлый и грузится только при открытии вкладки с графиком. */
 
@@ -77,6 +77,34 @@ export function BarsChart({ data, xKey, series, height = 180, format, stacked }:
           <Bar key={s.key} dataKey={s.key} name={s.label} fill={s.color} stackId={stacked ? 'a' : undefined} radius={stacked ? 0 : [4, 4, 0, 0]} isAnimationActive={false} />
         ))}
       </BarChart>
+    </ResponsiveContainer>
+  );
+}
+
+/** Линия с заливкой-градиентом под ней (как в Strava): объёмы по неделям. Заливка — тот же цвет серии, затухающий вниз. */
+export function AreaTrendChart({ data, xKey, series, height = 180, format }: CommonProps): ReactElement {
+  const fmt = format ? (v: unknown): string => (typeof v === 'number' ? format(v) : String(v)) : undefined;
+  const uid = useId().replace(/:/g, '');
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -8 }}>
+        <defs>
+          {series.map((s) => (
+            <linearGradient key={s.key} id={`${uid}-${s.key}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" style={{ stopColor: s.color, stopOpacity: 0.45 }} />
+              <stop offset="100%" style={{ stopColor: s.color, stopOpacity: 0 }} />
+            </linearGradient>
+          ))}
+        </defs>
+        <CartesianGrid stroke="var(--line)" vertical={false} />
+        <XAxis dataKey={xKey} tick={AXIS} tickLine={false} axisLine={TICK_LINE} interval="preserveStartEnd" minTickGap={32} />
+        <YAxis tick={AXIS} tickLine={false} axisLine={false} width={44} domain={[0, 'auto']} tickFormatter={fmt} />
+        <Tooltip {...TOOLTIP} formatter={fmt} />
+        {legend(series)}
+        {series.map((s) => (
+          <Area key={s.key} type="monotone" dataKey={s.key} name={s.label} stroke={s.color} strokeWidth={2.5} fill={`url(#${uid}-${s.key})`} dot={false} activeDot={{ r: 5 }} isAnimationActive={false} />
+        ))}
+      </AreaChart>
     </ResponsiveContainer>
   );
 }

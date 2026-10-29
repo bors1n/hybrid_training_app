@@ -14,31 +14,26 @@ const sets = (p: Omit<PlanSets, 'load'> & { load?: PlanSets['load'] }): PlanSets
 function strength(
   slug: string,
   plan: Omit<PlanSets, 'load'> & { load?: PlanSets['load'] },
-  opts: { inShort?: boolean; note?: string; id?: string } = {},
+  opts: { note?: string; id?: string } = {},
 ): TemplateBlock {
   return {
     type: 'strength',
     id: opts.id ?? bid('s'),
     superset: false,
     items: [{ exerciseId: ex(slug), plan: sets(plan), ...(opts.note ? { note: opts.note } : {}) }],
-    inShort: opts.inShort ?? true,
   };
 }
 
-function superset(
-  items: { exerciseId: string; plan: Omit<PlanSets, 'load'> }[],
-  opts: { inShort?: boolean } = {},
-): TemplateBlock {
+function superset(items: { exerciseId: string; plan: Omit<PlanSets, 'load'> }[]): TemplateBlock {
   return {
     type: 'strength',
     id: bid('ss'),
     superset: true,
     items: items.map((i) => ({ exerciseId: i.exerciseId, plan: sets(i.plan) })),
-    inShort: opts.inShort ?? true,
   };
 }
 
-const warmup = (note: string, inShort = true): TemplateBlock => ({
+const warmup = (note: string): TemplateBlock => ({
   type: 'cardio',
   id: bid('c'),
   modality: 'treadmill',
@@ -47,7 +42,6 @@ const warmup = (note: string, inShort = true): TemplateBlock => ({
   durationSec: 300,
   durationSecMax: 600,
   note,
-  inShort,
 });
 
 const finisher = (): TemplateBlock => ({
@@ -58,16 +52,14 @@ const finisher = (): TemplateBlock => ({
   name: 'Финиш: зона 2',
   durationSec: 900,
   note: 'Дорожка, гребля, лестница или вело. Если бегаешь 2 раза в неделю, замени его заминкой 5–10 мин.',
-  inShort: false,
 });
 
-const mobility = (items: { slug: string; note?: string }[], min: number, max: number | undefined, inShort = true): TemplateBlock => ({
+const mobility = (items: { slug: string; note?: string }[], min: number, max: number | undefined): TemplateBlock => ({
   type: 'mobility',
   id: bid('m'),
   items: items.map((i) => ({ exerciseId: own(i.slug), ...(i.note ? { note: i.note } : {}) })),
   durationSec: min * 60,
   ...(max ? { durationSecMax: max * 60 } : {}),
-  inShort,
 });
 
 const T1: Seed<TemplateRecord> = {
@@ -81,20 +73,16 @@ const T1: Seed<TemplateRecord> = {
     strength('squat', { sets: 3, repsMin: 6, repsMax: 8, weightKg: 85 }, { note: 'Перед первым силовым упражнением 2 разминочных подхода.' }),
     strength('bench-press', { sets: 3, repsMin: 6, repsMax: 8, weightKg: 80 }),
     strength('seated-cable-row', { sets: 3, repsMin: 10, repsMax: 12, weightKg: 59 }),
-    strength('db-lunge', { sets: 3, repsMin: 10, repsMax: 12, weightKg: 14, weightKgMax: 16, perSide: true }, { inShort: false }),
-    superset(
-      [
-        { exerciseId: ex('tricep-pushdown'), plan: { sets: 3, repsMin: 12, repsMax: 15, weightKg: 27, weightKgMax: 32 } },
-        { exerciseId: ex('cable-lateral-raise'), plan: { sets: 3, repsMin: 12, repsMax: 15, weightKg: 6.8 } },
-      ],
-      { inShort: false },
-    ),
+    strength('db-lunge', { sets: 3, repsMin: 10, repsMax: 12, weightKg: 14, weightKgMax: 16, perSide: true }),
+    superset([
+      { exerciseId: ex('tricep-pushdown'), plan: { sets: 3, repsMin: 12, repsMax: 15, weightKg: 27, weightKgMax: 32 } },
+      { exerciseId: ex('cable-lateral-raise'), plan: { sets: 3, repsMin: 12, repsMax: 15, weightKg: 6.8 } },
+    ]),
     {
       type: 'strength',
       id: bid('s'),
       superset: false,
       items: [{ exerciseId: own('side-back-extension'), plan: sets({ sets: 2, repsMin: 12, repsMax: 15, perSide: true }) }],
-      inShort: false,
     },
     mobility([{ slug: 'core-complex', note: 'Планка, dead bug, ягодичный мост, «самолёт»' }], 8, 10),
     finisher(),
@@ -120,14 +108,11 @@ const T2: Seed<TemplateRecord> = {
     strength('back-extension', { sets: 3, repsMin: 12, repsMax: 15 }, {
       note: 'Когда 15 даётся легко, бери блин. Вверху тело в одну линию, без прогиба в пояснице.',
     }),
-    superset(
-      [
-        { exerciseId: ex('bicep-curl'), plan: { sets: 3, repsMin: 12, repsMax: 15, weightKg: 16 } },
-        { exerciseId: ex('hanging-leg-raise'), plan: { sets: 3, repsMin: 12, repsMax: 15 } },
-      ],
-      { inShort: false },
-    ),
-    strength('smith-machine-calf-raise', { sets: 3, repsMin: 15, repsMax: 20, weightKg: 45 }, { inShort: false }),
+    superset([
+      { exerciseId: ex('bicep-curl'), plan: { sets: 3, repsMin: 12, repsMax: 15, weightKg: 16 } },
+      { exerciseId: ex('hanging-leg-raise'), plan: { sets: 3, repsMin: 12, repsMax: 15 } },
+    ]),
+    strength('smith-machine-calf-raise', { sets: 3, repsMin: 15, repsMax: 20, weightKg: 45 }),
     finisher(),
   ],
 };
@@ -139,7 +124,7 @@ const T3: Seed<TemplateRecord> = {
   durationHint: '40–55 мин',
   blocks: [
     warmup('Дорожка или гребля, мобильность таза, затем 2–3 лёгких раунда движений из комплекса.'),
-    { type: 'conditioning', id: bid('k'), fromQueue: true, inShort: true },
+    { type: 'conditioning', id: bid('k'), fromQueue: true },
     {
       type: 'conditioning',
       id: bid('k'),
@@ -148,7 +133,6 @@ const T3: Seed<TemplateRecord> = {
       format: 'INTERVALS',
       description:
         '6 × 40 с работы / 40 с отдыха (SkiErg, гребля или дорожка), через 2–3 мин после комплекса. Не нужны после интервальных комплексов (#004, #009, #017, #021) и в разгрузочном цикле.',
-      inShort: true,
     },
     mobility([{ slug: 'pelvis-mobility' }], 5, 10),
   ],

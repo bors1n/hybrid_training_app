@@ -144,7 +144,7 @@ select {
 .resume { background: var(--night); color: var(--on-night); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-3); }
 .resume__label { font: 500 11px/16px var(--font-data); letter-spacing: 0.08em; color: var(--sky); }
 .resume__title { font: 700 22px/28px var(--font-display); }
-.free-btn { width: 100%; margin-bottom: var(--space-4); }
+.free-btn { width: 100%; margin-top: var(--space-3); margin-bottom: var(--space-4); }
 .today-list { display: flex; flex-direction: column; gap: var(--space-1); }
 .history__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin: var(--space-6) 0 var(--space-3); }
 .history__title { margin: 0; font: 700 22px/28px var(--font-display); }

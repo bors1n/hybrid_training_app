@@ -1,7 +1,8 @@
-import { lazy, Suspense, type ComponentProps, type ReactElement } from 'react';
+import { lazy, Suspense, type ComponentProps, type ReactElement, type ReactNode } from 'react';
 
 const Trend = lazy(() => import('./charts.tsx').then((m) => ({ default: m.TrendChart })));
 const Bars = lazy(() => import('./charts.tsx').then((m) => ({ default: m.BarsChart })));
+const AreaTrend = lazy(() => import('./charts.tsx').then((m) => ({ default: m.AreaTrendChart })));
 
 function Frame({ title, hint, children }: { title: string; hint?: string; children: ReactElement }): ReactElement {
   return (
@@ -14,6 +15,7 @@ function Frame({ title, hint, children }: { title: string; hint?: string; childr
 
 type TrendProps = ComponentProps<typeof Trend>;
 type BarsProps = ComponentProps<typeof Bars>;
+type AreaProps = ComponentProps<typeof AreaTrend>;
 
 export function TrendBox({ title, hint, ...props }: TrendProps & { title: string; hint?: string }): ReactElement {
   return <Frame title={title} hint={hint}><Trend {...props} /></Frame>;
@@ -23,9 +25,13 @@ export function BarsBox({ title, hint, ...props }: BarsProps & { title: string; 
   return <Frame title={title} hint={hint}><Bars {...props} /></Frame>;
 }
 
+export function AreaBox({ title, hint, ...props }: AreaProps & { title: string; hint?: string }): ReactElement {
+  return <Frame title={title} hint={hint}><AreaTrend {...props} /></Frame>;
+}
+
 /** Плитка с одной цифрой. */
 /** `accent` — оранжевое значение: рекорд. */
-export function Stat({ label, value, sub, accent }: { label: string; value: string; sub?: string; accent?: boolean }): ReactElement {
+export function Stat({ label, value, sub, accent }: { label: string; value: ReactNode; sub?: string; accent?: boolean }): ReactElement {
   return (
     <div className="pg-stat">
       <span className="sheet__label">{label}</span>

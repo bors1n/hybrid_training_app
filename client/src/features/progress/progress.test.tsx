@@ -26,15 +26,15 @@ const strength = (exerciseId: string, sets: object[]) => ({ type: 'strength' as 
 describe('Прогресс: вкладки', () => {
   it('четыре раздела, «Сила» открыта; пустое состояние понятно', async () => {
     open();
-    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['Сила', 'Кардио', 'Комплексы', 'Баланс']);
-    expect(screen.getByRole('tab', { name: 'Сила' }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.getAllByRole('tab').map((t) => t.textContent)).toEqual(['Баланс', 'Сила', 'Выносливость', 'Комплексы']);
+    expect(screen.getByRole('tab', { name: 'Баланс' }).getAttribute('aria-selected')).toBe('true');
+    expect(await screen.findByText(/баланс и регулярность появятся/)).toBeTruthy();
+    tab('Сила');
     expect(await screen.findByText(/Пока нет выполненных силовых подходов/)).toBeTruthy();
-    tab('Кардио');
-    expect(await screen.findByText(/Бег: пока нет записей/)).toBeTruthy();
+    tab('Выносливость');
+    expect(await screen.findByText(/Выносливость: пока нет записей/)).toBeTruthy();
     tab('Комплексы');
     expect(await screen.findByText(/Пока нет результатов комплексов/)).toBeTruthy();
-    tab('Баланс');
-    expect(await screen.findByText(/баланс и регулярность появятся/)).toBeTruthy();
     // история остаётся под вкладками
     expect(screen.getByRole('region', { name: 'История' })).toBeTruthy();
   });
@@ -51,6 +51,7 @@ describe('Прогресс: сила', () => {
       ],
     }));
     open();
+    tab('Сила');
 
     // Первым в списке — упражнение, сделанное последним; здесь все в один день — выбираем явно.
     const picker = await screen.findByLabelText('Упражнение');
@@ -86,13 +87,23 @@ describe('Прогресс: кардио', () => {
       blocks: [{ type: 'cardio', id: 'c', modality: 'run', role: 'main', distanceM: 3090, durationSec: 1448, paceSecPerKm: 469, recordedPace: 466 }],
     }));
     open();
-    tab('Кардио');
-    expect((await screen.findAllByText('3,09 км')).length).toBeGreaterThan(1); // плитка «самая длинная» и таблица
+    tab('Выносливость');
+    // «Все» открыта по умолчанию: итоги по всем видам
+    const chips = await screen.findByRole('group', { name: 'Вид кардио' });
+    expect(within(chips).getByRole('button', { name: 'Все · 1' }).getAttribute('aria-pressed')).toBe('true');
+    expect(await screen.findByText('ДИСТАНЦИЯ')).toBeTruthy();
+    expect(screen.getByText('3,09 км')).toBeTruthy();
+    expect(screen.getByText('24 мин')).toBeTruthy();
+    expect(screen.getByRole('figure', { name: 'Километры по неделям' })).toBeTruthy();
+    expect(screen.getByRole('figure', { name: 'Минуты по неделям' })).toBeTruthy();
+    expect(screen.getByRole('figure', { name: 'Темп по тренировкам' })).toBeTruthy();
+
+    fireEvent.click(within(chips).getByRole('button', { name: 'Бег · 1' }));
+    expect(await screen.findByText('САМАЯ ДЛИННАЯ')).toBeTruthy();
+    expect(screen.getByText('3,09 км')).toBeTruthy();
     expect(screen.getAllByText('7:46 /км').length).toBeGreaterThan(0);
     expect(screen.queryByText('7:49 /км')).toBeNull();
-    const table = screen.getByRole('table', { name: 'Последние тренировки' });
-    expect(table.textContent).toContain('24:08');
-    expect(screen.getByRole('figure', { name: 'Километры по неделям' })).toBeTruthy();
+    expect(screen.queryByRole('table', { name: 'Последние тренировки' })).toBeNull();
   });
 
   it('вело и «другое» разделены; у разминки темпа нет', async () => {
@@ -105,8 +116,9 @@ describe('Прогресс: кардио', () => {
       ],
     }));
     open();
-    tab('Кардио');
+    tab('Выносливость');
     const chips = await screen.findByRole('group', { name: 'Вид кардио' });
+    expect(within(chips).getByRole('button', { name: 'Все · 3' })).toBeTruthy();
     expect(within(chips).getByRole('button', { name: 'Бег · 1' })).toBeTruthy(); // разминка на дорожке — «Бег», но без темпа
     expect(within(chips).getByRole('button', { name: 'Вело · 1' })).toBeTruthy();
     expect(within(chips).getByRole('button', { name: 'Другое · 1' })).toBeTruthy();
@@ -119,49 +131,82 @@ describe('Прогресс: кардио', () => {
 });
 
 describe('Прогресс: комплексы', () => {
-  it('#005 «9 раундов» — в истории с рекордом; нераскрытые не показывают историю', async () => {
+  it('итоги и лента: каждое выполнение — своя карточка, новые сверху, рекорд у лучшей', async () => {
     await ensureSeed();
-    const k = (id: string, date: string, rounds: number, extraReps?: number) =>
+    const k = (id: string, date: string, rounds: number, extraReps?: number, complexId = '#005') =>
       saveRecord('sessions', session(id, {
         date, type: 'conditioning',
-        blocks: [{ type: 'conditioning', id: 'k', complexId: '#005', format: 'AMRAP', result: { rounds, ...(extraReps ? { extraReps } : {}) } }] as never,
+        blocks: [{ type: 'conditioning', id: 'k', complexId, name: complexId === '#005' ? 'Пятый' : 'Первый', format: 'AMRAP', result: { rounds, ...(extraReps ? { extraReps } : {}) } }] as never,
       }));
     await k('a', '2026-10-11', 9);
     await k('b', '2026-10-18', 7, 14);
+    await k('c', '2026-10-15', 5, undefined, '#001');
     open();
     tab('Комплексы');
-    const head = await screen.findByRole('button', { name: /#005/ });
-    expect(head.textContent).toContain('2 попытки');
-    expect(head.textContent).toContain('рекорд 9 раундов');
-    expect(screen.queryByRole('list', { name: 'История результатов' })).toBeNull();
 
-    fireEvent.click(head);
-    const history = await screen.findByRole('list', { name: 'История результатов' });
-    const rows = within(history).getAllByRole('listitem').map((li) => li.textContent);
-    expect(rows).toHaveLength(2);
-    expect(rows[0]).toContain('7 + 14'); // новая попытка сверху
-    expect(rows[1]).toContain('9 раундов');
-    expect(rows[1]).toContain('рекорд');
-    expect(rows[0]).not.toContain('рекорд');
-    expect(screen.getByText(/Ещё 23 из библиотеки не делали/)).toBeTruthy();
+    const feed = await screen.findByRole('list', { name: 'Выполненные комплексы' });
+    const cards = within(feed).getAllByRole('listitem').map((li) => li.textContent ?? '');
+    expect(cards).toHaveLength(3);
+    expect(cards[0]).toContain('#005 · Пятый');
+    expect(cards[0]).toContain('7 + 14'); // самое новое — сверху
+    expect(cards[0]).not.toContain('рекорд');
+    expect(cards[1]).toContain('#001 · Первый');
+    expect(cards[1]).not.toContain('рекорд'); // единственная попытка
+    expect(cards[2]).toContain('9 раундов');
+    expect(cards[2]).toContain('рекорд');
+
+    expect(screen.getByText('КОМПЛЕКСОВ').nextElementSibling!.textContent).toBe('3');
+    expect(screen.getByText('РАУНДОВ').nextElementSibling!.textContent).toBe('21');
+    expect(screen.getByText('ПОВТОРОВ').nextElementSibling!.textContent).toBe('14');
+    expect(screen.queryByRole('region', { name: 'Баланс' })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Регулярность' })).toBeNull();
   });
 });
 
 describe('Прогресс: баланс', () => {
-  it('серия недель, теплокарта с числом тренировок', async () => {
-    const day = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const day = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  it('баланс сила — выносливость по числу тренировок, серия с огоньком, регулярность, графики', async () => {
     const now = new Date();
     const weekAgo = new Date(now.getTime() - 7 * 86_400_000);
     await saveRecord('sessions', session('now', { date: day(now), blocks: [strength('x', [set(50, 5)])] }));
     await saveRecord('sessions', session('prev', { date: day(weekAgo), blocks: [strength('x', [set(50, 5)])] }));
+    await saveRecord('sessions', session('run', {
+      date: day(now), type: 'cardio',
+      blocks: [{ type: 'cardio', id: 'c', modality: 'run', role: 'main', distanceM: 3000, durationSec: 1000 }],
+    }));
     open();
-    tab('Баланс');
-    await waitFor(() => expect(screen.getByText('НЕДЕЛЬ ПОДРЯД')).toBeTruthy());
+
+    const balance = await screen.findByRole('region', { name: 'Баланс' });
+    expect(within(balance).getByRole('img', { name: 'Тренировки за 4 недели: Сила 2, Выносливость 1' })).toBeTruthy();
+    expect(balance.textContent).toContain('Выносливость1');
+
+    expect(screen.getByText('НЕДЕЛЬ ПОДРЯД')).toBeTruthy();
     expect(screen.getByText('недели с тренировками')).toBeTruthy();
-    expect(screen.getByRole('img', { name: 'Тренировки по дням за 6 месяцев: 2 тренировки' })).toBeTruthy();
+    expect(screen.getByText('РЕКОРД СЕРИИ').nextElementSibling!.textContent).toBe('2');
+    expect(screen.getByRole('img', { name: 'Огонёк' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Регулярность' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Тренировки по дням за 6 месяцев: 3 тренировки' })).toBeTruthy();
     expect(screen.getByRole('figure', { name: 'Тренировки по неделям' })).toBeTruthy();
     expect(screen.getByRole('figure', { name: 'Минуты по неделям' })).toBeTruthy();
-    expect(screen.getByRole('region', { name: 'Баланс недели' })).toBeTruthy();
-    expect(screen.getByRole('region', { name: 'Регулярность' })).toBeTruthy();
+    expect(screen.queryByRole('region', { name: 'Баланс недели' })).toBeNull();
+    expect(screen.queryByText(/остаток длительности/)).toBeNull();
+    // порядок: баланс → серия → регулярность → графики
+    const order = [balance, screen.getByText('НЕДЕЛЬ ПОДРЯД'), screen.getByRole('region', { name: 'Регулярность' }), screen.getByRole('figure', { name: 'Тренировки по неделям' })];
+    for (let i = 1; i < order.length; i += 1) expect(order[i - 1]!.compareDocumentPosition(order[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('огонёк у рекорда серии; «Регулярность» и «Баланс недели» не висят под другими вкладками, у силы есть общая аналитика', async () => {
+    await saveRecord('sessions', session('a', { date: day(new Date()), blocks: [strength('x', [set(50, 5)])] }));
+    open();
+    await screen.findByRole('region', { name: 'Баланс' });
+    expect(screen.getByRole('img', { name: 'Огонёк' })).toBeTruthy(); // одна неделя подряд — рекорд 1
+    tab('Сила');
+    await screen.findByLabelText('Упражнение');
+    expect(screen.queryByRole('region', { name: 'Регулярность' })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Баланс недели' })).toBeNull();
+    const overview = screen.getByRole('region', { name: 'Силовые в целом' });
+    expect(within(overview).getByRole('figure', { name: 'Тоннаж по неделям' })).toBeTruthy();
+    expect(within(overview).getByText('ТРЕНИРОВОК')).toBeTruthy();
   });
 });

@@ -6,8 +6,6 @@ import { deriveSessionType } from './sessionType.ts';
 type TemplateLike = Pick<TemplateRecord, 'id' | 'title' | 'blocks'>;
 
 export interface FromTemplateOptions {
-  /** Короткая версия: только блоки, помеченные «в короткой версии». */
-  short: boolean;
   date: string;
   now: number;
   /** Очередь, из которой начата тренировка: завершение этой тренировки сдвигает её. */
@@ -19,20 +17,13 @@ export interface FromTemplateOptions {
   id: string;
 }
 
-/** Есть ли у шаблона короткая версия, отличающаяся от полной. */
-export function hasShortVersion(t: Pick<TemplateRecord, 'blocks'>): boolean {
-  const inShort = t.blocks.filter((b) => b.inShort).length;
-  return inShort > 0 && inShort < t.blocks.length;
-}
-
 /**
  * Тренировка из шаблона. Подходы предзаполняются прошлым результатом (копия того, что человек делал сам),
  * а если упражнения раньше не было — ориентиром из шаблона. Всё не отмечено выполненным: человек вносит
  * и подтверждает сам. Никаких рекомендаций: приложение ничего не прибавляет к прошлому весу.
  */
 export function sessionFromTemplate(t: TemplateLike, o: FromTemplateOptions): SessionDraft {
-  const source = o.short ? t.blocks.filter((b) => b.inShort) : t.blocks;
-  const blocks = source.map((b, i) => buildBlock(b, `${o.id}:${i}`, o));
+  const blocks = t.blocks.map((b, i) => buildBlock(b, `${o.id}:${i}`, o));
   return {
     id: o.id,
     date: o.date,

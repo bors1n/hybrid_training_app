@@ -1,6 +1,6 @@
 import type { SessionRecord, SetEntry } from '@splav/shared';
 import { compareSessionsAsc } from './lastPerformance.ts';
-import { weekStart } from './weeks.ts';
+import { lastWeeks, weekStart } from './weeks.ts';
 
 type S = Pick<SessionRecord, 'id' | 'date' | 'blocks' | 'startedAt' | 'updatedAt' | 'deletedAt'>;
 
@@ -129,6 +129,55 @@ export function weeklyTonnage(series: ExerciseSeries): WeeklyTonnage[] {
     map.set(w, (map.get(w) ?? 0) + s.tonnageKg);
   }
   return [...map].sort(([a], [b]) => a.localeCompare(b)).map(([week, tonnageKg]) => ({ week, tonnageKg: Math.round(tonnageKg * 100) / 100 }));
+}
+
+/** Общая картина по силовым, без привязки к упражнению. Окно — четыре недели, включая текущую. */
+export interface StrengthOverview {
+  sessions: number;
+  sets: number;
+  /** Тоннаж обычного веса, кг (отягощение и противовес не входят — как в тоннаже упражнения). */
+  tonnageKg: number;
+}
+
+function normalTonnage(sets: readonly SetEntry[]): number {
+  return sets.reduce((sum, x) => (x.done && x.load === 'normal' && x.weightKg !== undefined && x.reps !== undefined ? sum + x.weightKg * x.reps * (x.perSide ? 2 : 1) : sum), 0);
+}
+
+export function strengthOverview(sessions: readonly S[], today: string, weeks = 4): StrengthOverview {
+  const from = lastWeeks(today, weeks)[0]!;
+  let count = 0;
+  let sets = 0;
+  let tonnage = 0;
+  for (const s of sessions) {
+    if (s.deletedAt !== null || s.date < from || s.date > today) continue;
+    let any = false;
+    for (const b of s.blocks) {
+      if (b.type !== 'strength') continue;
+      for (const item of b.items) {
+        const done = item.sets.filter((x) => x.done);
+        if (done.length > 0) any = true;
+        sets += done.length;
+        tonnage += normalTonnage(done);
+      }
+    }
+    if (any) count += 1;
+  }
+  return { sessions: count, sets, tonnageKg: Math.round(tonnage) };
+}
+
+/** Тоннаж всех упражнений по неделям за последние `count` недель; недели без работы — нули. */
+export function overallWeeklyTonnage(sessions: readonly S[], today: string, count = 12): WeeklyTonnage[] {
+  const map = new Map<string, number>(lastWeeks(today, count).map((w) => [w, 0]));
+  for (const s of sessions) {
+    if (s.deletedAt !== null) continue;
+    const w = weekStart(s.date);
+    if (!map.has(w)) continue;
+    for (const b of s.blocks) {
+      if (b.type !== 'strength') continue;
+      for (const item of b.items) map.set(w, map.get(w)! + normalTonnage(item.sets));
+    }
+  }
+  return [...map].map(([week, t]) => ({ week, tonnageKg: Math.round(t) }));
 }
 
 export interface ExerciseUsage {

@@ -74,7 +74,7 @@ describe('главный экран: следующая тренировка', (
     expect(screen.queryByRole('region', { name: 'Следующая тренировка' })).toBeNull();
   });
 
-  it('тёмная карточка: следующая по очереди, цикл 1, «Начать» и «Короткая»', async () => {
+  it('тёмная карточка: следующая по очереди, цикл 1, одна кнопка «Начать»', async () => {
     await ensureSeed();
     renderApp();
     const card = await next();
@@ -82,7 +82,7 @@ describe('главный экран: следующая тренировка', (
     expect(within(card).getByText('ЦИКЛ 1')).toBeTruthy();
     expect(within(card).getByText(/Всё тело A/)).toBeTruthy();
     expect(within(card).getByRole('button', { name: 'Начать' })).toBeTruthy();
-    expect(within(card).getByRole('button', { name: 'Короткая' })).toBeTruthy();
+    expect(within(card).queryByRole('button', { name: 'Короткая' })).toBeNull();
   });
 
   repdb('в карточке — три упражнения: прошлый результат, а если его нет — плановые значения; «и ещё N · …»', async () => {
@@ -100,18 +100,37 @@ describe('главный экран: следующая тренировка', (
     expect(card.querySelector('.next-card__rest')!.textContent).toBe('и ещё 4 · финиш · мобильность');
   });
 
-  it('следующий комплекс и последняя пробежка', async () => {
+  it('«Последние»: карточки последнего комплекса и последнего кардио, затем список тренировок', async () => {
     await ensureSeed();
     await saveRecord('sessions', session('run', {
       date: '2026-05-29', type: 'cardio', finishedAt: 5, title: 'Бег',
       blocks: [{ type: 'cardio', id: 'c', modality: 'run', role: 'main', distanceM: 3090, durationSec: 1448, paceSecPerKm: 469, recordedPace: 466 }],
     }));
+    await saveRecord('sessions', session('cx', {
+      date: '2026-05-20', type: 'conditioning', finishedAt: 5, title: 'Т3',
+      blocks: [{ type: 'conditioning', id: 'k', complexId: '#001', name: 'Чиппер', format: 'FOR_TIME', result: { timeSec: 755, finished: true } }],
+    }));
     renderApp();
-    const complex = await screen.findByLabelText('Следующий комплекс');
-    expect(within(complex).getByText('#001')).toBeTruthy();
-    const run = screen.getByLabelText('Последняя пробежка');
-    expect(run.textContent).toContain('3,09 км');
-    expect(run.textContent).toContain('7:46 /км');
+    const complex = await screen.findByLabelText('Последний комплекс');
+    expect(complex.textContent).toContain('#001');
+    expect(complex.textContent).toContain('Чиппер');
+    expect(complex.textContent).toContain('на время');
+    expect(complex.textContent).toContain('12:35');
+    const cardio = screen.getByLabelText('Последнее кардио');
+    expect(cardio.textContent).toContain('3,09 км');
+    expect(cardio.textContent).toContain('7:46 /км');
+    // порядок: свободная тренировка → карточки → список
+    const free = screen.getByRole('button', { name: 'Свободная тренировка' });
+    expect(free.compareDocumentPosition(complex) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(complex.compareDocumentPosition(cardio) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('без комплексов и кардио карточек нет', async () => {
+    await ensureSeed();
+    renderApp();
+    await next();
+    expect(screen.queryByLabelText('Последний комплекс')).toBeNull();
+    expect(screen.queryByLabelText('Последнее кардио')).toBeNull();
   });
 });
 
@@ -152,15 +171,6 @@ describe('критерий приёмки: очередь Т1 → Т2', () => {
     expect(within(await next()).getByText('Тренировка 2')).toBeTruthy();
     expect((await sessions()).filter((s) => s.finishedAt !== undefined)).toHaveLength(2);
   }, 30_000);
-
-  it('«Короткая»: в тренировке только помеченные блоки', async () => {
-    await ensureSeed();
-    renderApp();
-    click('Короткая', within(await next()));
-    const expected = TEMPLATES[0]!.blocks.filter((b) => b.inShort).length;
-    await savedWhere((s) => s.templateId === 'seed:template:t1' && s.blocks.length === expected);
-    expect(expected).toBeLessThan(TEMPLATES[0]!.blocks.length);
-  });
 
   it('прошлый результат подставляется, правки плана — тоже; заметка упражнения из шаблона видна в тренировке', async () => {
     await ensureSeed();
@@ -266,20 +276,19 @@ describe('экран «План»: шаблон из очереди', () => {
     const sheet = await screen.findByRole('dialog', { name: 'Шаблон: Тренировка 2' });
     expect(sheet.querySelectorAll('.tpl-block')).toHaveLength(TEMPLATES[1]!.blocks.length);
     expect(within(sheet).getByText(/В очереди/)).toBeTruthy();
-    expect(within(sheet).getByRole('button', { name: 'Короткая версия' })).toBeTruthy();
+    expect(within(sheet).queryByRole('button', { name: 'Короткая версия' })).toBeNull();
     click('Начать', within(sheet));
 
     expect(await screen.findByLabelText('Название тренировки')).toHaveProperty('value', 'Тренировка 2');
     await savedWhere((s) => s.templateId === 'seed:template:t2' && s.queueSlot === 1);
   });
 
-  it('у Т3 нет короткой версии; свободная карточка запускает свободную тренировку без очереди', async () => {
+  it('свободная карточка запускает свободную тренировку без очереди', async () => {
     await ensureSeed();
     renderApp('/plan');
     await waitFor(() => expect(lanes()).toHaveLength(3));
     fireEvent.click(lanes()[2]!);
     const sheet = await screen.findByRole('dialog', { name: 'Шаблон: Тренировка 3' });
-    expect(within(sheet).queryByRole('button', { name: 'Короткая версия' })).toBeNull();
     click('Закрыть', within(sheet));
 
     fireEvent.click(screen.getByText('Свободная тренировка'));
@@ -379,7 +388,7 @@ describe('редактор шаблона', () => {
     expect(screen.getByText(/Блоков пока нет/)).toBeTruthy();
   });
 
-  it('силовой блок с плановыми значениями; «в короткой версии»; порядок; удаление блока', async () => {
+  it('силовой блок с плановыми значениями; удаление блока', async () => {
     await newTemplate();
     click('Добавить блок');
     click('Силовое упражнение', within(await screen.findByRole('dialog', { name: 'Добавить блок' })));
@@ -395,12 +404,9 @@ describe('редактор шаблона', () => {
     fill('Присед в тренажёре: вес до', '110', card);
     fireEvent.click(card.getByLabelText('Повторы на каждую сторону'));
     await waitFor(async () => expect((await templateRow())['blocks']).toMatchObject([
-      { type: 'strength', inShort: true, items: [{ exerciseId: 'splav:machine-squat', plan: { sets: 4, repsMin: 6, repsMax: 8, weightKg: 100, weightKgMax: 110, perSide: true, load: 'normal' } }] },
+      { type: 'strength', items: [{ exerciseId: 'splav:machine-squat', plan: { sets: 4, repsMin: 6, repsMax: 8, weightKg: 100, weightKgMax: 110, perSide: true, load: 'normal' } }] },
     ]));
-
-    fireEvent.click(card.getByLabelText('В короткой версии'));
-    await waitFor(async () => expect(((await templateRow())['blocks'] as { inShort: boolean }[])[0]!.inShort).toBe(false));
-    expect(screen.getByRole('status').textContent).toMatch(/В короткой версии блоков: 0 из 1/);
+    expect(screen.queryByLabelText('В короткой версии')).toBeNull();
 
     click('Убрать блок', card);
     click('Убрать?', card);

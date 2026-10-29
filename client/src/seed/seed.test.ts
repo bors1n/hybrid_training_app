@@ -70,15 +70,6 @@ describe('шаблоны Т1–Т3', () => {
     expect(items.find((i) => i.exerciseId === 'repdb:ohp')!.plan.weightKg).toBe(55);
     expect(items.find((i) => i.exerciseId === 'repdb:deadlift')!.plan.weightKg).toBe(85);
   });
-  it('короткая Т1: пункты 1–3 и 7 (присед, жим, тяга, кор)', () => {
-    const short = t1.blocks.filter((b) => b.inShort);
-    expect(strengthIds(short)).toEqual(['repdb:squat', 'repdb:bench-press', 'repdb:seated-cable-row']);
-    expect(short.some((b) => b.type === 'mobility' && b.items.some((i) => i.exerciseId === 'splav:core-complex'))).toBe(true);
-    expect(short.some((b) => b.type === 'cardio' && b.role === 'finisher')).toBe(false);
-  });
-  it('короткая Т2: пункты 1–4 (становая, подтягивания, жим стоя, гиперэкстензия)', () => {
-    expect(strengthIds(t2.blocks.filter((b) => b.inShort))).toEqual(['repdb:deadlift', 'repdb:pull-up', 'repdb:ohp', 'repdb:back-extension']);
-  });
   it('Т3: комплекс берётся из очереди, затем спринты', () => {
     const k = t3.blocks.filter((b) => b.type === 'conditioning');
     expect(k).toHaveLength(2);

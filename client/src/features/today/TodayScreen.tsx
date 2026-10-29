@@ -4,15 +4,15 @@ import { ScreenHead } from '../../components/ScreenHead.tsx';
 import { SessionRow } from '../../components/SessionRow.tsx';
 import { startTemplateWorkout } from '../../data/templateService.ts';
 import { sortSessions, todayKey } from '../../domain/history.ts';
+import { formatResult, lastComplexAttempt } from '../../domain/complexResults.ts';
+import { lastCardioEntry } from '../../domain/lastCardio.ts';
 import { formatDateShort, formatSet, lastPerformance } from '../../domain/lastPerformance.ts';
-import { lastRun } from '../../domain/lastRun.ts';
-import { formatPlan } from '../../domain/planFormat.ts';
-import { complexQueueState, queueState } from '../../domain/queue.ts';
-import { hasShortVersion } from '../../domain/templateSession.ts';
-import { formatKm, formatPaceLabel } from '../../domain/units.ts';
+import { FORMAT_SHORT, formatPlan } from '../../domain/planFormat.ts';
+import { queueState } from '../../domain/queue.ts';
+import { MODALITY_LABELS } from '../../domain/sessionEdit.ts';
+import { formatDecimal, formatDuration, formatKm, formatPaceLabel } from '../../domain/units.ts';
 import { useCatalog } from '../library/useCatalog.ts';
-import { FORMAT_SHORT } from '../../domain/planFormat.ts';
-import { useComplexes, useComplexQueue, useQueues, useTemplates } from '../plan/usePlanData.ts';
+import { useQueues, useTemplates } from '../plan/usePlanData.ts';
 import { startFreeWorkout } from '../workout/startWorkout.ts';
 import { useSessions } from '../workout/useSessions.ts';
 
@@ -29,8 +29,6 @@ export function TodayScreen(): ReactElement {
   const sessions = useSessions();
   const templates = useTemplates();
   const queues = useQueues();
-  const complexes = useComplexes();
-  const cq = useComplexQueue();
   const catalogList = useCatalog();
   const catalog = useMemo(() => new Map(catalogList.map((e) => [e.id, e])), [catalogList]);
   const [error, setError] = useState<string | null>(null);
@@ -43,9 +41,8 @@ export function TodayScreen(): ReactElement {
   const queue = queues?.[0];
   const state = useMemo(() => (queue && sessions ? queueState(queue, sessions) : null), [queue, sessions]);
   const template = state ? templates?.find((t) => t.id === state.templateId) : undefined;
-  const cqState = useMemo(() => (cq && sessions ? complexQueueState(cq, sessions) : null), [cq, sessions]);
-  const nextComplex = cqState ? complexes?.find((c) => c.id === cqState.complexId) : undefined;
-  const run = useMemo(() => (sessions ? lastRun(sessions) : null), [sessions]);
+  const lastComplex = useMemo(() => (sessions ? lastComplexAttempt(sessions) : null), [sessions]);
+  const lastCardio = useMemo(() => (sessions ? lastCardioEntry(sessions) : null), [sessions]);
   const today = todayKey();
 
   const exercises = template?.blocks.flatMap((b) => (b.type === 'strength' ? b.items : [])) ?? [];
@@ -60,10 +57,10 @@ export function TodayScreen(): ReactElement {
     template?.blocks.some((b) => b.type === 'mobility') ? 'мобильность' : null,
   ].filter(Boolean).join(' · ');
 
-  async function start(templateId: string, short: boolean): Promise<void> {
+  async function start(templateId: string): Promise<void> {
     setError(null);
     try {
-      navigate(`/workout/${await startTemplateWorkout(templateId, { short })}`);
+      navigate(`/workout/${await startTemplateWorkout(templateId)}`);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Не удалось начать тренировку');
     }
@@ -103,37 +100,13 @@ export function TodayScreen(): ReactElement {
           </ul>
           {rest ? <p className="next-card__rest">{rest}</p> : null}
           <div className="next-card__actions">
-            <button type="button" className="htr-btn htr-btn--night next-card__start" onClick={() => void start(template.id, false)}>Начать</button>
-            {hasShortVersion(template) ? (
-              <button type="button" className="htr-btn next-card__short" onClick={() => void start(template.id, true)}>Короткая</button>
-            ) : null}
+            <button type="button" className="htr-btn htr-btn--night next-card__start" onClick={() => void start(template.id)}>Начать</button>
           </div>
         </section>
       ) : queue && state && templates !== undefined ? (
         <p className="stub">Следующий шаблон очереди удалён. Откройте вкладку «План» и поправьте очередь.</p>
       ) : null}
       {error ? <p className="login__error sheet__error" role="alert">{error}</p> : null}
-
-      {nextComplex || run ? (
-        <div className="today-cards">
-          {nextComplex ? (
-            <div className="mini-card" aria-label="Следующий комплекс">
-              <span className="mini-card__label"><span className="dot" style={{ background: 'var(--conditioning)' }} />КОМПЛЕКС</span>
-              <span className="mini-card__value">{nextComplex.id}</span>
-              <span className="mini-card__sub">{FORMAT_SHORT[nextComplex.format]}{nextComplex.timeCapMin !== undefined ? ` · ${nextComplex.timeCapMin} мин` : ''}</span>
-            </div>
-          ) : null}
-          {run ? (
-            <div className="mini-card" aria-label="Последняя пробежка">
-              <span className="mini-card__label"><span className="dot" style={{ background: 'var(--cardio)' }} />ПОСЛЕДНИЙ БЕГ</span>
-              <span className="mini-card__value mono">{formatKm(run.block.distanceM!)}</span>
-              <span className="mini-card__sub">
-                {[run.block.recordedPace ?? run.block.paceSecPerKm ? formatPaceLabel((run.block.recordedPace ?? run.block.paceSecPerKm)!) : null, formatDateShort(run.date, today)].filter(Boolean).join(' · ')}
-              </span>
-            </div>
-          ) : null}
-        </div>
-      ) : null}
 
       <button type="button" className="htr-btn htr-btn--secondary free-btn" onClick={() => void startFree()}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
@@ -142,6 +115,42 @@ export function TodayScreen(): ReactElement {
 
       <div className="today-list">
         <span className="sheet__label">ПОСЛЕДНИЕ</span>
+        {lastComplex || lastCardio ? (
+          <div className="recent-cards">
+            {lastComplex ? (
+              <button type="button" className="recent-card" aria-label="Последний комплекс" onClick={() => navigate(`/workout/${lastComplex.sessionId}`)}>
+                <span className="recent-card__main">
+                  <span className="recent-card__label"><span className="dot" style={{ background: 'var(--conditioning)' }} />КОМПЛЕКС</span>
+                  <span className="recent-card__title">{[lastComplex.block.complexId, lastComplex.block.name].filter(Boolean).join(' · ') || 'Комплекс'}</span>
+                  <span className="recent-card__sub">{FORMAT_SHORT[lastComplex.block.format]}</span>
+                </span>
+                <span className="recent-card__value">
+                  {formatResult(lastComplex.block.format, lastComplex.block.result)}
+                  <small>{formatDateShort(lastComplex.date, today)}</small>
+                </span>
+              </button>
+            ) : null}
+            {lastCardio ? (
+              <button type="button" className="recent-card" aria-label="Последнее кардио" onClick={() => navigate(`/workout/${lastCardio.sessionId}`)}>
+                <span className="recent-card__main">
+                  <span className="recent-card__label"><span className="dot" style={{ background: 'var(--cardio)' }} />КАРДИО</span>
+                  <span className="recent-card__title">{lastCardio.block.name ?? MODALITY_LABELS[lastCardio.block.modality]}</span>
+                  <span className="recent-card__sub">
+                    {[
+                      lastCardio.block.durationSec !== undefined ? formatDuration(lastCardio.block.durationSec) : null,
+                      lastCardio.group === 'run' && lastCardio.paceSecPerKm !== null ? formatPaceLabel(lastCardio.paceSecPerKm) : null,
+                      lastCardio.group !== 'run' && lastCardio.speedKmh !== null ? `${formatDecimal(lastCardio.speedKmh, 1)} км/ч` : null,
+                    ].filter(Boolean).join(' · ')}
+                  </span>
+                </span>
+                <span className="recent-card__value">
+                  {lastCardio.block.distanceM !== undefined ? formatKm(lastCardio.block.distanceM) : formatDuration(lastCardio.block.durationSec ?? 0)}
+                  <small>{formatDateShort(lastCardio.date, today)}</small>
+                </span>
+              </button>
+            ) : null}
+          </div>
+        ) : null}
         {sessions !== undefined && recent.length === 0 && !inProgress ? (
           <p className="stub">Здесь появятся ваши тренировки. Начните с шаблона из очереди или со свободной тренировки.</p>
         ) : null}

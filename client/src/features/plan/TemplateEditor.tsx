@@ -19,9 +19,7 @@ import {
   removeBlock,
   removeItem,
   removeMobilityItem,
-  setInShort,
   setItemNote,
-  shortSummary,
   updateCardio,
   updateConditioning,
   updateItemPlan,
@@ -55,15 +53,6 @@ interface Ctx {
 }
 
 const nameOf = (ctx: Ctx, id: string): string => ctx.catalog.get(id)?.name ?? 'Упражнение удалено';
-
-function ShortToggle({ block, ctx }: { block: Block; ctx: Ctx }): ReactElement {
-  return (
-    <label className="check">
-      <input type="checkbox" checked={block.inShort} onChange={(e) => ctx.update((t) => setInShort(t, block.id, e.target.checked))} />
-      В короткой версии
-    </label>
-  );
-}
 
 function StrengthEditor({ block, ctx }: { block: Extract<Block, { type: 'strength' }>; ctx: Ctx }): ReactElement {
   const [picking, setPicking] = useState(false);
@@ -361,7 +350,6 @@ export function TemplateEditor(): ReactElement {
   }
 
   const ctx: Ctx = { catalog, catalogList, sessions: sessions ?? [], complexes: complexes ?? [], update };
-  const sum = shortSummary(draft);
 
   return (
     <div className="fullscreen tpl">
@@ -391,9 +379,6 @@ export function TemplateEditor(): ReactElement {
         </div>
 
         {draft.blocks.length === 0 ? <p className="stub">Блоков пока нет. Добавьте упражнения, кардио, комплекс или мобильность.</p> : null}
-        <p className="item__hint" role="status">
-          {sum.total > 0 ? `В короткой версии блоков: ${sum.inShort} из ${sum.total}. ${sum.inShort === sum.total ? 'Короткая версия совпадает с полной, кнопки «Короткая» не будет.' : ''}` : ''}
-        </p>
 
         {draft.blocks.map((b, i) => {
           const l = blockLabel(b);
@@ -409,7 +394,6 @@ export function TemplateEditor(): ReactElement {
               onMove={(d) => update((t) => moveBlock(t, b.id, d))}
               onRemove={() => update((t) => removeBlock(t, b.id))}
             >
-              <ShortToggle block={b} ctx={ctx} />
               {b.type === 'strength' ? <StrengthEditor block={b} ctx={ctx} /> : null}
               {b.type === 'cardio' ? <CardioEditor block={b} ctx={ctx} /> : null}
               {b.type === 'conditioning' ? <ConditioningEditor block={b} ctx={ctx} /> : null}

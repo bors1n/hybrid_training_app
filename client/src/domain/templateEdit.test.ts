@@ -14,9 +14,7 @@ import {
   removeBlock,
   removeItem,
   removeMobilityItem,
-  setInShort,
   setItemNote,
-  shortSummary,
   templateSummary,
   updateCardio,
   updateConditioning,
@@ -42,9 +40,9 @@ describe('шаблон: редактирование', () => {
     expect(t).not.toHaveProperty('subtitle');
   });
 
-  it('силовой блок: 3 подхода по умолчанию, в короткой версии, валиден', () => {
+  it('силовой блок: 3 подхода по умолчанию, валиден', () => {
     const t = withSquat();
-    expect(strength(t)).toMatchObject({ superset: false, inShort: true, items: [{ exerciseId: 'repdb:squat', plan: { sets: 3, load: 'normal' } }] });
+    expect(strength(t)).toMatchObject({ superset: false, items: [{ exerciseId: 'repdb:squat', plan: { sets: 3, load: 'normal' } }] });
     expect(valid(t)).toBe(true);
   });
   it('упражнение «на сторону» помечается сразу', () => {
@@ -92,7 +90,7 @@ describe('шаблон: редактирование', () => {
 
   it('кардио: вид, роль, диапазон времени; верх не меньше низа', () => {
     let t = addCardio(base(), 'treadmill', 'warmup', 'c1');
-    expect(t.blocks[0]).toMatchObject({ modality: 'treadmill', role: 'warmup', name: 'Дорожка', inShort: true });
+    expect(t.blocks[0]).toMatchObject({ modality: 'treadmill', role: 'warmup', name: 'Дорожка' });
     t = updateCardio(t, 'c1', { durationSec: 300, durationSecMax: 600, note: 'дорожка, гребля или лестница' });
     expect(t.blocks[0]).toMatchObject({ durationSec: 300, durationSecMax: 600, note: 'дорожка, гребля или лестница' });
     t = updateCardio(t, 'c1', { durationSec: 900 });
@@ -105,7 +103,7 @@ describe('шаблон: редактирование', () => {
 
   it('комплекс: из очереди, из библиотеки и свой', () => {
     let t = addQueuedComplex(base(), 'k1');
-    expect(t.blocks[0]).toMatchObject({ type: 'conditioning', fromQueue: true, inShort: true });
+    expect(t.blocks[0]).toMatchObject({ type: 'conditioning', fromQueue: true });
     t = addFixedComplex(t, { id: '#007', title: 'Чиппер', format: 'FOR_TIME', timeCapMin: 20, description: '50 приседаний…' }, 'k2');
     t = addFixedComplex(t, { name: 'Спринты', format: 'INTERVALS', description: '6 × 40/40' }, 'k3');
     expect(t.blocks[1]).toMatchObject({ fromQueue: false, complexId: '#007', name: 'Чиппер', format: 'FOR_TIME', timeCapMin: 20 });
@@ -130,12 +128,6 @@ describe('шаблон: редактирование', () => {
     expect(t.blocks).toEqual([]);
   });
 
-  it('«в короткой версии»: включить и выключить; счётчик', () => {
-    let t = addCardio(withSquat(), 'run', 'main', 'c1');
-    t = setInShort(t, 'c1', false);
-    expect(t.blocks.map((b) => b.inShort)).toEqual([true, false]);
-    expect(shortSummary(t)).toEqual({ inShort: 1, total: 2 });
-  });
   it('порядок блоков и удаление', () => {
     let t = addMobility(addCardio(withSquat(), 'run', 'main', 'c1'), 'x', 'm1');
     t = moveBlock(t, 'm1', -1);

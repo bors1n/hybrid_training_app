@@ -1,6 +1,6 @@
 import type { Block, SessionRecord } from '@splav/shared';
 import { describe, expect, it } from 'vitest';
-import { chartValue, complexSummaries } from './complexMetrics.ts';
+import { chartValue, complexFeed, complexSummaries, complexTotals } from './complexMetrics.ts';
 
 let n = 0;
 function k(complexId: string, date: string, result: object, format: 'AMRAP' | 'FOR_TIME' = 'AMRAP', extra: Partial<SessionRecord> = {}): SessionRecord {
@@ -39,5 +39,34 @@ describe('список комплексов с попытками', () => {
     const list = complexSummaries(library, [k('#001', '2026-10-20', { rounds: 5 }, 'AMRAP', { deletedAt: 1 }), k('#002', '2026-10-21', {})]);
     expect(list.every((c) => c.attempts === 0)).toBe(true);
     expect(list.map((c) => c.complexId)).toEqual(['#001', '#002', '#005']);
+  });
+});
+
+describe('итоги и лента комплексов', () => {
+  it('итоги: выполнено, повторы (totalReps, а без него добор), раунды; пустые не считаются', () => {
+    const sessions = [
+      k('#001', '2026-10-20', { rounds: 7, extraReps: 14 }),
+      k('#002', '2026-10-21', { totalReps: 180 }, 'AMRAP'),
+      k('#003', '2026-10-22', { timeSec: 600 }, 'FOR_TIME'),
+      k('#004', '2026-10-23', {}),
+      k('#005', '2026-10-24', { rounds: 5 }, 'AMRAP', { deletedAt: 5 }),
+    ];
+    expect(complexTotals(sessions)).toEqual({ done: 3, reps: 194, rounds: 7 });
+  });
+
+  it('лента: новые сверху, повторы комплекса — отдельные карточки, рекорд у лучшей из нескольких', () => {
+    const sessions = [k('#005', '2026-10-18', { rounds: 9 }), k('#005', '2026-10-25', { rounds: 7 }), k('#001', '2026-10-20', { rounds: 5 })];
+    const feed = complexFeed(sessions);
+    expect(feed.map((f) => [f.date, f.title, f.record])).toEqual([
+      ['2026-10-25', '#005', false],
+      ['2026-10-20', '#001', false], // единственная попытка — не рекорд
+      ['2026-10-18', '#005', true],
+    ]);
+  });
+
+  it('свой комплекс без номера попадает в ленту', () => {
+    const own = { type: 'conditioning', id: 'k', name: 'Свой', format: 'AMRAP', result: { rounds: 4 } } as Block;
+    const feed = complexFeed([{ id: 'x', date: '2026-10-20', blocks: [own], updatedAt: 1, deletedAt: null }]);
+    expect(feed).toMatchObject([{ title: 'Свой', record: false }]);
   });
 });

@@ -5,17 +5,14 @@ import { useSessions } from '../workout/useSessions.ts';
 import { BalanceTab } from './BalanceTab.tsx';
 import { CardioTab } from './CardioTab.tsx';
 import { ComplexTab } from './ComplexTab.tsx';
-import { todayKey } from '../../domain/history.ts';
 import { HistoryList } from './HistoryList.tsx';
-import { RegularityCard } from './RegularityCard.tsx';
-import { WeekBalanceCard } from './WeekBalanceCard.tsx';
 import { StrengthTab } from './StrengthTab.tsx';
 
 const TABS = [
-  { id: 'strength', label: 'Сила' },
-  { id: 'cardio', label: 'Кардио' },
-  { id: 'complex', label: 'Комплексы' },
   { id: 'balance', label: 'Баланс' },
+  { id: 'strength', label: 'Сила' },
+  { id: 'cardio', label: 'Выносливость' },
+  { id: 'complex', label: 'Комплексы' },
 ] as const;
 type TabId = (typeof TABS)[number]['id'];
 
@@ -23,7 +20,7 @@ export function ProgressScreen(): ReactElement {
   const sessions = useSessions();
   const catalogList = useCatalog();
   const catalog = useMemo(() => new Map(catalogList.map((e) => [e.id, e])), [catalogList]);
-  const [tab, setTab] = useState<TabId>('strength');
+  const [tab, setTab] = useState<TabId>('balance');
   const live = sessions ?? [];
 
   return (
@@ -38,17 +35,11 @@ export function ProgressScreen(): ReactElement {
       </div>
       <div id="pg-panel" role="tabpanel" aria-labelledby={`pg-tab-${tab}`} className="pg-panel">
         {sessions === undefined ? <div aria-busy="true" /> : null}
+        {sessions !== undefined && tab === 'balance' ? <BalanceTab sessions={live} /> : null}
         {sessions !== undefined && tab === 'strength' ? <StrengthTab sessions={live} catalog={catalog} /> : null}
         {sessions !== undefined && tab === 'cardio' ? <CardioTab sessions={live} /> : null}
         {sessions !== undefined && tab === 'complex' ? <ComplexTab sessions={live} /> : null}
-        {sessions !== undefined && tab === 'balance' ? <BalanceTab sessions={live} /> : null}
       </div>
-      {sessions !== undefined && live.length > 0 ? (
-        <>
-          <WeekBalanceCard sessions={live} today={todayKey()} />
-          <RegularityCard sessions={live} today={todayKey()} />
-        </>
-      ) : null}
       <HistoryList />
     </>
   );

@@ -16,17 +16,17 @@
 .next-card__list li { display: flex; justify-content: space-between; gap: var(--space-3); }
 .next-card__list .mono { color: var(--on-night); white-space: nowrap; }
 .next-card__rest { margin: 0; font-size: 14px; color: var(--on-night-muted); }
-.next-card__actions { display: flex; gap: var(--space-2); }
-.next-card__start { flex: 1; }
-.next-card__short { background: transparent; color: var(--on-night); border-color: var(--on-night); padding-inline: var(--space-4); font-size: 14px; }
+.next-card__actions { display: flex; justify-content: center; }
+.next-card__start { padding-inline: var(--space-6); }
 
-.today-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: var(--space-3); }
-.today-cards:has(> :only-child) { grid-template-columns: 1fr; }
-.mini-card { border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; flex-direction: column; gap: 6px; }
-.mini-card__label { display: inline-flex; align-items: center; gap: 6px; font: 500 10px/14px var(--font-data); letter-spacing: 0.08em; color: var(--ink-muted); }
-.mini-card__value { font: 600 17px/22px var(--font-display); }
-.mini-card__value.mono { font-family: var(--font-data); }
-.mini-card__sub { font-size: 13px; line-height: 17px; color: var(--ink-muted); }
+.recent-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: var(--space-3); }
+.recent-card { width: 100%; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.recent-card__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.recent-card__label { display: inline-flex; align-items: center; gap: 6px; font: 500 10px/14px var(--font-data); letter-spacing: 0.08em; color: var(--ink-muted); }
+.recent-card__title { font: 600 17px/22px var(--font-display); overflow-wrap: anywhere; }
+.recent-card__sub { font-size: 13px; line-height: 17px; color: var(--ink-muted); }
+.recent-card__value { flex: none; text-align: right; font: 600 17px/22px var(--font-data); }
+.recent-card__value small { display: block; font: 400 13px/17px var(--font-body, inherit); color: var(--ink-muted); }
 
 /* Очередь в стиле беговых дорожек */
 .track {
@@ -77,10 +77,8 @@
 /* Листы шаблона, очереди, комплекса */
 .tpl-blocks { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
 .tpl-block { display: flex; flex-direction: column; gap: 2px; padding-bottom: var(--space-3); border-bottom: 1px solid var(--line); }
-.tpl-block.is-long { opacity: 0.85; }
 .tpl-line { font-size: 14px; line-height: 20px; }
 .tpl-line--ss { padding-left: var(--space-3); border-left: 3px solid var(--strength); }
-.tpl-short { align-self: flex-start; margin-top: 2px; padding: 1px 8px; border-radius: var(--radius-pill); background: var(--cobalt-soft); font-size: 11px; }
 .q-edit { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
 .q-edit__row { display: grid; grid-template-columns: 24px minmax(0, 1fr) 36px 36px 36px; gap: var(--space-2); align-items: center; }
 .q-edit__no { font: 700 18px var(--font-display); color: var(--ink-muted); }

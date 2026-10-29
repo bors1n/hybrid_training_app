@@ -1,14 +1,14 @@
 import { SessionRecordSchema, type Block, type SessionRecord } from '@splav/shared';
 import { describe, expect, it } from 'vitest';
 import { TEMPLATES, QUEUE } from '../seed/templates.ts';
-import { dropEmptyBlocks, hasShortVersion, isEmptyBlock, sessionFromTemplate, type FromTemplateOptions } from './templateSession.ts';
+import { dropEmptyBlocks, isEmptyBlock, sessionFromTemplate, type FromTemplateOptions } from './templateSession.ts';
 
 const [T1, T2, T3] = TEMPLATES.map((t) => ({ ...t, updatedAt: 1, deletedAt: null })) as [
   (typeof TEMPLATES)[0] & { updatedAt: number; deletedAt: null }, (typeof TEMPLATES)[0] & { updatedAt: number; deletedAt: null }, (typeof TEMPLATES)[0] & { updatedAt: number; deletedAt: null },
 ];
 
 const base = (over: Partial<FromTemplateOptions> = {}): FromTemplateOptions => ({
-  short: false, date: '2026-10-27', now: 5_000, id: 'new', sessions: [], queue: { id: QUEUE.id, slot: 0 }, ...over,
+  date: '2026-10-27', now: 5_000, id: 'new', sessions: [], queue: { id: QUEUE.id, slot: 0 }, ...over,
 });
 const valid = (s: object): boolean => SessionRecordSchema.safeParse({ ...s, updatedAt: 1, deletedAt: null }).success;
 const strengthBlocks = (blocks: Block[]) => blocks.flatMap((b) => (b.type === 'strength' ? [b] : []));
@@ -103,22 +103,6 @@ describe('тренировка из шаблона', () => {
     expect(s.blocks.find((b) => b.type === 'mobility')).toMatchObject({ items: [{ exerciseId: 'splav:pelvis-mobility', sets: [] }] });
   });
 
-  it('короткая Т1 — только помеченное; полная и короткая различаются', () => {
-    const full = sessionFromTemplate(T1, base());
-    const short = sessionFromTemplate(T1, base({ short: true }));
-    expect(short.blocks.length).toBeLessThan(full.blocks.length);
-    expect(strengthBlocks(short.blocks).map((b) => b.items[0]!.exerciseId)).toEqual(['repdb:squat', 'repdb:bench-press', 'repdb:seated-cable-row']);
-    expect(short.blocks.some((b) => b.type === 'cardio' && b.role === 'finisher')).toBe(false);
-    expect(short.blocks.some((b) => b.type === 'mobility')).toBe(true);
-    expect(hasShortVersion(T1)).toBe(true);
-    expect(hasShortVersion(T2)).toBe(true);
-    expect(hasShortVersion(T3)).toBe(false);
-  });
-  it('короткая Т2 — пункты 1–4', () => {
-    const short = sessionFromTemplate(T2, base({ short: true }));
-    expect(strengthBlocks(short.blocks).map((b) => b.items[0]!.exerciseId)).toEqual(['repdb:deadlift', 'repdb:pull-up', 'repdb:ohp', 'repdb:back-extension']);
-  });
-
   it('Т3: комплекс берётся из очереди комплексов; спринты — отдельный блок', () => {
     const c005 = { id: '#005', title: 'AMRAP 15 мин, вес тела', format: 'AMRAP' as const, timeCapMin: 15, description: '6 подтягиваний → …' };
     const s = sessionFromTemplate(T3, base({ nextComplex: c005, queue: { id: QUEUE.id, slot: 2 } }));
@@ -135,8 +119,8 @@ describe('тренировка из шаблона', () => {
     expect(k).toMatchObject({ name: 'Комплекс', format: 'AMRAP', result: {} });
     expect(k).not.toHaveProperty('complexId');
   });
-  it('все шаблоны и обе версии дают корректные тренировки', () => {
-    for (const t of [T1, T2, T3]) for (const short of [false, true]) expect(valid(sessionFromTemplate(t, base({ short }))), `${t.title} short=${short}`).toBe(true);
+  it('все шаблоны дают корректные тренировки', () => {
+    for (const t of [T1, T2, T3]) expect(valid(sessionFromTemplate(t, base())), t.title).toBe(true);
   });
 });
 
@@ -171,5 +155,5 @@ describe('пустые заготовки при завершении', () => {
 });
 
 function baseOptions(over: Partial<FromTemplateOptions> = {}): FromTemplateOptions {
-  return { short: false, date: '2026-10-27', now: 5_000, id: 'new', sessions: [], queue: { id: QUEUE.id, slot: 0 }, ...over };
+  return { date: '2026-10-27', now: 5_000, id: 'new', sessions: [], queue: { id: QUEUE.id, slot: 0 }, ...over };
 }

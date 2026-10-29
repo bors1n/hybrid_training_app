@@ -1,4 +1,5 @@
 import type { SessionRecord, SessionType } from '@splav/shared';
+import { resultScore } from './complexResults.ts';
 import { sessionDurationMin } from './summary.ts';
 import { addDays, addWeeks, lastWeeks, weekStart } from './weeks.ts';
 
@@ -65,6 +66,44 @@ export function weeklyBalance(sessions: readonly S[], today: string, count = 12)
     w.minutes.mobility += m.mobility;
   }
   return weeks.map((w) => map.get(w)!);
+}
+
+/** Окно баланса «сила — выносливость»: последние четыре недели, включая текущую. */
+export const BALANCE_WEEKS = 4;
+
+export interface StrengthEnduranceBalance {
+  /** Тренировки с выполненными силовыми подходами. */
+  strength: number;
+  /** Тренировки с кардио (есть дистанция или время) или комплексом с результатом. */
+  endurance: number;
+  /** С какого дня (понедельник) считается окно. */
+  from: string;
+}
+
+export const hasStrengthWork = (s: Pick<S, 'blocks'>): boolean =>
+  s.blocks.some((b) => b.type === 'strength' && b.items.some((i) => i.sets.some((x) => x.done)));
+
+export const hasEnduranceWork = (s: Pick<S, 'blocks'>): boolean =>
+  s.blocks.some(
+    (b) =>
+      (b.type === 'cardio' && (b.distanceM !== undefined || b.durationSec !== undefined)) ||
+      (b.type === 'conditioning' && resultScore(b.format, b.result) !== null),
+  );
+
+/**
+ * Баланс по числу тренировок, не по минутам: сила против выносливости (кардио + комплексы).
+ * Смешанная тренировка (сила и кардио) идёт в обе стороны; мобильность не учитывается.
+ */
+export function strengthEnduranceBalance(sessions: readonly S[], today: string): StrengthEnduranceBalance {
+  const from = lastWeeks(today, BALANCE_WEEKS)[0]!;
+  let strength = 0;
+  let endurance = 0;
+  for (const s of live(sessions)) {
+    if (s.date < from || s.date > today) continue;
+    if (hasStrengthWork(s)) strength += 1;
+    if (hasEnduranceWork(s)) endurance += 1;
+  }
+  return { strength, endurance, from };
 }
 
 export interface HeatDay {

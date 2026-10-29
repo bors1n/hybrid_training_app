@@ -15,7 +15,7 @@ import { loadSessions } from './importService.ts';
  */
 export async function startTemplateWorkout(
   templateId: string,
-  { short = false, now = Date.now(), database = db }: { short?: boolean; now?: number; database?: SplavDB } = {},
+  { now = Date.now(), database = db }: { now?: number; database?: SplavDB } = {},
 ): Promise<string> {
   const row = await database.rows('templates').get(templateId);
   const template = row && row.deletedAt === null ? TemplateRecordSchema.safeParse(row) : null;
@@ -40,7 +40,6 @@ export async function startTemplateWorkout(
   const nextComplex = next ? (complexes.find((c) => c.id === next.complexId) ?? null) : null;
 
   const draft = sessionFromTemplate(template.data, {
-    short,
     date: todayKey(new Date(now)),
     now,
     sessions,
