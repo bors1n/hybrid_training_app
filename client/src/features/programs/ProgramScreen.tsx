@@ -182,7 +182,7 @@ export function ProgramScreen(): ReactElement {
 
       <button type="button" className="free-card" onClick={() => void startFree()}>
         <span className="free-card__title">Тренировка вне очереди</span>
-        <span className="free-card__sub">Без шаблона: собери блоки на ходу. Очередь не сдвинется.</span>
+        <span className="free-card__sub">Разовая тренировка не из очереди: соберите блоки на ходу. Очередь не сдвинется.</span>
       </button>
 
       {sheet?.kind === 'queue' && queue ? (

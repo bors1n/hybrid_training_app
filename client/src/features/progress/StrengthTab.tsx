@@ -118,7 +118,7 @@ function OverviewBlock({ sessions }: TabProps): ReactElement {
   const overview = useMemo(() => strengthOverview(sessions, today), [sessions, today]);
   const weekly = useMemo(() => overallWeeklyTonnage(sessions, today, 12), [sessions, today]);
   return (
-    <section aria-label="Силовые в целом">
+    <section className="pg-section" aria-label="Силовые в целом">
       <div className="pg-stats">
         <Stat label="ТРЕНИРОВОК" value={String(overview.sessions)} sub="за 4 недели" />
         <Stat label="ПОДХОДОВ" value={String(overview.sets)} sub="за 4 недели" />

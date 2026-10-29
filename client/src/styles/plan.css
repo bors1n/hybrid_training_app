@@ -19,7 +19,11 @@
 .next-card__actions { display: flex; justify-content: center; }
 .next-card__start { padding-inline: var(--space-6); }
 
-.recent-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: var(--space-3); }
+.recent-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: var(--space-3); }
+/* В «Последних» карточки узкие: результат уходит под название, шрифт мельче, длинные названия переносятся. */
+.recent-cards .recent-card { flex-direction: column; justify-content: flex-start; gap: var(--space-2); padding: 12px; }
+.recent-cards .recent-card__title { font-size: 15px; line-height: 20px; }
+.recent-cards .recent-card__value { text-align: left; font-size: 15px; line-height: 20px; }
 .recent-card { width: 100%; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: var(--radius-md); background: var(--surface); padding: 14px; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
 .recent-card__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .recent-card__label { display: inline-flex; align-items: center; gap: 6px; font: 500 10px/14px var(--font-data); letter-spacing: 0.08em; color: var(--ink-muted); }
