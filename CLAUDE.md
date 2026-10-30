@@ -105,3 +105,13 @@ npx vitest run --project site   # тесты сайта (Astro Container API)
   - остановиться и ждать подтверждения; коммит — после него.
 - Неоднозначность — выбрать разумный вариант, записать в DECISIONS.md и продолжать.
 - Окружение: Windows 11, Node 24, npm 11 (pnpm нет).
+
+## Agent skills
+
+### Issue tracker
+
+Задачи ведутся в GitHub Issues (`bors1n/hybrid_training_app`, через `gh`). См. `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Одноконтекстный репозиторий: один `GLOSSARY.md` и `docs/adr/` в корне. См. `docs/agents/domain.md`.
