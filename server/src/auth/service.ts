@@ -1,6 +1,6 @@
 import { and, desc, eq, gt, isNull, sql } from 'drizzle-orm';
 import { createHash, createHmac, randomBytes, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
-import { CODE_LENGTH, type User } from '@splav/shared';
+import { CODE_LENGTH, type User } from '@hybridlog/shared';
 import type { Config } from '../config.ts';
 import type { Db } from '../db/client.ts';
 import { authSessions, loginCodes, users } from '../db/schema.ts';

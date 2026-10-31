@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 
 export interface SessionSummary {
   /** Тоннаж, кг: сумма вес × повторы по выполненным подходам с обычным весом. */

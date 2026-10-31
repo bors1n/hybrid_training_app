@@ -40,7 +40,7 @@ export const ExerciseContentSchema = z.object({
 });
 export type ExerciseContent = z.infer<typeof ExerciseContentSchema>;
 
-/** Элемент каталога: упражнение с идентификатором (`repdb:*`, `splav:*`). */
+/** Элемент каталога: упражнение с идентификатором (`repdb:*`, `hybridlog:*`). */
 export const CatalogExerciseSchema = ExerciseContentSchema.extend({ id: z.string().min(1) });
 export type CatalogExercise = z.infer<typeof CatalogExerciseSchema>;
 

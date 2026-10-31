@@ -1,4 +1,4 @@
-import { SessionRecordSchema, type Block, type SessionRecord } from '@splav/shared';
+import { SessionRecordSchema, type Block, type SessionRecord } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { TEMPLATES, QUEUE } from '../seed/templates.ts';
 import { dropEmptyBlocks, isEmptyBlock, sessionFromTemplate, type FromTemplateOptions } from './templateSession.ts';
@@ -100,7 +100,7 @@ describe('тренировка из шаблона', () => {
     expect(s.blocks[0]).toMatchObject({ type: 'cardio', role: 'warmup', modality: 'treadmill', name: 'Разминка' });
     expect(s.blocks[0]).not.toHaveProperty('durationSec');
     expect(s.blocks.at(-1)).toMatchObject({ type: 'cardio', role: 'finisher' });
-    expect(s.blocks.find((b) => b.type === 'mobility')).toMatchObject({ items: [{ exerciseId: 'splav:pelvis-mobility', sets: [] }] });
+    expect(s.blocks.find((b) => b.type === 'mobility')).toMatchObject({ items: [{ exerciseId: 'hybridlog:pelvis-mobility', sets: [] }] });
   });
 
   it('Т3: комплекс берётся из очереди комплексов; спринты — отдельный блок', () => {

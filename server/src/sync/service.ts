@@ -1,5 +1,5 @@
 import { and, asc, eq, gt, sql } from 'drizzle-orm';
-import type { PullResponse, PushResponse, SyncRecord } from '@splav/shared';
+import type { PullResponse, PushResponse, SyncRecord } from '@hybridlog/shared';
 import type { Db } from '../db/client.ts';
 import { records, users } from '../db/schema.ts';
 

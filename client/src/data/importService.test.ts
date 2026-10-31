@@ -7,15 +7,15 @@ import { createMatcher } from '../domain/matching.ts';
 import { CATALOG } from '../seed/catalog.ts';
 import { deleteRecord, listRecords, saveRecord } from '../sync/records.ts';
 import { session } from '../test/fixtures.ts';
-import { SplavDB } from './db.ts';
+import { HybridLogDB } from './db.ts';
 import { exportAllJson, exportAllSessionsCsv } from './exportService.ts';
 import { applyImport, loadSessions } from './importService.ts';
 
 const TEMPLATE = readFileSync(new URL('../../../docs/import_template.csv', import.meta.url), 'utf8');
 
-let database: SplavDB;
+let database: HybridLogDB;
 beforeEach(async () => {
-  database = new SplavDB(`import-${Math.random()}`);
+  database = new HybridLogDB(`import-${Math.random()}`);
   await database.open();
 });
 
@@ -104,7 +104,7 @@ describe('импорт в базу', () => {
 
     const resolved = await plan(csv, { 'мой присед': CATALOG.find((e) => e.name === 'Кор-комплекс')!.id });
     expect(resolved.newExercises.map((e) => e.name)).toEqual(['Фермерская прогулка 2×24']);
-    const res = await applyImport(resolved, { replaceExisting: false, manualMatches: [{ name: 'Мой присед', exerciseId: 'splav:core-complex' }], database });
+    const res = await applyImport(resolved, { replaceExisting: false, manualMatches: [{ name: 'Мой присед', exerciseId: 'hybridlog:core-complex' }], database });
     expect(res.exercisesCreated).toBe(1);
     const custom = await listRecords('exercises', database);
     expect(custom).toHaveLength(1);
@@ -138,7 +138,7 @@ describe('экспорт', () => {
     expect(exported.warnings).toEqual([]);
 
     // Новая база: свои упражнения (если были) восстанавливаем из экспорта, остальное — из файла
-    const fresh = new SplavDB(`import-fresh-${Math.random()}`);
+    const fresh = new HybridLogDB(`import-fresh-${Math.random()}`);
     await fresh.open();
     const matcher = createMatcher([...CATALOG, ...customs.map((c) => ({ id: c.id, name: String(c['name']) }))]);
     const back = buildImport(parseCsvText(exported.csv), { today: '2026-10-27', matcher });
@@ -153,11 +153,11 @@ describe('экспорт', () => {
     await saveRecord('sessions', session('a'), { database });
     await saveRecord('sessions', session('b'), { database });
     await deleteRecord('sessions', 'b', { database });
-    await saveRecord('exerciseNotes', { id: 'splav:core-complex', exerciseId: 'splav:core-complex', text: 'заметка' }, { database });
+    await saveRecord('exerciseNotes', { id: 'hybridlog:core-complex', exerciseId: 'hybridlog:core-complex', text: 'заметка' }, { database });
 
     const { json, counts } = await exportAllJson(database, new Date('2026-10-27T12:00:00Z'));
     const data = JSON.parse(json);
-    expect(data).toMatchObject({ app: 'SPLAV', version: 1, exportedAt: '2026-10-27T12:00:00.000Z' });
+    expect(data).toMatchObject({ app: 'HybridLog', version: 1, exportedAt: '2026-10-27T12:00:00.000Z' });
     expect(Object.keys(data.collections).sort()).toEqual(['complexQueue', 'complexes', 'exerciseAliases', 'exerciseNotes', 'exercises', 'programs', 'queues', 'sessions', 'settings', 'templates']);
     expect(data.collections.sessions.map((s: { id: string }) => s.id)).toEqual(['a']);
     expect(counts).toMatchObject({ sessions: 1, exerciseNotes: 1, templates: 0 });

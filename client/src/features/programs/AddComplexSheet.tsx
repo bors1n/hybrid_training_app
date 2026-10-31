@@ -1,4 +1,4 @@
-import { FORMATS, type ComplexRecord } from '@splav/shared';
+import { FORMATS, type ComplexRecord } from '@hybridlog/shared';
 import { useState, type ReactElement } from 'react';
 import { Chip } from '../../components/Chip.tsx';
 import { NumberField } from '../../components/fields.tsx';

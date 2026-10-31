@@ -1,4 +1,4 @@
-import { ExerciseRecordSchema, type CatalogExercise } from '@splav/shared';
+import { ExerciseRecordSchema, type CatalogExercise } from '@hybridlog/shared';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { db } from '../../data/db.ts';

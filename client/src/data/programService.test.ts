@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { activeProgram } from '../domain/programs.ts';
 import { ensureSeed } from '../seed/install.ts';
 import { listRecords } from '../sync/records.ts';
-import { SplavDB } from './db.ts';
+import { HybridLogDB } from './db.ts';
 import { addComplexToProgram, createOwnComplex, createProgram, deleteProgram, removeComplexFromProgram, setActiveProgram, updateProgram } from './programService.ts';
 
-let database: SplavDB;
+let database: HybridLogDB;
 beforeEach(async () => {
-  database = new SplavDB(`prg-${Math.random()}`);
+  database = new HybridLogDB(`prg-${Math.random()}`);
   await database.open();
   await ensureSeed(database);
 });

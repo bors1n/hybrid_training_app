@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 import { cardioEntries, type CardioEntry } from './cardioMetrics.ts';
 
 type S = Pick<SessionRecord, 'id' | 'date' | 'blocks' | 'startedAt' | 'updatedAt' | 'deletedAt'>;

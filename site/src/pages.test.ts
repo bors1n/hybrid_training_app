@@ -6,7 +6,7 @@ import ArticleList from './components/ArticleList.astro';
 import RubricNav from './components/RubricNav.astro';
 
 import Index from './pages/index.astro';
-import Splav from './pages/splav/index.astro';
+import AppPage from './pages/app/index.astro';
 
 async function render(component: Parameters<AstroContainer['renderToString']>[0], path = '/', props?: Record<string, unknown>) {
   const container = await AstroContainer.create();
@@ -23,9 +23,9 @@ describe('главная страница', () => {
     expect(html).toContain('width=device-width, initial-scale=1');
   });
 
-  it('содержит разделы макета: формула недели, основы, статьи, SPLAV, инстаграм', async () => {
+  it('содержит разделы макета: основы, статьи, HybridLog, инстаграм', async () => {
     const html = await render(Index);
-    for (const text of ['Формула гибридной недели', 'Что такое гибридная тренировка', 'Свежие статьи', 'Силовые и кардио в одном месте', 'Комьюнити', 'Hybrid', 'Russia', '60–70%', '12–16']) {
+    for (const text of ['Что такое гибридная тренировка', 'Свежие статьи', 'Силовые и кардио в одном месте', 'Комьюнити', 'Hybrid', 'Russia']) {
       expect(html).toContain(text);
     }
   });
@@ -33,7 +33,7 @@ describe('главная страница', () => {
   it('первый экран: две кнопки, в шапке значок Инстаграма, шесть карточек основ', async () => {
     const html = await render(Index);
     expect(html).toMatch(/href="\/articles\/"[^>]*>[^<]*Статьи</);
-    expect(html).toMatch(/href="\/splav\/"[^>]*>[^<]*Приложение</);
+    expect(html).toMatch(/href="\/app\/"[^>]*>[^<]*Приложение</);
     expect(html).toMatch(/<svg[^>]*aria-hidden="true"[^>]*><rect[^>]*><\/rect><circle/);
     expect(html.match(/class="basic[ "]/g)).toHaveLength(6);
   });
@@ -41,19 +41,19 @@ describe('главная страница', () => {
   it('фото первого экрана и скриншот приложения в рамке iPhone — картинки с описанием', async () => {
     const html = await render(Index);
     expect(html).toMatch(/<img[^>]*alt="Бегун на вечерней тренировке"/);
-    expect(html).toMatch(/<img[^>]*alt="Экран «Прогресс» в приложении SPLAV"/);
+    expect(html).toMatch(/<img[^>]*alt="Экран «Прогресс» в приложении HybridLog"/);
     expect(html).toContain('iphone__island');
   });
 
   it('меню ведёт только на существующие страницы сайта', () => {
     const internal = [...NAV, ...FOOTER_NAV].map((n) => n.href).filter((h) => h.startsWith('/'));
-    for (const href of internal) expect(['/articles/', '/splav/', '/about/', '/rubrics/complexes/']).toContain(href);
+    for (const href of internal) expect(['/articles/', '/app/', '/about/', '/rubrics/complexes/']).toContain(href);
   });
 
   it('все картинки-логотипы доступны скринридеру: названия вместо пустых ссылок', async () => {
     const html = await render(Index);
     expect(html).toContain('aria-label="Hybrid Training Russia, на главную"');
-    expect(html).toContain('aria-label="SPLAV"');
+    expect(html).toContain('aria-label="HybridLog"');
     expect(html).not.toMatch(/<a [^>]*href="#"[^>]*><\/a>/);
   });
 });
@@ -99,7 +99,7 @@ describe('рубрики и список статей', () => {
 
 describe('страницы-заглушки', () => {
   it.each([
-    ['SPLAV', Splav, '/splav/'],
+    ['HybridLog', AppPage, '/app/'],
     ['О проекте', About, '/about/'],
   ] as const)('%s: заголовок, ссылка на главную, текущий пункт меню', async (title, component, path) => {
     const html = await render(component, path);

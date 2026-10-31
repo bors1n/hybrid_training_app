@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { getMeta, setMeta, SplavDB } from './db.ts';
+import { getMeta, setMeta, HybridLogDB } from './db.ts';
 
-let database: SplavDB;
+let database: HybridLogDB;
 beforeEach(async () => {
-  database = new SplavDB(`test-${Math.random()}`);
+  database = new HybridLogDB(`test-${Math.random()}`);
   await database.open();
 });
 

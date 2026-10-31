@@ -1,4 +1,4 @@
-import { FORMATS, type ComplexQueueRecord, type ComplexRecord, type SessionRecord } from '@splav/shared';
+import { FORMATS, type ComplexQueueRecord, type ComplexRecord, type SessionRecord } from '@hybridlog/shared';
 import { useMemo, useState, type ReactElement } from 'react';
 import { ConfirmButton, NumberField } from '../../components/fields.tsx';
 import { complexSourceUrl, isReadOnlyComplex } from '../../domain/complexLibrary.ts';

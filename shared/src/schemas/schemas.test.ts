@@ -88,7 +88,7 @@ describe('блоки', () => {
   it('дискриминатор: тип блока обязателен и известен', () => {
     expect(BlockSchema.safeParse({ id: 'x' }).success).toBe(false);
     expect(BlockSchema.safeParse({ type: 'swim', id: 'x' }).success).toBe(false);
-    expect(BlockSchema.safeParse({ type: 'mobility', id: 'm', items: [{ exerciseId: 'splav:core-complex', durationSec: 600 }] }).success).toBe(true);
+    expect(BlockSchema.safeParse({ type: 'mobility', id: 'm', items: [{ exerciseId: 'hybridlog:core-complex', durationSec: 600 }] }).success).toBe(true);
   });
 });
 

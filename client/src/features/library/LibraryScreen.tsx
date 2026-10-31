@@ -1,4 +1,4 @@
-import { FORMATS, type CatalogExercise, type ComplexRecord } from '@splav/shared';
+import { FORMATS, type CatalogExercise, type ComplexRecord } from '@hybridlog/shared';
 import { useDeferredValue, useMemo, useState, type ReactElement } from 'react';
 import { Chip } from '../../components/Chip.tsx';
 import { ScreenHead } from '../../components/ScreenHead.tsx';

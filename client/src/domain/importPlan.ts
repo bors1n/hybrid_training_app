@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 import type { ImportPlan, PlannedSession } from './importCsv.ts';
 
 /** JSON с отсортированными ключами: сравнение содержимого не зависит от порядка полей. */

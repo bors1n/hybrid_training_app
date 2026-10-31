@@ -1,4 +1,4 @@
-import type { ComplexRecord } from '@splav/shared';
+import type { ComplexRecord } from '@hybridlog/shared';
 import { WOD_SITE, type WodRecord } from '../seed/wodParse.ts';
 
 /** Откуда комплекс: автор программы (#001…), общая библиотека (wod:…) или свой (own:…). */

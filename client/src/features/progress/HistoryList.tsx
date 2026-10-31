@@ -1,4 +1,4 @@
-import { SESSION_TYPES, type SessionType } from '@splav/shared';
+import { SESSION_TYPES, type SessionType } from '@hybridlog/shared';
 import { useMemo, useState, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 import { Chip } from '../../components/Chip.tsx';

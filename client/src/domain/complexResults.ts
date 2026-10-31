@@ -1,4 +1,4 @@
-import type { ConditioningBlock, ConditioningResult, SessionRecord } from '@splav/shared';
+import type { ConditioningBlock, ConditioningResult, SessionRecord } from '@hybridlog/shared';
 import { compareSessionsAsc } from './lastPerformance.ts';
 import { formatDuration } from './units.ts';
 

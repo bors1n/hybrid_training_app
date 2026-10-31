@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 
 export interface TabProps {
   /** Все тренировки без удалённых. */

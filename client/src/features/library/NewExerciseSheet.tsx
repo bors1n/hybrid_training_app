@@ -1,4 +1,4 @@
-import type { CatalogExercise } from '@splav/shared';
+import type { CatalogExercise } from '@hybridlog/shared';
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { Chip } from '../../components/Chip.tsx';
 import { defaultMetrics, EQUIPMENT_LABELS, KIND_LABELS, type Equipment, type Kind } from '../../domain/catalogFilter.ts';

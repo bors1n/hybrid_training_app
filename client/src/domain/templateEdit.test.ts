@@ -1,4 +1,4 @@
-import { TemplateRecordSchema } from '@splav/shared';
+import { TemplateRecordSchema } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { complexMakeNext, queueAddTemplate, queueMoveTemplate, queueRemoveTemplate, queueSetPosition, type QueueDraft } from './queueEdit.ts';
 import {
@@ -118,10 +118,10 @@ describe('шаблон: редактирование', () => {
   });
 
   it('мобильность: блок, упражнения, время с диапазоном', () => {
-    let t = addMobility(base(), 'splav:core-complex', 'm1');
+    let t = addMobility(base(), 'hybridlog:core-complex', 'm1');
     t = addMobilityItem(t, 'm1', 'repdb:dead-bug');
     t = updateMobility(t, 'm1', { durationSec: 480, durationSecMax: 600 });
-    expect(t.blocks[0]).toMatchObject({ items: [{ exerciseId: 'splav:core-complex' }, { exerciseId: 'repdb:dead-bug' }], durationSec: 480, durationSecMax: 600 });
+    expect(t.blocks[0]).toMatchObject({ items: [{ exerciseId: 'hybridlog:core-complex' }, { exerciseId: 'repdb:dead-bug' }], durationSec: 480, durationSecMax: 600 });
     t = updateMobility(t, 'm1', { durationSec: 720 });
     expect(t.blocks[0]).toMatchObject({ durationSecMax: 720 });
     t = removeMobilityItem(removeMobilityItem(t, 'm1', 0), 'm1', 0);

@@ -1,4 +1,4 @@
-import { ComplexRecordSchema, MODALITIES, CARDIO_ROLES, type CardioBlock, type ComplexRecord } from '@splav/shared';
+import { ComplexRecordSchema, MODALITIES, CARDIO_ROLES, type CardioBlock, type ComplexRecord } from '@hybridlog/shared';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo, useState, type ReactElement } from 'react';
 import { Chip } from '../../components/Chip.tsx';

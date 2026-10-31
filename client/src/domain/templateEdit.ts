@@ -1,4 +1,4 @@
-import type { ComplexRecord, PlanSets, TemplateBlock, TemplateRecord } from '@splav/shared';
+import type { ComplexRecord, PlanSets, TemplateBlock, TemplateRecord } from '@hybridlog/shared';
 import { MODALITY_LABELS } from './sessionEdit.ts';
 
 /** Шаблон в редакторе: без полей синхронизации, их добавляет saveRecord. */

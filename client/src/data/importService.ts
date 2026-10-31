@@ -1,16 +1,16 @@
-import { ExerciseRecordSchema, SessionRecordSchema, type SessionRecord } from '@splav/shared';
+import { ExerciseRecordSchema, SessionRecordSchema, type SessionRecord } from '@hybridlog/shared';
 import { classifyPlan } from '../domain/importPlan.ts';
 import type { ImportPlan } from '../domain/importCsv.ts';
 import { normalizeName } from '../domain/matching.ts';
 import { saveRecord, listRecords } from '../sync/records.ts';
-import { db, type SplavDB } from './db.ts';
+import { db, type HybridLogDB } from './db.ts';
 
 export interface ApplyOptions {
   /** Человек подтвердил замену существующих тренировок. Без этого заменяемые тренировки пропускаются. */
   replaceExisting: boolean;
   /** Названия, которые человек вручную сопоставил с упражнением каталога: запоминаются на будущие импорты. */
   manualMatches?: readonly { name: string; exerciseId: string }[];
-  database?: SplavDB;
+  database?: HybridLogDB;
 }
 
 export interface ApplyResult {
@@ -23,7 +23,7 @@ export interface ApplyResult {
 }
 
 /** Живые тренировки из базы (то, с чем сравнивается файл). */
-export async function loadSessions(database: SplavDB = db): Promise<SessionRecord[]> {
+export async function loadSessions(database: HybridLogDB = db): Promise<SessionRecord[]> {
   return (await listRecords('sessions', database)).flatMap((r) => {
     const p = SessionRecordSchema.safeParse(r);
     return p.success ? [p.data] : [];

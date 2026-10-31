@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 import { exerciseSeries, trainedExercises } from './strengthMetrics.ts';
 import { formatDecimal, formatWeightReps } from './units.ts';
 

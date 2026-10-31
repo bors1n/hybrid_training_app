@@ -1,4 +1,4 @@
-import type { ComplexQueueRecord, ProgramRecord, QueueRecord, SettingsRecord } from '@splav/shared';
+import type { ComplexQueueRecord, ProgramRecord, QueueRecord, SettingsRecord } from '@hybridlog/shared';
 
 export const BASIC_PROGRAM_ID = 'seed:program:basic';
 

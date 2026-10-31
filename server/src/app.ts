@@ -1,7 +1,7 @@
 import cookie from '@fastify/cookie';
 import rateLimit from '@fastify/rate-limit';
 import Fastify, { type FastifyInstance } from 'fastify';
-import type { Health } from '@splav/shared';
+import type { Health } from '@hybridlog/shared';
 import type { Mailer } from './auth/mailer.ts';
 import { registerAuthRoutes } from './auth/routes.ts';
 import type { Config } from './config.ts';
@@ -25,7 +25,7 @@ export async function buildApp({ db, mailer, config, now = Date.now }: AppDeps):
   await app.register(cookie);
   await app.register(rateLimit, { global: false });
 
-  app.get('/api/health', async (): Promise<Health> => ({ ok: true, service: 'splav' }));
+  app.get('/api/health', async (): Promise<Health> => ({ ok: true, service: 'hybridlog' }));
 
   const deps = { db, mailer, config, now };
   registerAuthRoutes(app, deps);

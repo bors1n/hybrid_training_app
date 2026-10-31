@@ -1,4 +1,4 @@
-import type { SessionRecord, SessionType } from '@splav/shared';
+import type { SessionRecord, SessionType } from '@hybridlog/shared';
 import { compareSessionsAsc } from './lastPerformance.ts';
 import { normalizeName } from './matching.ts';
 

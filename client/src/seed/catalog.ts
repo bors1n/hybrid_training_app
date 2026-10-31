@@ -1,4 +1,4 @@
-import type { CatalogExercise, ExerciseContent } from '@splav/shared';
+import type { CatalogExercise, ExerciseContent } from '@hybridlog/shared';
 import ruNames from './catalog.ru.json';
 import { OWN_EXERCISES } from './ownExercises.ts';
 import { PROGRAM_EXERCISES } from './programExercises.ts';

@@ -1,4 +1,4 @@
-import type { SessionRecord, TemplateRecord } from '@splav/shared';
+import type { SessionRecord, TemplateRecord } from '@hybridlog/shared';
 
 type Sync = 'updatedAt' | 'deletedAt';
 

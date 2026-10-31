@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 import { toCsvText, type Column } from './csvText.ts';
 import { compareSessionsAsc } from './lastPerformance.ts';
 import { formatDuration } from './units.ts';

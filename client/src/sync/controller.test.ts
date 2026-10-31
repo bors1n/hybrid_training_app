@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { SplavDB } from '../data/db.ts';
+import { HybridLogDB } from '../data/db.ts';
 import { createSyncController } from './controller.ts';
 import { AuthError, NetworkError, type Transport } from './engine.ts';
 import { saveRecord } from './records.ts';
 import { syncLabel, type SyncStatus } from './status.ts';
 import { session, template } from '../test/fixtures.ts';
 
-let database: SplavDB;
+let database: HybridLogDB;
 beforeEach(async () => {
-  database = new SplavDB(`test-${Math.random()}`);
+  database = new HybridLogDB(`test-${Math.random()}`);
   await database.open();
 });
 

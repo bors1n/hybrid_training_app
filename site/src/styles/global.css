@@ -1,10 +1,12 @@
-@import '@splav/design/tokens.css';
+@import '@hybridlog/design/tokens.css';
 @import '@fontsource/unbounded/cyrillic-600.css';
 @import '@fontsource/unbounded/cyrillic-700.css';
-@import '@fontsource/unbounded/cyrillic-800.css';
 @import '@fontsource/unbounded/latin-600.css';
 @import '@fontsource/unbounded/latin-700.css';
-@import '@fontsource/unbounded/latin-800.css';
+@import '@fontsource/oswald/cyrillic-600.css';
+@import '@fontsource/oswald/cyrillic-700.css';
+@import '@fontsource/oswald/latin-600.css';
+@import '@fontsource/oswald/latin-700.css';
 @import '@fontsource/golos-text/cyrillic-400.css';
 @import '@fontsource/golos-text/cyrillic-500.css';
 @import '@fontsource/golos-text/cyrillic-600.css';
@@ -18,6 +20,8 @@
 
 /* Сайт всегда светлый с ночными разделами, как в макете; тёмная тема системы не меняет его. */
 :root {
+  /* Заголовки сайта набраны узким гротеском под фото на главной; приложение остаётся на Unbounded. */
+  --font-display: 'Oswald', 'Arial Narrow', 'Arial Black', system-ui, sans-serif;
   --site-max: 1240px;
   --site-pad: max(20px, 4vw);
   --night-panel: #22262E;

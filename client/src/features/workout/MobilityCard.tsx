@@ -1,4 +1,4 @@
-import type { MobilityBlock } from '@splav/shared';
+import type { MobilityBlock } from '@hybridlog/shared';
 import { useState, type ReactElement } from 'react';
 import { ConfirmButton, DurationField } from '../../components/fields.tsx';
 import { addMobilityItem, moveBlock, removeBlock, removeMobilityItem, updateMobilityItem } from '../../domain/sessionEdit.ts';

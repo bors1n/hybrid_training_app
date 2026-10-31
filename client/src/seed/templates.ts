@@ -1,9 +1,9 @@
-import type { PlanSets, QueueRecord, TemplateBlock, TemplateRecord } from '@splav/shared';
+import type { PlanSets, QueueRecord, TemplateBlock, TemplateRecord } from '@hybridlog/shared';
 
 type Seed<T> = Omit<T, 'updatedAt' | 'deletedAt'>;
 
 const ex = (slug: string): string => `repdb:${slug}`;
-const own = (slug: string): string => `splav:${slug}`;
+const own = (slug: string): string => `hybridlog:${slug}`;
 
 let seq = 0;
 const bid = (prefix: string): string => `${prefix}-${++seq}`;

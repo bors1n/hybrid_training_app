@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { PullResponseSchema, PushResponseSchema, type SyncRecord } from '@splav/shared';
+import { PullResponseSchema, PushResponseSchema, type SyncRecord } from '@hybridlog/shared';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SplavDB, getMeta } from '../../client/src/data/db.ts';
+import { HybridLogDB, getMeta } from '../../client/src/data/db.ts';
 import { applyImport, loadSessions } from '../../client/src/data/importService.ts';
 import { parseCsvText } from '../../client/src/domain/csvText.ts';
 import { buildImport } from '../../client/src/domain/importCsv.ts';
@@ -35,13 +35,13 @@ afterAll(async () => {
   await t.close();
 });
 
-const device = async (): Promise<SplavDB> => {
-  const d = new SplavDB(`import-${Math.random()}`);
+const device = async (): Promise<HybridLogDB> => {
+  const d = new HybridLogDB(`import-${Math.random()}`);
   await d.open();
   return d;
 };
 
-async function importTemplate(database: SplavDB, replaceExisting = false) {
+async function importTemplate(database: HybridLogDB, replaceExisting = false) {
   const plan = buildImport(parseCsvText(TEMPLATE), {
     today: '2026-10-27',
     matcher: createMatcher(CATALOG),
@@ -85,7 +85,7 @@ describe('импорт и сервер', () => {
   });
 });
 
-async function database_is_unchanged(d: SplavDB): Promise<void> {
+async function database_is_unchanged(d: HybridLogDB): Promise<void> {
   await d.outbox.clear();
   const again = await importTemplate(d, true);
   expect(again).toMatchObject({ added: 0, replaced: 0, unchanged: 9 });

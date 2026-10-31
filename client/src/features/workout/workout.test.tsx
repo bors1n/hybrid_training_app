@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { SessionRecordSchema, type Block, type SessionRecord } from '@splav/shared';
+import { SessionRecordSchema, type Block, type SessionRecord } from '@hybridlog/shared';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -144,14 +144,14 @@ describe('внесение тренировки с нуля (как «Трени
     expect(warm).toMatchObject({ modality: 'stairs', role: 'warmup', name: 'Лестница', durationSec: 600 });
     expect(str).toMatchObject({ type: 'strength', superset: false });
     if (str?.type === 'strength') {
-      expect(str.items[0]!.exerciseId).toBe('splav:machine-squat');
+      expect(str.items[0]!.exerciseId).toBe('hybridlog:machine-squat');
       expect(str.items[0]!.sets).toEqual([
         { weightKg: 85, reps: 8, rpe: 7, done: true, load: 'normal' },
         { weightKg: 85, reps: 8, done: true, load: 'normal' },
         { weightKg: 85, reps: 8, rpe: 8, done: true, load: 'normal' },
       ]);
     }
-    expect(mob).toMatchObject({ type: 'mobility', items: [{ exerciseId: 'splav:core-complex', durationSec: 600 }] });
+    expect(mob).toMatchObject({ type: 'mobility', items: [{ exerciseId: 'hybridlog:core-complex', durationSec: 600 }] });
     expect(fin).toMatchObject({ modality: 'indoor_bike', role: 'finisher', durationSec: 900, notes: 'зона 2' });
 
     // Запись поставлена в очередь отправки и появилась в списке «Последние»
@@ -218,7 +218,7 @@ describe('ничего не теряется', () => {
 describe('подсказки из истории', () => {
   const squatSets = (...sets: [number, number][]): Block => ({
     type: 'strength', id: 'b', superset: false,
-    items: [{ exerciseId: 'splav:machine-squat', sets: sets.map(([weightKg, reps]) => ({ weightKg, reps, done: true, load: 'normal' as const })) }],
+    items: [{ exerciseId: 'hybridlog:machine-squat', sets: sets.map(([weightKg, reps]) => ({ weightKg, reps, done: true, load: 'normal' as const })) }],
   });
 
   it('прошлый результат: строка над подходами, колонка «прошлый» и копия первого подхода в новом блоке', async () => {
@@ -465,7 +465,7 @@ describe('история и правка', () => {
       'sessions',
       session('a', {
         title: 'Тренировка 1', date: '2026-10-20', finishedAt: 5,
-        blocks: [{ type: 'strength', id: 'b', superset: false, items: [{ exerciseId: 'splav:machine-squat', sets: [{ weightKg: 85, reps: 8, done: true, load: 'normal' }] }] }],
+        blocks: [{ type: 'strength', id: 'b', superset: false, items: [{ exerciseId: 'hybridlog:machine-squat', sets: [{ weightKg: 85, reps: 8, done: true, load: 'normal' }] }] }],
       }),
     );
     renderApp('/progress');

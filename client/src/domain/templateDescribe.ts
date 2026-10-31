@@ -1,4 +1,4 @@
-import type { TemplateBlock } from '@splav/shared';
+import type { TemplateBlock } from '@hybridlog/shared';
 import { formatMinutesRange, formatPlan } from './planFormat.ts';
 import { MODALITY_LABELS, ROLE_LABELS } from './sessionEdit.ts';
 

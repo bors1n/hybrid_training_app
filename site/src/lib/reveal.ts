@@ -1,7 +1,7 @@
 /** Блоки, которые плавно появляются при прокрутке. Селекторы — классы компонентов сайта. */
 export const REVEAL_SELECTOR = [
-  '.hero__text > *', '.hero__photo', '.band__stat', '.section__head', '.section__row', '.basic', '.card',
-  '.splav__text > *', '.splav__phone-wrap', '.insta', '.page__head', '.rubrics', '.stub > *',
+  '.hero__text > *', '.hero__photo', '.section__head', '.section__row', '.basic', '.card',
+  '.app__text > *', '.app__phone-wrap', '.insta', '.page__head', '.rubrics', '.stub > *',
   '.article__head > *', '.article__cover', '.prose > *', '.cta', '.more__title',
 ].join(', ');
 

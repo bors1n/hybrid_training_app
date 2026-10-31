@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { User } from '@splav/shared';
+import type { User } from '@hybridlog/shared';
 import { clearLocalData, db, getMeta, setMeta } from '../data/db.ts';
 import { AuthError, NetworkError } from '../sync/engine.ts';
 import { saveRecord } from '../sync/records.ts';

@@ -1,17 +1,17 @@
-import { SessionRecordSchema } from '@splav/shared';
+import { SessionRecordSchema } from '@hybridlog/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { queueState } from '../domain/queue.ts';
 import { QUEUE, TEMPLATES } from '../seed/templates.ts';
 import { ensureSeed, COMPLEX_QUEUE_ID } from '../seed/install.ts';
 import { deleteRecord, listRecords, saveRecord } from '../sync/records.ts';
 import { session } from '../test/fixtures.ts';
-import { SplavDB } from './db.ts';
+import { HybridLogDB } from './db.ts';
 import { loadSessions } from './importService.ts';
 import { createTemplate, deleteTemplate, startTemplateWorkout } from './templateService.ts';
 
-let database: SplavDB;
+let database: HybridLogDB;
 beforeEach(async () => {
-  database = new SplavDB(`tpl-${Math.random()}`);
+  database = new HybridLogDB(`tpl-${Math.random()}`);
   await database.open();
   await ensureSeed(database);
 });

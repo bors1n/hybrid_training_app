@@ -1,4 +1,4 @@
-import type { ComplexRecord } from '@splav/shared';
+import type { ComplexRecord } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { buildComplexLibrary, complexSource, complexSourceUrl, isReadOnlyComplex } from './complexLibrary.ts';
 

@@ -1,4 +1,4 @@
-import { SessionRecordSchema, type Block } from '@splav/shared';
+import { SessionRecordSchema, type Block } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import {
   addCardioBlock,
@@ -197,8 +197,8 @@ describe('комплексы', () => {
 
 describe('мобильность', () => {
   it('блок с упражнением и временем, добавление и правка', () => {
-    let s = addMobilityItem(base(), 'splav:core-complex', 600, undefined, 'm1');
-    expect(s.blocks[0]).toMatchObject({ type: 'mobility', items: [{ exerciseId: 'splav:core-complex', durationSec: 600 }] });
+    let s = addMobilityItem(base(), 'hybridlog:core-complex', 600, undefined, 'm1');
+    expect(s.blocks[0]).toMatchObject({ type: 'mobility', items: [{ exerciseId: 'hybridlog:core-complex', durationSec: 600 }] });
     expect(s.type).toBe('mobility');
     s = addMobilityItem(s, 'repdb:dead-bug', undefined, 'm1');
     s = updateMobilityItem(s, 'm1', 1, { durationSec: 90 });

@@ -1,4 +1,4 @@
-import type { ComplexQueueRecord, QueueRecord, SessionRecord } from '@splav/shared';
+import type { ComplexQueueRecord, QueueRecord, SessionRecord } from '@hybridlog/shared';
 import { compareSessionsAsc } from './lastPerformance.ts';
 
 type S = Pick<SessionRecord, 'id' | 'date' | 'blocks' | 'startedAt' | 'updatedAt' | 'deletedAt' | 'finishedAt' | 'queueId' | 'queueSlot'>;

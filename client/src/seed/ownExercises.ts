@@ -1,4 +1,4 @@
-import type { CatalogExercise } from '@splav/shared';
+import type { CatalogExercise } from '@hybridlog/shared';
 
 /**
  * Упражнения автора, которых нет в каталоге RepDB. Входят в статичный каталог (в базе не хранятся);
@@ -9,7 +9,7 @@ type Own = Omit<CatalogExercise, 'id' | 'muscles' | 'perSide' | 'isCustom' | 'al
 
 function own(slug: string, e: Own): CatalogExercise {
   return {
-    id: `splav:${slug}`,
+    id: `hybridlog:${slug}`,
     aliases: [],
     muscles: { primary: [], secondary: [] },
     perSide: false,

@@ -1,4 +1,4 @@
-import type { Block, SessionRecord } from '@splav/shared';
+import type { Block, SessionRecord } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { attempts, bestAttempt, formatResult, isTimeFormat, plural, resultScore } from './complexResults.ts';
 import { filterSessions, sortSessions, todayKey } from './history.ts';

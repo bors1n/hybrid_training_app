@@ -1,4 +1,4 @@
-import { MODALITIES, CARDIO_ROLES, type CardioBlock } from '@splav/shared';
+import { MODALITIES, CARDIO_ROLES, type CardioBlock } from '@hybridlog/shared';
 import { useMemo, type ReactElement } from 'react';
 import { DistanceField, DurationField, NumberField, RpePicker } from '../../components/fields.tsx';
 import { todayKey } from '../../domain/history.ts';

@@ -1,4 +1,4 @@
-import type { PullResponse, PushResponse, SyncRecord } from '@splav/shared';
+import type { PullResponse, PushResponse, SyncRecord } from '@hybridlog/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createTestApp, rec, type TestApp } from '../test-helpers.ts';
 

@@ -14,7 +14,7 @@ import {
   type SessionType,
   type SetEntry,
   type StrengthBlock,
-} from '@splav/shared';
+} from '@hybridlog/shared';
 import type { Table, TableRow } from './csvText.ts';
 import type { Matcher } from './matching.ts';
 import { normalizeName } from './matching.ts';

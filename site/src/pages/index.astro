@@ -2,12 +2,10 @@
 import { Image } from 'astro:assets';
 import Button from '../components/Button.astro';
 import heroPhoto from '../assets/home/hero.jpg';
-import splavScreen from '../assets/splav/screen.png';
+import appScreen from '../assets/app/screen.png';
 import HtrAvatar from '../components/HtrAvatar.astro';
 import IphoneFrame from '../components/IphoneFrame.astro';
-import SplavWordmark from '../components/SplavWordmark.astro';
-import Sticker from '../components/Sticker.astro';
-import RaceTrack from '../components/RaceTrack.astro';
+import HybridLogWordmark from '../components/HybridLogWordmark.astro';
 import { SITE } from '../config.ts';
 import Base from '../layouts/Base.astro';
 import { loadArticles } from '../lib/collection.ts';
@@ -25,7 +23,7 @@ const basics = [
 
 const fresh = (await loadArticles()).slice(0, 3);
 
-const splavPoints = [
+const appPoints = [
   { color: '#1D46E8', text: 'Любая тренировка: зал, площадка, бег, вело, комплексы' },
   { color: '#3091D8', text: 'Готовые программы и каталог комплексов' },
   { color: '#E2591A', text: 'Прогресс по силе и выносливости' },
@@ -39,12 +37,12 @@ const splavPoints = [
       <div class="hero__text">
         <span class="hero__kicker">{SITE.tagline}</span>
         <h1 class="hero__title">
-          <Sticker>Hybrid</Sticker><br />Training<br />Russia
+          Hybrid<br />Training<br />Russia
         </h1>
         <p class="hero__lead">Комьюнити увлечённых здоровыми и разнообразными тренировками</p>
         <div class="hero__actions">
           <Button href="/articles/" variant="sky" size="lg">Статьи</Button>
-          <Button href="/splav/" variant="outline" size="lg">Приложение</Button>
+          <Button href="/app/" variant="outline" size="lg">Приложение</Button>
         </div>
       </div>
       <div class="hero__photo">
@@ -52,15 +50,6 @@ const splavPoints = [
       </div>
     </section>
 
-    <RaceTrack
-      label="Формула гибридной недели"
-      stats={[
-        { value: '2–3', label: 'Силовых в неделю' },
-        { value: '2–3', label: 'Кардио в неделю' },
-        { value: '60–70%', label: 'Пульса в зоне 2' },
-        { value: '12–16', label: 'Недель на первый цикл' },
-      ]}
-    />
   </Fragment>
 
   <section class="section wrap" aria-labelledby="basics-title">
@@ -90,21 +79,21 @@ const splavPoints = [
     <ArticleList articles={fresh} empty="Статей пока нет. Первые появятся совсем скоро." />
   </section>
 
-  <section class="section wrap" aria-labelledby="splav-title">
-    <div class="splav">
-      <div class="splav__text">
-        <div class="splav__brand">
-          <SplavWordmark />
-          <span class="splav__soon">Скоро</span>
+  <section class="section wrap" aria-labelledby="app-title">
+    <div class="app">
+      <div class="app__text">
+        <div class="app__brand">
+          <HybridLogWordmark />
+          <span class="app__soon">Скоро</span>
         </div>
-        <h2 id="splav-title" class="splav__title">Силовые и кардио в одном месте</h2>
-        <ul class="splav__list">
-          {splavPoints.map((p) => <li><span class="splav__bullet" style={`background:${p.color}`}></span>{p.text}</li>)}
+        <h2 id="app-title" class="app__title">Силовые и кардио в одном месте</h2>
+        <ul class="app__list">
+          {appPoints.map((p) => <li><span class="app__bullet" style={`background:${p.color}`}></span>{p.text}</li>)}
         </ul>
-        <Button href="/splav/" variant="cobalt">Узнать о SPLAV</Button>
+        <Button href="/app/" variant="cobalt">Узнать о HybridLog</Button>
       </div>
-      <div class="splav__phone-wrap">
-        <IphoneFrame src={splavScreen} alt="Экран «Прогресс» в приложении SPLAV" />
+      <div class="app__phone-wrap">
+        <IphoneFrame src={appScreen} alt="Экран «Прогресс» в приложении HybridLog" />
       </div>
     </div>
   </section>
@@ -127,7 +116,7 @@ const splavPoints = [
   .hero { display: flex; flex-wrap: wrap; align-items: stretch; gap: 48px; padding-block: 40px 72px; }
   .hero__text { flex: 1 1 540px; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 28px; }
   .hero__kicker { font: 500 13px/1.3 var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; color: var(--on-night-muted); }
-  .hero__title { margin: 0; font: 800 clamp(44px, 7.4vw, 112px) / 0.92 var(--font-display); letter-spacing: -0.035em; }
+  .hero__title { margin: 0; font: 700 clamp(56px, 9vw, 136px) / 0.94 var(--font-display); letter-spacing: 0.005em; text-transform: uppercase; }
   .hero__lead { margin: 0; max-width: 520px; font-size: 19px; line-height: 1.55; color: var(--on-night-soft); }
   .hero__actions { display: flex; flex-wrap: wrap; gap: 12px; }
   .hero__photo { flex: 1 1 360px; min-width: 0; position: relative; min-height: 540px; border-radius: 28px; background: var(--night-panel); overflow: hidden; }
@@ -137,7 +126,7 @@ const splavPoints = [
   .section--last { padding-bottom: 88px; }
   .section__head { display: flex; flex-direction: column; gap: 12px; }
   .section__row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
-  .h2 { margin: 0; font: 700 clamp(28px, 3.8vw, 48px) / 1.02 var(--font-display); letter-spacing: -0.02em; }
+  .h2 { margin: 0; font: 700 clamp(28px, 3.8vw, 48px) / 1.02 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; }
 
   .basics { display: flex; flex-wrap: wrap; gap: 20px; }
   .basic { flex: 1 1 300px; min-width: 0; border: 1px solid var(--line); border-radius: 16px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
@@ -147,20 +136,20 @@ const splavPoints = [
   .basic__text { margin: 0; color: var(--ink-muted); font-size: 16px; line-height: 1.5; }
 
 
-  .splav { background: var(--surface); border-radius: 28px; padding: clamp(28px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
-  .splav__text { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 22px; align-items: flex-start; }
-  .splav__brand { display: flex; align-items: center; gap: 14px; }
-  .splav__soon { padding: 4px 12px 5px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 2px var(--night) inset; font-weight: 600; font-size: 14px; transform: rotate(3deg); }
-  .splav__title { margin: 0; font: 700 clamp(26px, 3.4vw, 44px) / 1.05 var(--font-display); letter-spacing: -0.02em; }
-  .splav__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 18px; line-height: 1.4; }
-  .splav__list li { display: flex; gap: 12px; align-items: baseline; }
-  .splav__bullet { flex: none; width: 11px; height: 11px; border-radius: 999px; }
-  .splav__phone-wrap { flex: 1 1 320px; min-width: 0; display: flex; justify-content: center; }
+  .app { background: var(--surface); border-radius: 28px; padding: clamp(28px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
+  .app__text { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 22px; align-items: flex-start; }
+  .app__brand { display: flex; align-items: center; gap: 14px; }
+  .app__soon { padding: 4px 12px 5px; border-radius: 999px; background: #fff; box-shadow: 0 0 0 2px var(--night) inset; font-weight: 600; font-size: 14px; transform: rotate(3deg); }
+  .app__title { margin: 0; font: 700 clamp(26px, 3.4vw, 44px) / 1.05 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; }
+  .app__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 18px; line-height: 1.4; }
+  .app__list li { display: flex; gap: 12px; align-items: baseline; }
+  .app__bullet { flex: none; width: 11px; height: 11px; border-radius: 999px; }
+  .app__phone-wrap { flex: 1 1 320px; min-width: 0; display: flex; justify-content: center; }
 
   .insta { border: 1px solid var(--line); border-radius: 28px; padding: clamp(24px, 4vw, 44px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; }
   .insta__who { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; min-width: 0; }
   .insta__text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
-  .insta__title { margin: 0; font: 700 clamp(22px, 2.6vw, 34px) / 1.1 var(--font-display); letter-spacing: -0.02em; }
+  .insta__title { margin: 0; font: 700 clamp(22px, 2.6vw, 34px) / 1.1 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; }
   .insta__lead { margin: 0; font-size: 17px; color: var(--ink-muted); }
 
   @media (max-width: 640px) {

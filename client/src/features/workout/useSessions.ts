@@ -1,4 +1,4 @@
-import { SessionRecordSchema, type SessionRecord } from '@splav/shared';
+import { SessionRecordSchema, type SessionRecord } from '@hybridlog/shared';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { listRecords } from '../../sync/records.ts';

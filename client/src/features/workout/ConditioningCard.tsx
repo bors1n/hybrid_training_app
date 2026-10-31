@@ -1,4 +1,4 @@
-import { type ConditioningBlock } from '@splav/shared';
+import { type ConditioningBlock } from '@hybridlog/shared';
 import { useMemo, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 import { attempts, bestAttempt, formatResult } from '../../domain/complexResults.ts';

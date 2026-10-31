@@ -1,4 +1,4 @@
-import type { SessionRecord, SetEntry } from '@splav/shared';
+import type { SessionRecord, SetEntry } from '@hybridlog/shared';
 import { compareSessionsAsc } from './lastPerformance.ts';
 import { lastWeeks, weekStart } from './weeks.ts';
 

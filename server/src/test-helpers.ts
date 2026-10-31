@@ -1,6 +1,6 @@
 import type { FastifyInstance } from 'fastify';
-import type { SyncRecord } from '@splav/shared';
-import { sessionData } from '@splav/shared/fixtures';
+import type { SyncRecord } from '@hybridlog/shared';
+import { sessionData } from '@hybridlog/shared/fixtures';
 import { buildApp } from './app.ts';
 import type { Mailer } from './auth/mailer.ts';
 import { loadConfig, type Config } from './config.ts';

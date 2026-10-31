@@ -1,4 +1,4 @@
-import type { ProgramRecord } from '@splav/shared';
+import type { ProgramRecord } from '@hybridlog/shared';
 import { useState, type ReactElement } from 'react';
 import { ConfirmButton } from '../../components/fields.tsx';
 import { deleteProgram, setActiveProgram, updateProgram } from '../../data/programService.ts';

@@ -1,4 +1,4 @@
-import { ComplexRecordSchema, type CatalogExercise } from '@splav/shared';
+import { ComplexRecordSchema, type CatalogExercise } from '@hybridlog/shared';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo, useRef, useState, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';

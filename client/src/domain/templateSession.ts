@@ -1,4 +1,4 @@
-import type { Block, ComplexRecord, SessionRecord, SetEntry, TemplateBlock, TemplateRecord } from '@splav/shared';
+import type { Block, ComplexRecord, SessionRecord, SetEntry, TemplateBlock, TemplateRecord } from '@hybridlog/shared';
 import { lastPerformance } from './lastPerformance.ts';
 import { MODALITY_LABELS, type SessionDraft } from './sessionEdit.ts';
 import { deriveSessionType } from './sessionType.ts';

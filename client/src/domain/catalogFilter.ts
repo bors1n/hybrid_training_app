@@ -1,4 +1,4 @@
-import type { CatalogExercise, ExerciseContent } from '@splav/shared';
+import type { CatalogExercise, ExerciseContent } from '@hybridlog/shared';
 import { normalizeName } from './matching.ts';
 
 export type Kind = ExerciseContent['kind'];

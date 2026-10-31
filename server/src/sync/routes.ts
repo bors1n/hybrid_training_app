@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { checkRecord, PullQuerySchema, PushRequestSchema, type PushResponse, type SyncRecord } from '@splav/shared';
+import { checkRecord, PullQuerySchema, PushRequestSchema, type PushResponse, type SyncRecord } from '@hybridlog/shared';
 import { requireUser } from '../auth/routes.ts';
 import type { AuthDeps } from '../auth/service.ts';
 import { pullRecords, pushRecords } from './service.ts';

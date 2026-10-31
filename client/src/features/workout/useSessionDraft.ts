@@ -1,4 +1,4 @@
-import { SessionRecordSchema } from '@splav/shared';
+import { SessionRecordSchema } from '@hybridlog/shared';
 import { useRecordDraft, type DraftStatus, type RecordDraftApi } from '../../data/useRecordDraft.ts';
 import type { SessionDraft } from '../../domain/sessionEdit.ts';
 

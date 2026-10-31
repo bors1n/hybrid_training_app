@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { RequestCodeSchema, VerifyCodeSchema, type User } from '@splav/shared';
+import { RequestCodeSchema, VerifyCodeSchema, type User } from '@hybridlog/shared';
 import type { AuthDeps } from './service.ts';
 import { endSession, getSession, requestCode, TooManyCodesError, verifyCode } from './service.ts';
 

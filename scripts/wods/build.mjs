@@ -20,7 +20,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const all = new Map();
 for (let p = 1; p <= PAGES; p += 1) {
   const url = `${WOD_SITE}/Wod/${p === 1 ? '' : `?p=${p}`}`;
-  const res = await fetch(url, { headers: { 'user-agent': 'SPLAV-seed/1.0 (personal training log)' } });
+  const res = await fetch(url, { headers: { 'user-agent': 'HybridLog-seed/1.0 (personal training log)' } });
   if (!res.ok) throw new Error(`${url}: HTTP ${res.status}`);
   const items = parseWodPage(new JSDOM(await res.text()).window.document);
   for (const w of items) all.set(w.id, w);

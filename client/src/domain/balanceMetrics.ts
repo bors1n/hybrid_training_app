@@ -1,4 +1,4 @@
-import type { SessionRecord, SessionType } from '@splav/shared';
+import type { SessionRecord, SessionType } from '@hybridlog/shared';
 import { resultScore } from './complexResults.ts';
 import { sessionDurationMin } from './summary.ts';
 import { addDays, addWeeks, lastWeeks, weekStart } from './weeks.ts';

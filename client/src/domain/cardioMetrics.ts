@@ -1,4 +1,4 @@
-import type { CardioBlock, SessionRecord } from '@splav/shared';
+import type { CardioBlock, SessionRecord } from '@hybridlog/shared';
 import { compareSessionsAsc } from './lastPerformance.ts';
 import { paceFromDistanceTime } from './units.ts';
 import { lastWeeks, weekStart } from './weeks.ts';

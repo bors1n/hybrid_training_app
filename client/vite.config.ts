@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['apple-touch-icon-180x180.png', 'favicon.svg'],
       manifest: {
-        name: 'SPLAV',
-        short_name: 'SPLAV',
+        name: 'HybridLog',
+        short_name: 'HybridLog',
         description: 'Дневник гибридных тренировок: сила, кардио и комплексы в одном месте',
         lang: 'ru',
         start_url: '/',

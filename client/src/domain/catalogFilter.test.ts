@@ -1,4 +1,4 @@
-import type { CatalogExercise } from '@splav/shared';
+import type { CatalogExercise } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { defaultMetrics, EMPTY_FILTER, filterCatalog, kindColorVar, muscleGroups, rankByQuery } from './catalogFilter.ts';
 

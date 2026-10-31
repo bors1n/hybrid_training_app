@@ -1,10 +1,10 @@
-import { db, type SplavDB } from '../data/db.ts';
+import { db, type HybridLogDB } from '../data/db.ts';
 import { AuthError, NetworkError, syncOnce, type Transport } from './engine.ts';
 import type { SyncStatus } from './status.ts';
 
 export interface ControllerOptions {
   transport: Transport;
-  database?: SplavDB;
+  database?: HybridLogDB;
   isOnline?: () => boolean;
   onStatus: (patch: Partial<SyncStatus>) => void;
   onUnauth?: () => void;

@@ -1,4 +1,4 @@
-import type { SetEntry, StrengthBlock } from '@splav/shared';
+import type { SetEntry, StrengthBlock } from '@hybridlog/shared';
 import { useMemo, useState, type ReactElement } from 'react';
 import { ConfirmButton, DurationField, NumberField } from '../../components/fields.tsx';
 import { copySet, addItemToBlock, addSet, moveBlock, removeBlock, removeItem, removeSet, setItemLoad, updateSet, LOAD_LABELS } from '../../domain/sessionEdit.ts';

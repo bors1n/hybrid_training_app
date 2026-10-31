@@ -1,7 +1,7 @@
-import { RECORD_SCHEMAS, type CatalogExercise, type TemplateBlock } from '@splav/shared';
+import { RECORD_SCHEMAS, type CatalogExercise, type TemplateBlock } from '@hybridlog/shared';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createMatcher } from '../domain/matching.ts';
-import { SplavDB, getMeta } from '../data/db.ts';
+import { HybridLogDB, getMeta } from '../data/db.ts';
 import { deleteRecord, listRecords, saveRecord } from '../sync/records.ts';
 import { buildCatalog, CATALOG, CATALOG_BY_ID, HAS_REPDB_CATALOG, type GeneratedExercise } from './catalog.ts';
 import { COMPLEX_QUEUE_ORDER, COMPLEXES } from './complexes.ts';
@@ -115,9 +115,9 @@ describe('ссылки на упражнения', () => {
     for (const b of t.blocks) if (b.type === 'strength' || b.type === 'mobility') for (const i of b.items) referenced.add(i.exerciseId);
   }
 
-  it('упражнения автора (splav:*) существуют', () => {
+  it('упражнения автора (hybridlog:*) существуют', () => {
     const own = new Set(OWN_EXERCISES.map((e) => e.id));
-    for (const id of referenced) if (id.startsWith('splav:')) expect(own.has(id), id).toBe(true);
+    for (const id of referenced) if (id.startsWith('hybridlog:')) expect(own.has(id), id).toBe(true);
   });
   repdb('упражнения RepDB из шаблонов есть в собранном каталоге', () => {
     for (const id of referenced) expect(CATALOG_BY_ID.has(id), id).toBe(true);
@@ -181,13 +181,13 @@ describe('сопоставление названий из истории', () =
   const expectId = (name: string, id: string) => expect(matcher.match(name), name).toEqual({ status: 'exact', id });
 
   it('упражнения автора', () => {
-    expectId('Кор-комплекс', 'splav:core-complex');
-    expectId('Мобильность ТБС', 'splav:pelvis-mobility');
-    expectId('Боковая гиперэкстензия', 'splav:side-back-extension');
-    expectId('Самолет ягодицы', 'splav:glute-airplane');
-    expectId('Payoff press (с резинкой)', 'splav:pallof-press');
-    expectId('Приседания в тренажере', 'splav:machine-squat');
-    expectId('Подьем таза стоя на кубиках', 'splav:hip-lift-blocks');
+    expectId('Кор-комплекс', 'hybridlog:core-complex');
+    expectId('Мобильность ТБС', 'hybridlog:pelvis-mobility');
+    expectId('Боковая гиперэкстензия', 'hybridlog:side-back-extension');
+    expectId('Самолет ягодицы', 'hybridlog:glute-airplane');
+    expectId('Payoff press (с резинкой)', 'hybridlog:pallof-press');
+    expectId('Приседания в тренажере', 'hybridlog:machine-squat');
+    expectId('Подьем таза стоя на кубиках', 'hybridlog:hip-lift-blocks');
   });
 
   repdb('названия из workouts_history.md и программы находятся в каталоге', () => {
@@ -271,9 +271,9 @@ describe('сопоставление названий из истории', () =
 });
 
 describe('ensureSeed', () => {
-  let database: SplavDB;
+  let database: HybridLogDB;
   beforeEach(async () => {
-    database = new SplavDB(`seed-${Math.random()}`);
+    database = new HybridLogDB(`seed-${Math.random()}`);
     await database.open();
   });
 

@@ -1,4 +1,4 @@
-import { ComplexQueueRecordSchema, ComplexRecordSchema, ProgramRecordSchema, QueueRecordSchema, TemplateRecordSchema } from '@splav/shared';
+import { ComplexQueueRecordSchema, ComplexRecordSchema, ProgramRecordSchema, QueueRecordSchema, TemplateRecordSchema } from '@hybridlog/shared';
 import { buildComplexLibrary } from '../domain/complexLibrary.ts';
 import { WODS } from '../seed/wods.ts';
 import { todayKey } from '../domain/history.ts';
@@ -7,7 +7,7 @@ import { queueRemoveTemplate } from '../domain/queueEdit.ts';
 import { newTemplate } from '../domain/templateEdit.ts';
 import { sessionFromTemplate } from '../domain/templateSession.ts';
 import { deleteRecord, listRecords, saveRecord } from '../sync/records.ts';
-import { db, type SplavDB } from './db.ts';
+import { db, type HybridLogDB } from './db.ts';
 import { loadSessions } from './importService.ts';
 
 /**
@@ -19,7 +19,7 @@ import { loadSessions } from './importService.ts';
  */
 export async function startTemplateWorkout(
   templateId: string,
-  { now = Date.now(), database = db, queueId }: { now?: number; database?: SplavDB; queueId?: string } = {},
+  { now = Date.now(), database = db, queueId }: { now?: number; database?: HybridLogDB; queueId?: string } = {},
 ): Promise<string> {
   const row = await database.rows('templates').get(templateId);
   const template = row && row.deletedAt === null ? TemplateRecordSchema.safeParse(row) : null;
@@ -65,7 +65,7 @@ export async function startTemplateWorkout(
 }
 
 /** Новый пустой шаблон; возвращает его id для редактора. */
-export async function createTemplate(database: SplavDB = db): Promise<string> {
+export async function createTemplate(database: HybridLogDB = db): Promise<string> {
   const t = newTemplate();
   await saveRecord('templates', t, { database });
   return t.id;
@@ -76,7 +76,7 @@ export type DeleteTemplateResult = { ok: true } | { ok: false; reason: string };
 /**
  * Удаляет шаблон и убирает его из очередей (очередь может опустеть). Уже сделанные тренировки остаются.
  */
-export async function deleteTemplate(templateId: string, database: SplavDB = db): Promise<DeleteTemplateResult> {
+export async function deleteTemplate(templateId: string, database: HybridLogDB = db): Promise<DeleteTemplateResult> {
   const queues = (await listRecords('queues', database)).flatMap((r) => {
     const p = QueueRecordSchema.safeParse(r);
     return p.success ? [p.data] : [];

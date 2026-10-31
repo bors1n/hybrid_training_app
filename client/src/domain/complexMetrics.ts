@@ -1,4 +1,4 @@
-import type { ComplexRecord, ConditioningResult, SessionRecord } from '@splav/shared';
+import type { ComplexRecord, ConditioningResult, SessionRecord } from '@hybridlog/shared';
 import { attempts, bestAttempt, isTimeFormat, resultScore, type Attempt } from './complexResults.ts';
 import { compareSessionsAsc } from './lastPerformance.ts';
 

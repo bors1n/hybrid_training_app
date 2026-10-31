@@ -1,4 +1,4 @@
-import type { QueueRecord, TemplateRecord } from '@splav/shared';
+import type { QueueRecord, TemplateRecord } from '@hybridlog/shared';
 import { useState, type ReactElement } from 'react';
 import { ConfirmButton } from '../../components/fields.tsx';
 import { queueAddTemplate, queueMoveTemplate, queueRemoveTemplate, queueSetPosition, type QueueDraft } from '../../domain/queueEdit.ts';

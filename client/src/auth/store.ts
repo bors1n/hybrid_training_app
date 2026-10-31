@@ -1,4 +1,4 @@
-import type { User } from '@splav/shared';
+import type { User } from '@hybridlog/shared';
 import { create } from 'zustand';
 import { clearLocalData, db, getMeta, setMeta } from '../data/db.ts';
 import { AuthError } from '../sync/engine.ts';

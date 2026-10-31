@@ -1,7 +1,7 @@
-import { PullResponseSchema, PushResponseSchema, type SyncRecord } from '@splav/shared';
+import { PullResponseSchema, PushResponseSchema, type SyncRecord } from '@hybridlog/shared';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SplavDB, getMeta } from '../../client/src/data/db.ts';
+import { HybridLogDB, getMeta } from '../../client/src/data/db.ts';
 import { ensureSeed, seedRecords } from '../../client/src/seed/install.ts';
 import { TEMPLATES } from '../../client/src/seed/templates.ts';
 import { AuthError, NetworkError, syncOnce, type Transport } from '../../client/src/sync/engine.ts';
@@ -32,8 +32,8 @@ afterAll(async () => {
   await t.close();
 });
 
-async function device(): Promise<SplavDB> {
-  const d = new SplavDB(`device-${Math.random()}`);
+async function device(): Promise<HybridLogDB> {
+  const d = new HybridLogDB(`device-${Math.random()}`);
   await d.open();
   return d;
 }

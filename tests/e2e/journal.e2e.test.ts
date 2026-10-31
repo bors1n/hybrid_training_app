@@ -1,7 +1,7 @@
-import { PullResponseSchema, PushResponseSchema, SessionRecordSchema, type SyncRecord } from '@splav/shared';
+import { PullResponseSchema, PushResponseSchema, SessionRecordSchema, type SyncRecord } from '@hybridlog/shared';
 import type { FastifyInstance } from 'fastify';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { SplavDB, getMeta } from '../../client/src/data/db.ts';
+import { HybridLogDB, getMeta } from '../../client/src/data/db.ts';
 import {
   addCardioBlock,
   addConditioningBlock,
@@ -45,8 +45,8 @@ afterAll(async () => {
   await t.close();
 });
 
-const device = async (): Promise<SplavDB> => {
-  const d = new SplavDB(`journal-${Math.random()}`);
+const device = async (): Promise<HybridLogDB> => {
+  const d = new HybridLogDB(`journal-${Math.random()}`);
   await d.open();
   return d;
 };
@@ -64,7 +64,7 @@ function training1(): SessionDraft {
   s = addSupersetBlock(s, [{ exerciseId: 'repdb:bicep-curl' }, { exerciseId: 'repdb:hanging-leg-raise' }], 'ss');
   s = addStrengthBlock(s, { exerciseId: 'repdb:pull-up' }, 'pu');
   s = setItemLoad(updateSet(s, 'pu', 0, 0, { weightKg: 10, reps: 8 }), 'pu', 0, 'added');
-  s = addMobilityItem(s, 'splav:core-complex', 600, undefined, 'mob');
+  s = addMobilityItem(s, 'hybridlog:core-complex', 600, undefined, 'mob');
   s = updateCardio(addCardioBlock(s, 'indoor_bike', 'finisher', 'bike'), 'bike', { durationSec: 900, notes: 'зона 2' });
   s = updateCardio(addCardioBlock(s, 'run', 'main', 'run'), 'run', { distanceM: 3090, durationSec: 1448, recordedPace: 466, avgHr: 142, rpe: 6 });
   s = updateConditioning(addConditioningBlock(s, { complexId: '#005', format: 'AMRAP', timeCapMin: 15 }, 'k'), 'k', { result: { rounds: 9 }, rpe: 8 });

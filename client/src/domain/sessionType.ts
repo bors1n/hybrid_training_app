@@ -1,4 +1,4 @@
-import type { Block, SessionType } from '@splav/shared';
+import type { Block, SessionType } from '@hybridlog/shared';
 
 /**
  * Тип тренировки для статистики баланса — по блокам, без разминок, финишей и мобильности.

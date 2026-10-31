@@ -1,4 +1,4 @@
-import type { CatalogExercise, SessionRecord } from '@splav/shared';
+import type { CatalogExercise, SessionRecord } from '@hybridlog/shared';
 import type { SessionDraft } from '../../domain/sessionEdit.ts';
 
 /** Всё, что нужно карточкам блоков: тренировка, история для подсказок и способ её изменить. */

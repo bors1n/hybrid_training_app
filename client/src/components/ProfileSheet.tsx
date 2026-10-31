@@ -37,7 +37,7 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
     setBusy(true);
     try {
       const r = await exportAllSessionsCsv();
-      const outcome = await saveTextFile(`splav-trenirovki-${todayKey()}.csv`, r.csv, 'text/csv;charset=utf-8');
+      const outcome = await saveTextFile(`hybridlog-trenirovki-${todayKey()}.csv`, r.csv, 'text/csv;charset=utf-8');
       setExportNote({ text: `${outcomeText(outcome)}: тренировок ${r.sessions}, строк ${r.rows}`, warnings: r.warnings });
     } catch (e) {
       setExportNote({ text: `Не удалось экспортировать: ${e instanceof Error ? e.message : 'ошибка'}`, warnings: [] });
@@ -50,7 +50,7 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
     setBusy(true);
     try {
       const { json, counts } = await exportAllJson();
-      const outcome = await saveTextFile(`splav-dannye-${todayKey()}.json`, json, 'application/json');
+      const outcome = await saveTextFile(`hybridlog-dannye-${todayKey()}.json`, json, 'application/json');
       setExportNote({ text: `${outcomeText(outcome)}: тренировок ${counts['sessions'] ?? 0}, шаблонов ${counts['templates'] ?? 0}`, warnings: [] });
     } catch (e) {
       setExportNote({ text: `Не удалось экспортировать: ${e instanceof Error ? e.message : 'ошибка'}`, warnings: [] });
@@ -68,7 +68,7 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
         <div className="sheet__row">
           <span className="sheet__label">АККАУНТ</span>
           <span className="sheet__account">
-            <Avatar seed={user?.id ?? 'splav'} size={48} />
+            <Avatar seed={user?.id ?? 'hybridlog'} size={48} />
             {user?.email ?? '—'}
           </span>
         </div>
@@ -111,7 +111,7 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
 
         <details className="sheet__about">
           <summary>О приложении</summary>
-          <p>SPLAV — дневник гибридных тренировок: сила, кардио и комплексы в одном журнале.</p>
+          <p>HybridLog — дневник гибридных тренировок: сила, кардио и комплексы в одном журнале.</p>
           <p className="sheet__credit">
             <a href={REPDB_URL} target="_blank" rel="noreferrer">{REPDB_ATTRIBUTION}</a>
           </p>

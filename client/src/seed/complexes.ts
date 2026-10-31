@@ -1,4 +1,4 @@
-import type { ComplexRecord } from '@splav/shared';
+import type { ComplexRecord } from '@hybridlog/shared';
 
 type Seed = Omit<ComplexRecord, 'updatedAt' | 'deletedAt'>;
 

@@ -1,4 +1,4 @@
-import { FORMATS, type ConditioningBlock } from '@splav/shared';
+import { FORMATS, type ConditioningBlock } from '@hybridlog/shared';
 import { useMemo, type ReactElement } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { DurationField, NumberField, RpePicker } from '../../components/fields.tsx';

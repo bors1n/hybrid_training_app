@@ -46,8 +46,8 @@ describe('Прогресс: сила', () => {
       date: '2026-10-13',
       blocks: [
         strength('repdb:squat', [set(80, 5), set(85, 5, { rpe: 8 }), set(85, 5, { rpe: 8 })]),
-        strength('splav:pullup', [set(10, 5, { load: 'added' })]),
-        strength('splav:gravitron', [set(18.5, 6, { load: 'assisted' })]),
+        strength('hybridlog:pullup', [set(10, 5, { load: 'added' })]),
+        strength('hybridlog:gravitron', [set(18.5, 6, { load: 'assisted' })]),
       ],
     }));
     open();
@@ -67,13 +67,13 @@ describe('Прогресс: сила', () => {
     expect(normal.textContent).toContain('СР. RPE8'); // средний RPE: подходы с RPE 8, 8
     expect(within(normal).getByRole('table', { name: /Лучший подход по повторам/ }).textContent).toContain('85 кг');
 
-    fireEvent.change(picker, { target: { value: 'splav:pullup' } });
+    fireEvent.change(picker, { target: { value: 'hybridlog:pullup' } });
     const added = await screen.findByRole('region', { name: /: С отягощением$/ });
     expect(within(added).queryByText('РАСЧЁТНЫЙ 1ПМ')).toBeNull();
     expect(screen.queryByRole('region', { name: /: Обычный вес$/ })).toBeNull();
     expect(within(added).getAllByText(/\+?10 кг/).length).toBeGreaterThan(0);
 
-    fireEvent.change(picker, { target: { value: 'splav:gravitron' } });
+    fireEvent.change(picker, { target: { value: 'hybridlog:gravitron' } });
     const assisted = await screen.findByRole('region', { name: /: С противовесом$/ });
     expect(within(assisted).getByText('МИНИМУМ ПРОТИВОВЕСА')).toBeTruthy();
     expect(assisted.textContent).toContain('18,5 кг');

@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { lastCardioEntry } from './lastCardio.ts';
 

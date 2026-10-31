@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable, type Table } from 'dexie';
-import type { Collection } from '@splav/shared';
+import type { Collection } from '@hybridlog/shared';
 
 export interface MetaRow {
   key: string;
@@ -23,11 +23,11 @@ export interface OutboxRow {
 
 export const outboxKey = (collection: Collection, id: string): string => `${collection}:${id}`;
 
-export class SplavDB extends Dexie {
+export class HybridLogDB extends Dexie {
   meta!: EntityTable<MetaRow, 'key'>;
   outbox!: EntityTable<OutboxRow, 'key'>;
 
-  constructor(name = 'splav') {
+  constructor(name = 'hybridlog') {
     super(name);
     this.version(1).stores({ meta: 'key' });
     this.version(2).stores({
@@ -57,22 +57,22 @@ export class SplavDB extends Dexie {
   }
 }
 
-export const db = new SplavDB();
+export const db = new HybridLogDB();
 
-export async function getMeta<T>(key: string, database: SplavDB = db): Promise<T | undefined> {
+export async function getMeta<T>(key: string, database: HybridLogDB = db): Promise<T | undefined> {
   return (await database.meta.get(key))?.value as T | undefined;
 }
 
-export async function setMeta(key: string, value: unknown, database: SplavDB = db): Promise<void> {
+export async function setMeta(key: string, value: unknown, database: HybridLogDB = db): Promise<void> {
   await database.meta.put({ key, value });
 }
 
-export async function deleteMeta(key: string, database: SplavDB = db): Promise<void> {
+export async function deleteMeta(key: string, database: HybridLogDB = db): Promise<void> {
   await database.meta.delete(key);
 }
 
 /** Полная очистка локальных данных (выход из аккаунта, смена пользователя). */
-export async function clearLocalData(database: SplavDB = db): Promise<void> {
+export async function clearLocalData(database: HybridLogDB = db): Promise<void> {
   await database.transaction('rw', database.tables, async () => {
     await Promise.all(database.tables.map((t) => t.clear()));
   });

@@ -1,0 +1,16 @@
+---
+/** HybridLog: «H» из двух стоек (кобальт — сила, голубой — выносливость) и грифа между ними; дальше слово «YBRIDLOG». */
+interface Props {
+  size?: number;
+}
+const { size = 44 } = Astro.props;
+---
+
+<span class="wordmark" style={`font-size:${size}px`} role="img" aria-label="HybridLog">
+  <svg viewBox="0 0 62 81" aria-hidden="true" class="wordmark__h"><rect x="0" y="0" width="17" height="81" fill="#1D46E8"></rect><rect x="45" y="0" width="17" height="81" fill="#3091D8"></rect><rect x="17" y="33" width="28" height="15" fill="currentColor"></rect></svg><span aria-hidden="true">YBRIDLOG</span>
+</span>
+
+<style>
+  .wordmark { display: inline-flex; align-items: baseline; font: 700 1em/1 var(--font-display); letter-spacing: 0.02em; text-transform: uppercase; }
+  .wordmark__h { width: 0.62em; height: 0.81em; margin-right: 0.05em; }
+</style>

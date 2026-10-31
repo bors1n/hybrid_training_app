@@ -1,4 +1,4 @@
-import type { CatalogExercise } from '@splav/shared';
+import type { CatalogExercise } from '@hybridlog/shared';
 import { useEffect, useState, type ReactElement } from 'react';
 import { db } from '../../data/db.ts';
 import { EQUIPMENT_LABELS, KIND_LABELS, kindColorVar, muscleLabel } from '../../domain/catalogFilter.ts';
@@ -45,7 +45,7 @@ export function ExerciseSheet({ exercise: e, onClose }: Props): ReactElement {
   }
 
   const fromRepdb = e.media?.source === MEDIA_SOURCE;
-  const userCreated = e.isCustom && !e.id.startsWith('splav:');
+  const userCreated = e.isCustom && !e.id.startsWith('hybridlog:');
 
   return (
     <>

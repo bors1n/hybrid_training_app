@@ -7,7 +7,7 @@ import type {
   SessionRecord,
   SetEntry,
   StrengthBlock,
-} from '@splav/shared';
+} from '@hybridlog/shared';
 import { deriveSessionType } from './sessionType.ts';
 import { paceFromDistanceTime } from './units.ts';
 

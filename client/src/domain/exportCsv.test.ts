@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { COLUMNS, parseCsvText } from './csvText.ts';
 import { exportSessionsCsv } from './exportCsv.ts';

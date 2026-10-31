@@ -1,4 +1,4 @@
-import type { ConditioningBlock, ConditioningResult, PlanSets } from '@splav/shared';
+import type { ConditioningBlock, ConditioningResult, PlanSets } from '@hybridlog/shared';
 import { formatDecimal, formatDuration } from './units.ts';
 import { isTimeFormat } from './complexResults.ts';
 

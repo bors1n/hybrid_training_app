@@ -1,4 +1,4 @@
-import { ComplexQueueRecordSchema, ComplexRecordSchema, ProgramRecordSchema, QueueRecordSchema, SettingsRecordSchema, TemplateRecordSchema, type ComplexQueueRecord, type ComplexRecord, type ProgramRecord, type QueueRecord, type SettingsRecord, type TemplateRecord } from '@splav/shared';
+import { ComplexQueueRecordSchema, ComplexRecordSchema, ProgramRecordSchema, QueueRecordSchema, SettingsRecordSchema, TemplateRecordSchema, type ComplexQueueRecord, type ComplexRecord, type ProgramRecord, type QueueRecord, type SettingsRecord, type TemplateRecord } from '@hybridlog/shared';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useMemo } from 'react';
 import { SETTINGS_ID } from '../../data/programService.ts';

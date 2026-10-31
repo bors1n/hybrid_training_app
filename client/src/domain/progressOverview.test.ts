@@ -1,4 +1,4 @@
-import type { Block, SessionRecord, SetEntry } from '@splav/shared';
+import type { Block, SessionRecord, SetEntry } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { strengthEnduranceBalance } from './balanceMetrics.ts';
 import { cardioEntries, cardioTotals, weeklyCardioFilled } from './cardioMetrics.ts';

@@ -1,4 +1,4 @@
-import { CARDIO_ROLES, FORMATS, MODALITIES, TemplateRecordSchema, type CatalogExercise, type ComplexRecord } from '@splav/shared';
+import { CARDIO_ROLES, FORMATS, MODALITIES, TemplateRecordSchema, type CatalogExercise, type ComplexRecord } from '@hybridlog/shared';
 import { useMemo, useState, type ReactElement } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { Chip } from '../../components/Chip.tsx';

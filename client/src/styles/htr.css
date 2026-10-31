@@ -1,5 +1,5 @@
 
-/* Hybrid Training Russia / SPLAV — component styles. Values come from tokens.css. */
+/* Hybrid Training Russia / HybridLog — component styles. Values come from tokens.css. */
 .htr-stack { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-4); }
 .htr-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); padding: var(--space-4); }
 
@@ -41,7 +41,7 @@
 .htr-track__num { font: 800 64px/0.9 var(--font-display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
 .htr-track__cap { display: block; margin-top: var(--space-2); font: 500 12px/16px var(--font-data); letter-spacing: .08em; text-transform: uppercase; color: #8FD0FF; }
 
-/* Exercise card (SPLAV) */
+/* Exercise card (HybridLog) */
 .htr-ex { background: var(--surface-raised); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); max-width: 420px; }
 .htr-ex__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); }
 .htr-ex__name { font: 600 19px/26px var(--font-text); margin: 0; }

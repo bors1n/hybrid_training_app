@@ -1,5 +1,5 @@
-import { MAX_BATCH, type PullResponse, type PushResponse, type SyncRecord } from '@splav/shared';
-import { db, getMeta, setMeta, type SplavDB } from '../data/db.ts';
+import { MAX_BATCH, type PullResponse, type PushResponse, type SyncRecord } from '@hybridlog/shared';
+import { db, getMeta, setMeta, type HybridLogDB } from '../data/db.ts';
 import { applyRemote } from './records.ts';
 
 /** Нет связи с сервером (офлайн, таймаут, 5xx): данные остаются в очереди. */
@@ -23,13 +23,13 @@ export interface SyncResult {
 }
 
 /** Сервер не принял эти записи и не примет повторно: не держим их в очереди, но оставляем след для диагностики. */
-async function noteRejected(rejected: PushResponse['rejected'], database: SplavDB): Promise<void> {
+async function noteRejected(rejected: PushResponse['rejected'], database: HybridLogDB): Promise<void> {
   console.error('Сервер отклонил записи', rejected);
   const prev = (await getMeta<unknown[]>(REJECTED_KEY, database)) ?? [];
   await setMeta(REJECTED_KEY, [...prev, ...rejected.map((r) => ({ ...r, at: Date.now() }))].slice(-REJECTED_KEEP), database);
 }
 
-async function pushPending(transport: Transport, database: SplavDB): Promise<number> {
+async function pushPending(transport: Transport, database: HybridLogDB): Promise<number> {
   let pushed = 0;
   for (let round = 0; round < MAX_PUSH_ROUNDS; round++) {
     const pending = await database.outbox.limit(MAX_BATCH).toArray();
@@ -60,7 +60,7 @@ async function pushPending(transport: Transport, database: SplavDB): Promise<num
   return pushed;
 }
 
-async function pullAll(transport: Transport, database: SplavDB): Promise<number> {
+async function pullAll(transport: Transport, database: HybridLogDB): Promise<number> {
   let since = (await getMeta<number>(CURSOR_KEY, database)) ?? 0;
   let pulled = 0;
   for (;;) {
@@ -74,7 +74,7 @@ async function pullAll(transport: Transport, database: SplavDB): Promise<number>
 }
 
 /** Один цикл синхронизации: сначала отправка очереди, затем получение чужих изменений. */
-export async function syncOnce(transport: Transport, database: SplavDB = db): Promise<SyncResult> {
+export async function syncOnce(transport: Transport, database: HybridLogDB = db): Promise<SyncResult> {
   const pushed = await pushPending(transport, database);
   const pulled = await pullAll(transport, database);
   return { pushed, pulled };

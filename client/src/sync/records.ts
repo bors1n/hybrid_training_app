@@ -1,5 +1,6 @@
-import { RECORD_SCHEMAS, type Collection, type PullRecord, type RecordInput } from '@splav/shared';
-import { db, outboxKey, type Row, type SplavDB } from '../data/db.ts';
+import { RECORD_SCHEMAS, type Collection, type PullRecord, type RecordInput } from '@hybridlog/shared';
+import { db, outboxKey, type Row, type HybridLogDB } from '../data/db.ts';
+import { LEGACY_ID_PREFIX, renameLegacyIds } from '../data/legacyMigration.ts';
 
 type Listener = () => void;
 const writeListeners = new Set<Listener>();
@@ -11,7 +12,7 @@ export function onLocalWrite(listener: Listener): () => void {
 }
 
 export interface SaveOptions {
-  database?: SplavDB;
+  database?: HybridLogDB;
   now?: () => number;
 }
 
@@ -56,7 +57,7 @@ export async function deleteRecord(
 }
 
 /** Живые записи коллекции (без помеченных удалёнными). */
-export async function listRecords(collection: Collection, database: SplavDB = db): Promise<Row[]> {
+export async function listRecords(collection: Collection, database: HybridLogDB = db): Promise<Row[]> {
   return (await database.rows(collection).toArray()).filter((r) => r.deletedAt === null);
 }
 
@@ -64,7 +65,12 @@ export async function listRecords(collection: Collection, database: SplavDB = db
  * Применяет записи с сервера по правилу last-write-wins: локальная версия не младше — остаётся.
  * Возвращает число применённых записей.
  */
-export async function applyRemote(remote: PullRecord[], database: SplavDB = db): Promise<number> {
+export async function applyRemote(incoming: PullRecord[], database: HybridLogDB = db): Promise<number> {
+  // Устройство без обновления ещё шлёт id `splav:*`: переименовываем их. Удалённые старые id пропускаем:
+  // это могильники, которые оставила миграция, и они не должны затереть новую запись.
+  const remote = incoming
+    .filter((r) => !(r.id.startsWith(LEGACY_ID_PREFIX) && r.deletedAt !== null))
+    .map((r) => ({ ...r, id: renameLegacyIds(r.id), data: renameLegacyIds(r.data) }));
   if (remote.length === 0) return 0;
   const tables = [...new Set(remote.map((r) => r.collection))].map((c) => database.rows(c));
   return database.transaction('rw', [...tables, database.outbox], async () => {

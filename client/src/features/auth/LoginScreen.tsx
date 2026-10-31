@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactElement } from 'react';
-import { CODE_LENGTH, EmailSchema } from '@splav/shared';
+import { CODE_LENGTH, EmailSchema } from '@hybridlog/shared';
 import { authApi, InvalidCodeError } from '../../auth/api.ts';
 import { useAuth } from '../../auth/store.ts';
 import { NetworkError } from '../../sync/engine.ts';
@@ -14,13 +14,11 @@ function errorText(e: unknown): string {
 
 function Logo(): ReactElement {
   return (
-    <svg width="210" height="56" viewBox="0 0 210 56" role="img" aria-label="SPLAV">
-      <text x="0" y="48" fontFamily="Unbounded, sans-serif" fontWeight="800" fontSize="50" fill="#F3F5F8">SPL</text>
-      <g transform="translate(102 4) scale(0.75)">
-        <polygon points="0,64 16,64 29,6 29,0 22,0" fill="#7C9BFF" />
-        <polygon points="60,64 44,64 31,6 31,0 38,0" fill="#8FD0FF" />
-      </g>
-      <text x="150" y="48" fontFamily="Unbounded, sans-serif" fontWeight="800" fontSize="50" fill="#F3F5F8">V</text>
+    <svg width="250" height="48" viewBox="0 0 250 48" role="img" aria-label="HybridLog">
+      <rect x="0" y="4" width="9" height="40" fill="#7C9BFF" />
+      <rect x="25" y="4" width="9" height="40" fill="#8FD0FF" />
+      <rect x="9" y="20" width="16" height="8" fill="#F3F5F8" />
+      <text x="44" y="42" textLength="206" lengthAdjust="spacingAndGlyphs" fontFamily="Unbounded, sans-serif" fontWeight="800" fontSize="38" fill="#F3F5F8">YBRIDLOG</text>
     </svg>
   );
 }

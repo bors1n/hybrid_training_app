@@ -6,7 +6,7 @@ import { SyncBadge } from './SyncBadge.tsx';
 
 export function ScreenHead({ label, title }: { label?: string; title: string }): ReactElement {
   const { open } = useProfile();
-  const seed = useAuth((s) => s.user?.id) ?? 'splav';
+  const seed = useAuth((s) => s.user?.id) ?? 'hybridlog';
   return (
     <header className="screen-head">
       <div>

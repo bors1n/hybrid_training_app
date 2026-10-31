@@ -1,5 +1,5 @@
 {
-  "name": "@splav/client",
+  "name": "@hybridlog/client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -12,8 +12,8 @@
     "@fontsource/golos-text": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/unbounded": "^5.3.0",
-    "@splav/design": "*",
-    "@splav/shared": "*",
+    "@hybridlog/design": "*",
+    "@hybridlog/shared": "*",
     "dexie": "^4.4.7",
     "dexie-react-hooks": "^4.4.0",
     "papaparse": "^5.7.0",

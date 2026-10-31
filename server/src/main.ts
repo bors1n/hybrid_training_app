@@ -12,7 +12,7 @@ if (dataDir) mkdirSync(dataDir, { recursive: true });
 const { db, close } = await openDb({ url: env['DATABASE_URL'], dataDir });
 
 const smtpUrl = env['SMTP_URL'];
-const mailer = smtpUrl ? smtpMailer(smtpUrl, env['MAIL_FROM'] ?? 'SPLAV <no-reply@localhost>') : consoleMailer;
+const mailer = smtpUrl ? smtpMailer(smtpUrl, env['MAIL_FROM'] ?? 'HybridLog <no-reply@localhost>') : consoleMailer;
 if (!smtpUrl) console.warn('SMTP_URL не задан: коды входа печатаются в консоль.');
 
 const app = await buildApp({ db, mailer, config });

@@ -212,10 +212,10 @@ describe('новые упражнения при импорте', () => {
 
     await doImport();
     const sets = (await sessions())[0]!['blocks'] as { items: { exerciseId: string }[] }[];
-    expect(sets[0]!.items[0]!.exerciseId).toBe('splav:core-complex');
+    expect(sets[0]!.items[0]!.exerciseId).toBe('hybridlog:core-complex');
     expect((await db.rows('exercises').toArray()).map((c) => c['name'])).not.toContain('Моё странное упражнение');
     // Ключ — нормализованное название (ё → е, регистр и знаки не важны)
-    expect(await db.rows('exerciseAliases').get('alias:мое странное упражнение')).toMatchObject({ exerciseId: 'splav:core-complex', alias: 'Моё странное упражнение' });
+    expect(await db.rows('exerciseAliases').get('alias:мое странное упражнение')).toMatchObject({ exerciseId: 'hybridlog:core-complex', alias: 'Моё странное упражнение' });
   });
 
   it('можно передумать и вернуться к «Создать своё»', async () => {
@@ -254,7 +254,7 @@ describe('экспорт из профиля', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Экспорт CSV' }));
     await waitFor(() => expect(saveTextFile).toHaveBeenCalledTimes(1));
     const [name, text, mime] = vi.mocked(saveTextFile).mock.calls[0]!;
-    expect(name).toMatch(/^splav-trenirovki-\d{4}-\d{2}-\d{2}\.csv$/);
+    expect(name).toMatch(/^hybridlog-trenirovki-\d{4}-\d{2}-\d{2}\.csv$/);
     expect(mime).toBe('text/csv;charset=utf-8');
     expect(text.startsWith('﻿date,session,session_type')).toBe(true);
     expect(text.split('\r\n')).toHaveLength(20);
@@ -267,7 +267,7 @@ describe('экспорт из профиля', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Экспорт JSON' }));
     await waitFor(() => expect(saveTextFile).toHaveBeenCalledTimes(1));
     const [name, text, mime] = vi.mocked(saveTextFile).mock.calls[0]!;
-    expect(name).toMatch(/^splav-dannye-.*\.json$/);
+    expect(name).toMatch(/^hybridlog-dannye-.*\.json$/);
     expect(mime).toBe('application/json');
     expect(JSON.parse(text).collections.sessions).toHaveLength(9);
   }, 20_000);

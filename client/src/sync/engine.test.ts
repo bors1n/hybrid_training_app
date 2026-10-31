@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { PullResponse, PushResponse, SyncRecord } from '@splav/shared';
-import { getMeta, SplavDB } from '../data/db.ts';
+import type { PullResponse, PushResponse, SyncRecord } from '@hybridlog/shared';
+import { getMeta, HybridLogDB } from '../data/db.ts';
 import { AuthError, CURSOR_KEY, NetworkError, syncOnce, type Transport } from './engine.ts';
 import { saveRecord } from './records.ts';
 import { session, template } from '../test/fixtures.ts';
 
-let database: SplavDB;
+let database: HybridLogDB;
 beforeEach(async () => {
-  database = new SplavDB(`test-${Math.random()}`);
+  database = new HybridLogDB(`test-${Math.random()}`);
   await database.open();
 });
 

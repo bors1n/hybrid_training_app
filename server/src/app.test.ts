@@ -1,4 +1,4 @@
-import { HealthSchema } from '@splav/shared';
+import { HealthSchema } from '@hybridlog/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createTestApp, type TestApp } from './test-helpers.ts';
 

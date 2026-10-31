@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Collection } from '@splav/shared';
+import type { Collection } from '@hybridlog/shared';
 import { saveRecord } from '../sync/records.ts';
 import { db } from './db.ts';
 

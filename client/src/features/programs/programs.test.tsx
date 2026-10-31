@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { SessionRecordSchema, type SessionRecord } from '@splav/shared';
+import { SessionRecordSchema, type SessionRecord } from '@hybridlog/shared';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -434,7 +434,7 @@ describe('редактор шаблона', () => {
     fill('Присед в тренажёре: вес до', '110', card);
     fireEvent.click(card.getByLabelText('Повторы на каждую сторону'));
     await waitFor(async () => expect((await templateRow())['blocks']).toMatchObject([
-      { type: 'strength', items: [{ exerciseId: 'splav:machine-squat', plan: { sets: 4, repsMin: 6, repsMax: 8, weightKg: 100, weightKgMax: 110, perSide: true, load: 'normal' } }] },
+      { type: 'strength', items: [{ exerciseId: 'hybridlog:machine-squat', plan: { sets: 4, repsMin: 6, repsMax: 8, weightKg: 100, weightKgMax: 110, perSide: true, load: 'normal' } }] },
     ]));
     expect(screen.queryByLabelText('В короткой версии')).toBeNull();
 
@@ -482,7 +482,7 @@ describe('редактор шаблона', () => {
     await waitFor(async () => expect((await templateRow())['blocks']).toMatchObject([
       { type: 'cardio', role: 'warmup', modality: 'treadmill', durationSec: 300, durationSecMax: 600 },
       { type: 'conditioning', fromQueue: true },
-      { type: 'mobility', items: [{ exerciseId: 'splav:core-complex' }], durationSec: 480 },
+      { type: 'mobility', items: [{ exerciseId: 'hybridlog:core-complex' }], durationSec: 480 },
     ]));
   }, 30_000);
 
@@ -498,7 +498,7 @@ describe('редактор шаблона', () => {
     fireEvent.change(within(picker).getByLabelText('Поиск упражнения'), { target: { value: 'боковая гиперэкстензия' } });
     fireEvent.click(await within(picker).findByRole('button', { name: /Боковая гиперэкстензия/ }));
     await screen.findByRole('region', { name: 'Блок: суперсет' });
-    await waitFor(async () => expect((await templateRow())['blocks']).toMatchObject([{ superset: true, items: [{ exerciseId: 'splav:machine-squat' }, { exerciseId: 'splav:side-back-extension', plan: { perSide: true } }] }]));
+    await waitFor(async () => expect((await templateRow())['blocks']).toMatchObject([{ superset: true, items: [{ exerciseId: 'hybridlog:machine-squat' }, { exerciseId: 'hybridlog:side-back-extension', plan: { perSide: true } }] }]));
   }, 20_000);
 
   it('правка плана влияет на следующую тренировку из шаблона (Т1: вес приседа 85 → 90)', async () => {

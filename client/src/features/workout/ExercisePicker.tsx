@@ -1,4 +1,4 @@
-import type { CatalogExercise, SessionRecord } from '@splav/shared';
+import type { CatalogExercise, SessionRecord } from '@hybridlog/shared';
 import { useDeferredValue, useMemo, useState, type ReactElement } from 'react';
 import { EMPTY_FILTER, EQUIPMENT_LABELS, KIND_LABELS, filterCatalog, kindColorVar, rankByQuery, type Kind } from '../../domain/catalogFilter.ts';
 import { recentExerciseIds } from '../../domain/recent.ts';

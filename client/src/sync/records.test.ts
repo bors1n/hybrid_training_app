@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PullRecord } from '@splav/shared';
-import { SplavDB } from '../data/db.ts';
+import type { PullRecord } from '@hybridlog/shared';
+import { HybridLogDB } from '../data/db.ts';
 import { applyRemote, deleteRecord, listRecords, onLocalWrite, saveRecord } from './records.ts';
 import { session, template } from '../test/fixtures.ts';
 
-let database: SplavDB;
+let database: HybridLogDB;
 beforeEach(async () => {
-  database = new SplavDB(`test-${Math.random()}`);
+  database = new HybridLogDB(`test-${Math.random()}`);
   await database.open();
 });
 

@@ -16,13 +16,13 @@ export interface NavItem {
 
 export const NAV: NavItem[] = [
   { href: '/articles/', label: 'Статьи' },
-  { href: '/splav/', label: 'SPLAV' },
+  { href: '/app/', label: 'HybridLog' },
   { href: '/about/', label: 'О проекте' },
 ];
 
 export const FOOTER_NAV: NavItem[] = [
   { href: '/articles/', label: 'Статьи' },
   { href: '/rubrics/complexes/', label: 'Комплексы' },
-  { href: '/splav/', label: 'SPLAV' },
+  { href: '/app/', label: 'HybridLog' },
   { href: SITE.instagramUrl, label: 'Инстаграм', icon: 'instagram' },
 ];

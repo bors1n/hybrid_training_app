@@ -1,4 +1,4 @@
-import { UserSchema, type User } from '@splav/shared';
+import { UserSchema, type User } from '@hybridlog/shared';
 import { z } from 'zod';
 import { AuthError } from '../sync/engine.ts';
 import { request } from '../sync/http.ts';

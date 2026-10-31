@@ -105,8 +105,8 @@ describe('заметка к упражнению', () => {
     const note = (await screen.findByPlaceholderText(/Настройка тренажёра/)) as HTMLTextAreaElement;
     fireEvent.change(note, { target: { value: 'угол 4, пауза 2 с' } });
     fireEvent.blur(note);
-    await waitFor(async () => expect((await db.rows('exerciseNotes').get('splav:core-complex'))?.['text']).toBe('угол 4, пауза 2 с'));
-    expect(await db.outbox.get('exerciseNotes:splav:core-complex')).toBeTruthy();
+    await waitFor(async () => expect((await db.rows('exerciseNotes').get('hybridlog:core-complex'))?.['text']).toBe('угол 4, пауза 2 с'));
+    expect(await db.outbox.get('exerciseNotes:hybridlog:core-complex')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Закрыть' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
@@ -116,7 +116,7 @@ describe('заметка к упражнению', () => {
     const again = screen.getByPlaceholderText(/Настройка тренажёра/);
     fireEvent.change(again, { target: { value: '   ' } });
     fireEvent.blur(again);
-    await waitFor(async () => expect((await db.rows('exerciseNotes').get('splav:core-complex'))?.deletedAt).not.toBeNull());
+    await waitFor(async () => expect((await db.rows('exerciseNotes').get('hybridlog:core-complex'))?.deletedAt).not.toBeNull());
   });
 });
 

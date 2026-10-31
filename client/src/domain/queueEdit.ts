@@ -1,4 +1,4 @@
-import type { ComplexQueueRecord, QueueRecord } from '@splav/shared';
+import type { ComplexQueueRecord, QueueRecord } from '@hybridlog/shared';
 
 /** Очередь в редакторе: без полей синхронизации. */
 export type QueueDraft = Omit<QueueRecord, 'updatedAt' | 'deletedAt'>;

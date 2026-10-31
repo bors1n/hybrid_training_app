@@ -1,4 +1,4 @@
-import type { SessionRecord, SetEntry } from '@splav/shared';
+import type { SessionRecord, SetEntry } from '@hybridlog/shared';
 import { formatDecimal, formatDuration, formatWeightReps } from './units.ts';
 
 export interface Performance {

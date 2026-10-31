@@ -1,4 +1,4 @@
-import type { Block } from '@splav/shared';
+import type { Block } from '@hybridlog/shared';
 import { describe, expect, it } from 'vitest';
 import { complexQueueState, queueState } from './queue.ts';
 

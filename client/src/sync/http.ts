@@ -4,7 +4,7 @@ import {
   type PullResponse,
   type PushResponse,
   type SyncRecord,
-} from '@splav/shared';
+} from '@hybridlog/shared';
 import type { z } from 'zod';
 import { AuthError, NetworkError, type Transport } from './engine.ts';
 

@@ -1,4 +1,4 @@
-import type { SessionRecord } from '@splav/shared';
+import type { SessionRecord } from '@hybridlog/shared';
 import type { ReactElement } from 'react';
 import { todayKey } from '../domain/history.ts';
 import { formatDateShort } from '../domain/lastPerformance.ts';

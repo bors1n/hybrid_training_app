@@ -1,5 +1,5 @@
-import type { Collection, RecordInput } from '@splav/shared';
-import { db, getMeta, setMeta, type SplavDB } from '../data/db.ts';
+import type { Collection, RecordInput } from '@hybridlog/shared';
+import { db, getMeta, setMeta, type HybridLogDB } from '../data/db.ts';
 import { saveRecord } from '../sync/records.ts';
 import { COMPLEX_QUEUE_ORDER, COMPLEXES } from './complexes.ts';
 import { BASIC_PROGRAM_ID } from '../domain/programs.ts';
@@ -37,7 +37,7 @@ export function seedRecords(): SeedRecord[] {
  * уже лежащие на сервере (в том числе изменённые или удалённые пользователем), не перезаписываются.
  * Удалённая запись остаётся в таблице с deletedAt, поэтому заново не создаётся.
  */
-export async function ensureSeed(database: SplavDB = db): Promise<number> {
+export async function ensureSeed(database: HybridLogDB = db): Promise<number> {
   if (((await getMeta<number>(SEED_META_KEY, database)) ?? 0) >= SEED_VERSION) return 0;
   let created = 0;
   for (const { collection, data } of seedRecords()) {

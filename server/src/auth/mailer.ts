@@ -18,8 +18,8 @@ export function smtpMailer(url: string, from: string): Mailer {
       await transport.sendMail({
         from,
         to: email,
-        subject: `SPLAV: код входа ${code}`,
-        text: `Код входа в SPLAV: ${code}\nОн действует 10 минут. Если вы не запрашивали код, просто проигнорируйте это письмо.`,
+        subject: `HybridLog: код входа ${code}`,
+        text: `Код входа в HybridLog: ${code}\nОн действует 10 минут. Если вы не запрашивали код, просто проигнорируйте это письмо.`,
       });
     },
   };

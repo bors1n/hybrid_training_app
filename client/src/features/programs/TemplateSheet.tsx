@@ -1,4 +1,4 @@
-import type { CatalogExercise, TemplateRecord } from '@splav/shared';
+import type { CatalogExercise, TemplateRecord } from '@hybridlog/shared';
 import { useState, type ReactElement } from 'react';
 import { useNavigate } from 'react-router';
 import { startTemplateWorkout } from '../../data/templateService.ts';
