@@ -83,7 +83,7 @@ describe('главный экран: следующая тренировка', (
     renderApp();
     const card = await next();
     expect(within(card).getByText('Тренировка 1')).toBeTruthy();
-    expect(within(card).getByText('ЦИКЛ 1')).toBeTruthy();
+    expect(within(card).getByText('Цикл 1')).toBeTruthy();
     expect(within(card).getByText(/Всё тело A/)).toBeTruthy();
     expect(within(card).getByRole('button', { name: 'Начать' })).toBeTruthy();
     expect(within(card).queryByRole('button', { name: 'Короткая' })).toBeNull();
@@ -196,7 +196,7 @@ describe('экран программы: очередь', () => {
     renderApp(BASIC);
     await waitFor(() => expect(lanes()).toHaveLength(3));
     expect(laneTitles()).toEqual(['Тренировка 1', 'Тренировка 2', 'Тренировка 3']);
-    expect(screen.getByText('ЦИКЛ 1')).toBeTruthy();
+    expect(screen.getByText('Цикл 1')).toBeTruthy();
     expect(within(lanes()[0]!).getByText('Следующая')).toBeTruthy();
     expect(lanes()[0]!.querySelector('.lane__sub')!.textContent).toBe('Всё тело A · 7 упражнений · кардио · мобильность');
     expect(lanes()[2]!.querySelector('.lane__sub')!.textContent).toBe('Комплексы и спринты · кардио · комплекс · мобильность');
@@ -223,7 +223,7 @@ describe('экран программы: очередь', () => {
     await saveRecord('templates', { id: 'extra', title: 'Дополнительная', blocks: [] });
     renderApp(BASIC);
     await waitFor(() => expect(lanes()).toHaveLength(3));
-    click('ИЗМЕНИТЬ');
+    click('Изменить');
     const dialog = await screen.findByRole('dialog', { name: 'Очередь' });
 
     click('Тренировка 3: выше', within(dialog));
@@ -601,7 +601,7 @@ describe('программы: список, создание, активная',
     await saveRecord('programs', { id: 'own:p', title: 'Своя', queueId: 'own:q', complexQueueId: 'own:cq' });
     renderApp('/programs/own:p');
     await waitFor(() => expect(lanes()).toHaveLength(2));
-    click('О ПРОГРАММЕ');
+    click('О программе');
     click('Сделать активной', within(await screen.findByRole('dialog', { name: 'О программе' })));
     await waitFor(async () => expect((await db.rows('settings').get('settings'))?.['activeProgramId']).toBe('own:p'));
   });
@@ -625,8 +625,8 @@ describe('программы: список, создание, активная',
     await saveRecord('complexQueue', { id: 'own:cq', order: [] });
     await saveRecord('programs', { id: 'own:p', title: 'Своя', queueId: 'own:q', complexQueueId: 'own:cq' });
     renderApp('/programs/own:p');
-    await screen.findByRole('button', { name: 'О ПРОГРАММЕ' });
-    click('О ПРОГРАММЕ');
+    await screen.findByRole('button', { name: 'О программе' });
+    click('О программе');
     const dialog = await screen.findByRole('dialog', { name: 'О программе' });
     click('Удалить программу', within(dialog));
     click('Удалить насовсем?', within(dialog));

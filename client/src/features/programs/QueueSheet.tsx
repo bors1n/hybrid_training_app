@@ -56,7 +56,7 @@ export function QueueSheet({ queue, templates, position, onClose }: Props): Reac
         {outside.length > 0 ? (
           <div className="two">
             <label className="field-col">
-              <span className="sheet__label">ДОБАВИТЬ В ОЧЕРЕДЬ</span>
+              <span className="sheet__label">Добавить В очередь</span>
               <select aria-label="Шаблон для добавления" value={toAdd} onChange={(e) => setToAdd(e.target.value)}>
                 <option value="">Выберите шаблон…</option>
                 {outside.map((t) => <option key={t.id} value={t.id}>{t.title}</option>)}
@@ -78,7 +78,7 @@ export function QueueSheet({ queue, templates, position, onClose }: Props): Reac
 
         <div className="two">
           <label className="field-col">
-            <span className="sheet__label">НАЧАТЬ С</span>
+            <span className="sheet__label">Начать С</span>
             <select aria-label="Начать с шаблона" value={startAt} onChange={(e) => setStartAt(e.target.value)}>
               {queue.templateIds.map((id, i) => <option key={id} value={i}>{i + 1}. {byId.get(id)?.title ?? 'Шаблон удалён'}</option>)}
             </select>

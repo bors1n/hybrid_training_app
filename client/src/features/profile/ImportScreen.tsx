@@ -182,10 +182,10 @@ export function ImportScreen(): ReactElement {
           <p className="imp__file-name">{phase.fileName}</p>
 
           <div className="imp-tiles">
-            <div className="imp-tile"><span className="sheet__label">ТРЕНИРОВОК</span><output aria-label="Тренировок">{plan.stats.sessions}</output></div>
-            <div className="imp-tile"><span className="sheet__label">ПОДХОДОВ</span><output aria-label="Подходов">{plan.stats.sets}</output></div>
-            <div className="imp-tile"><span className="sheet__label">КАРДИО</span><output aria-label="Кардио">{plan.stats.cardio}</output></div>
-            <div className="imp-tile"><span className="sheet__label">КОМПЛЕКСОВ</span><output aria-label="Комплексов">{plan.stats.complexes}</output></div>
+            <div className="imp-tile"><span className="sheet__label">Тренировок</span><output aria-label="Тренировок">{plan.stats.sessions}</output></div>
+            <div className="imp-tile"><span className="sheet__label">Подходов</span><output aria-label="Подходов">{plan.stats.sets}</output></div>
+            <div className="imp-tile"><span className="sheet__label">Кардио</span><output aria-label="Кардио">{plan.stats.cardio}</output></div>
+            <div className="imp-tile"><span className="sheet__label">Комплексов</span><output aria-label="Комплексов">{plan.stats.complexes}</output></div>
           </div>
           <p className="imp__counts">
             Строк в файле: {plan.stats.rows}. Принято: {plan.stats.importedRows}. С ошибками: {plan.stats.skippedRows}.

@@ -66,14 +66,14 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
         <h2 className="sheet__title">Профиль</h2>
 
         <div className="sheet__row">
-          <span className="sheet__label">АККАУНТ</span>
+          <span className="sheet__label">Аккаунт</span>
           <span className="sheet__account">
             <Avatar seed={user?.id ?? 'hybridlog'} size={48} />
             {user?.email ?? '—'}
           </span>
         </div>
         <div className="sheet__row">
-          <span className="sheet__label">СИНХРОНИЗАЦИЯ</span>
+          <span className="sheet__label">Синхронизация</span>
           <span>{synced ? `Всё отправлено${lastSync ? ` · ${lastSync}` : ''}` : syncLabel(status)}</span>
         </div>
         <button type="button" className="htr-btn htr-btn--secondary" onClick={triggerSync} disabled={status.state === 'syncing'}>
@@ -81,7 +81,7 @@ export function ProfileSheet({ onClose }: { onClose: () => void }): ReactElement
         </button>
 
         <div className="sheet__row">
-          <span className="sheet__label">ДАННЫЕ</span>
+          <span className="sheet__label">Данные</span>
         </div>
         <button
           type="button"

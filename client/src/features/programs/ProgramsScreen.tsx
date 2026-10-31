@@ -55,7 +55,7 @@ export function ProgramsScreen(): ReactElement {
       {creating ? (
         <form className="prog-new" onSubmit={(e) => { e.preventDefault(); void create(); }}>
           <label className="field-col">
-            <span className="sheet__label">НАЗВАНИЕ ПРОГРАММЫ</span>
+            <span className="sheet__label">Название программы</span>
             <input className="field" aria-label="Название программы" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} autoFocus />
           </label>
           <div className="two">

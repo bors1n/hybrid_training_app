@@ -22,9 +22,9 @@ export function ComplexTab({ sessions }: TabProps): ReactElement {
   return (
     <>
       <div className="pg-stats pg-stats--three-up">
-        <Stat label="КОМПЛЕКСОВ" value={String(totals.done)} sub="выполнено" />
-        <Stat label="ПОВТОРОВ" value={String(totals.reps)} sub="записано" />
-        <Stat label="РАУНДОВ" value={String(totals.rounds)} sub="всего" />
+        <Stat label="Комплексов" value={String(totals.done)} sub="выполнено" />
+        <Stat label="Повторов" value={String(totals.reps)} sub="записано" />
+        <Stat label="Раундов" value={String(totals.rounds)} sub="всего" />
       </div>
 
       <ul className="pg-feed" aria-label="Выполненные комплексы">

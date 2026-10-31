@@ -69,7 +69,7 @@ function ItemEditor({ block, itemIndex, ctx }: ItemProps): ReactElement {
 
       {canChangeLoad ? (
         <label className="item__load">
-          <span className="sheet__label">НАГРУЗКА</span>
+          <span className="sheet__label">Нагрузка</span>
           <select
             aria-label="Тип нагрузки"
             value={load}
@@ -84,10 +84,10 @@ function ItemEditor({ block, itemIndex, ctx }: ItemProps): ReactElement {
 
       <div className="setrow setrow--head" style={grid} aria-hidden="true">
         <span>№</span>
-        <span>ПРОШЛЫЙ</span>
+        <span>Прошлый</span>
         {showWeight ? <span className="c">{weightLabel}</span> : null}
-        {showReps ? <span className="c">ПОВТ</span> : null}
-        {showTime ? <span className="c">ВРЕМЯ</span> : null}
+        {showReps ? <span className="c">Повт</span> : null}
+        {showTime ? <span className="c">Время</span> : null}
         <span className="c">RPE</span>
         <span />
       </div>

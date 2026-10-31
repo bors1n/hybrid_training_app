@@ -87,7 +87,7 @@ export function LoginScreen(): ReactElement {
         {step === 'email' ? (
           <form className="login__form" onSubmit={sendCode} noValidate>
             <label className="login__label">
-              <span>ПОЧТА</span>
+              <span>Почта</span>
               <input
                 className="login__input"
                 type="email"
@@ -109,7 +109,7 @@ export function LoginScreen(): ReactElement {
         ) : (
           <form className="login__form" onSubmit={verify} noValidate>
             <label className="login__label">
-              <span>КОД ИЗ ПИСЬМА НА {parsedEmail.success ? parsedEmail.data.toUpperCase() : ''}</span>
+              <span>Код из письма на {parsedEmail.success ? parsedEmail.data : ''}</span>
               <input
                 className="login__input login__input--code"
                 type="text"

@@ -78,14 +78,14 @@ export function ConditioningScreen(): ReactElement {
           <button type="button" className="round-btn" aria-label="Назад к тренировке" onClick={() => void back()}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6" /></svg>
           </button>
-          <span className="cxs__crumb">БЛОК {index + 1} · {draft.title.toUpperCase()}</span>
+          <span className="cxs__crumb">Блок {index + 1} · {draft.title}</span>
           <span className="cxs__spacer" />
         </div>
 
         {saveError ? <p className="login__error sheet__error" role="alert">Не удалось сохранить: {saveError}</p> : null}
 
         <div className="cxs__head">
-          <span className="cxs__kind"><span className="dot" style={{ background: 'var(--conditioning)' }} />{block.complexId ? `КОМПЛЕКС ${block.complexId}` : 'СВОЙ КОМПЛЕКС'}</span>
+          <span className="cxs__kind"><span className="dot" style={{ background: 'var(--conditioning)' }} />{block.complexId ? `Комплекс ${block.complexId}` : 'Свой комплекс'}</span>
           <input
             className="cxs__title"
             aria-label="Название комплекса"
@@ -109,13 +109,13 @@ export function ConditioningScreen(): ReactElement {
           <summary>Параметры комплекса</summary>
           <div className="two">
             <label className="field-col">
-              <span className="sheet__label cx__label">ФОРМАТ</span>
+              <span className="sheet__label cx__label">Формат</span>
               <select aria-label="Формат комплекса" value={block.format} onChange={(e) => patch({ format: e.target.value as ConditioningBlock['format'] })}>
                 {FORMATS.map((f) => <option key={f} value={f}>{FORMAT_LABELS[f]}</option>)}
               </select>
             </label>
             <label className="field-col">
-              <span className="sheet__label cx__label">ЛИМИТ, МИН</span>
+              <span className="sheet__label cx__label">Лимит, мин</span>
               <NumberField className="field" label="Лимит времени, мин" value={block.timeCapMin} min={0} max={600} onCommit={(v) => patch({ timeCapMin: v })} />
             </label>
           </div>
@@ -123,7 +123,7 @@ export function ConditioningScreen(): ReactElement {
 
         <section className="cxs__result" aria-label="Результат">
           <div className="cxs__result-head">
-            <span className="sheet__label">РЕЗУЛЬТАТ</span>
+            <span className="sheet__label">Результат</span>
             <span className="cxs__record">
               {best ? `Рекорд ${formatResult(best.block.format, best.block.result)}` : block.complexId ? 'Раньше не выполнялся' : ''}
               {last && best && last !== best ? ` · прошлый раз ${formatDateShort(last.date, todayKey())}: ${formatResult(last.block.format, last.block.result)}` : ''}

@@ -19,9 +19,10 @@ import { useSessions } from '../workout/useSessions.ts';
 const RECENT = 6;
 const SHOWN_EXERCISES = 3;
 
-/** «ВТОРНИК, 27 ОКТЯБРЯ». */
+/** «Вторник, 27 октября». */
 function todayLabel(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }).format(now).toUpperCase();
+  const label = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }).format(now);
+  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 export function TodayScreen(): ReactElement {
@@ -77,7 +78,7 @@ export function TodayScreen(): ReactElement {
 
       {inProgress ? (
         <section className="resume" aria-label="Незавершённая тренировка">
-          <span className="resume__label">НЕ ЗАВЕРШЕНА</span>
+          <span className="resume__label">Не завершена</span>
           <span className="resume__title">{inProgress.title}</span>
           <button type="button" className="htr-btn htr-btn--night" onClick={() => navigate(`/workout/${inProgress.id}`)}>Продолжить</button>
         </section>
@@ -86,8 +87,8 @@ export function TodayScreen(): ReactElement {
       {template && state ? (
         <section className="next-card" aria-label="Следующая тренировка">
           <div className="next-card__head">
-            <span className="next-card__label">СЛЕДУЮЩАЯ ПО ОЧЕРЕДИ</span>
-            <span className="next-card__cycle">ЦИКЛ {state.cycle}</span>
+            <span className="next-card__label">Следующая по очереди</span>
+            <span className="next-card__cycle">Цикл {state.cycle}</span>
           </div>
           <div className="next-card__title">
             <span className="next-card__name">{template.title}</span>
@@ -114,13 +115,13 @@ export function TodayScreen(): ReactElement {
       </button>
 
       <div className="today-list">
-        <span className="sheet__label">ПОСЛЕДНИЕ</span>
+        <span className="sheet__label">Последние</span>
         {lastComplex || lastCardio ? (
           <div className="recent-cards">
             {lastComplex ? (
               <button type="button" className="recent-card" aria-label="Последний комплекс" onClick={() => navigate(`/workout/${lastComplex.sessionId}`)}>
                 <span className="recent-card__main">
-                  <span className="recent-card__label"><span className="dot" style={{ background: 'var(--conditioning)' }} />КОМПЛЕКС</span>
+                  <span className="recent-card__label"><span className="dot" style={{ background: 'var(--conditioning)' }} />Комплекс</span>
                   <span className="recent-card__title">{[lastComplex.block.complexId, lastComplex.block.name].filter(Boolean).join(' · ') || 'Комплекс'}</span>
                   <span className="recent-card__sub">{FORMAT_SHORT[lastComplex.block.format]}</span>
                 </span>
@@ -133,7 +134,7 @@ export function TodayScreen(): ReactElement {
             {lastCardio ? (
               <button type="button" className="recent-card" aria-label="Последнее кардио" onClick={() => navigate(`/workout/${lastCardio.sessionId}`)}>
                 <span className="recent-card__main">
-                  <span className="recent-card__label"><span className="dot" style={{ background: 'var(--cardio)' }} />КАРДИО</span>
+                  <span className="recent-card__label"><span className="dot" style={{ background: 'var(--cardio)' }} />Кардио</span>
                   <span className="recent-card__title">{lastCardio.block.name ?? MODALITY_LABELS[lastCardio.block.modality]}</span>
                   <span className="recent-card__sub">
                     {[

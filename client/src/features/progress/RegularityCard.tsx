@@ -20,7 +20,7 @@ export function RegularityCard({ sessions, today }: TabProps & { today: string }
     <section className="pg-card" aria-label="Регулярность">
       <div className="pg-card__head">
         <span className="pg-card__title">Регулярность</span>
-        <span className="sheet__label">6 МЕСЯЦЕВ · {total} {plural(total, 'ТРЕНИРОВКА', 'ТРЕНИРОВКИ', 'ТРЕНИРОВОК')}</span>
+        <span className="sheet__label">6 месяцев · {total} {plural(total, 'Тренировка', 'Тренировки', 'Тренировок')}</span>
       </div>
       <svg className="pg-heat" viewBox={`0 0 ${width} ${height}`} role="img" aria-label={`Тренировки по дням за 6 месяцев: ${total} ${plural(total, 'тренировка', 'тренировки', 'тренировок')}`}>
         {weeks.map((week, x) =>

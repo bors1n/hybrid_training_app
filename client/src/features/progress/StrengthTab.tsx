@@ -36,7 +36,7 @@ function E1rmCard({ series }: { series: ExerciseSeries }): ReactElement {
     <>
       <div className="pg-hero">
         <div className="pg-hero__main">
-          <span className="sheet__label">РАСЧЁТНЫЙ 1ПМ</span>
+          <span className="sheet__label">Расчётный 1ПМ</span>
           <span className="pg-hero__value">{formatDecimal(last.v, 1)}<span className="pg-hero__unit"> кг</span></span>
         </div>
         {delta !== null && delta !== 0 ? <span className="pg-delta">{delta > 0 ? '+' : '−'}{formatDecimal(Math.abs(delta), 1)} кг</span> : null}
@@ -51,8 +51,8 @@ function E1rmCard({ series }: { series: ExerciseSeries }): ReactElement {
         highlightLast
       />
       <div className="pg-stats pg-stats--three">
-        <Stat label="РЕКОРД" value={record ? formatWeightReps(record.weightKg, record.reps) : '–'} accent />
-        <Stat label="ПОСЛЕДНИЙ" value={lastSet ? formatWeightReps(lastSet.weightKg, lastSet.reps) : '–'} />
+        <Stat label="Рекорд" value={record ? formatWeightReps(record.weightKg, record.reps) : '–'} accent />
+        <Stat label="Последний" value={lastSet ? formatWeightReps(lastSet.weightKg, lastSet.reps) : '–'} />
         <Stat label="СР. RPE" value={series.avgRpe === null ? '–' : formatDecimal(series.avgRpe, 1)} />
       </div>
     </>
@@ -76,9 +76,9 @@ function SeriesView({ series, name }: { series: ExerciseSeries; name: string }):
       {series.load === 'normal' ? <E1rmCard series={series} /> : null}
 
       <div className="pg-stats">
-        <Stat label="РАБОЧИЙ ВЕС" value={last.topWeightKg === null ? '–' : kg(last.topWeightKg)} sub={formatDateShort(last.date, today)} />
-        {series.load !== 'normal' ? <Stat label={series.load === 'assisted' ? 'МИНИМУМ ПРОТИВОВЕСА' : 'МАКСИМУМ'} value={bestTop === null ? '–' : kg(bestTop)} /> : null}
-        {series.load !== 'normal' ? <Stat label="СРЕДНИЙ RPE" value={series.avgRpe === null ? '–' : formatDecimal(series.avgRpe, 1)} sub={`${series.setsCount} подх.`} /> : null}
+        <Stat label="Рабочий вес" value={last.topWeightKg === null ? '–' : kg(last.topWeightKg)} sub={formatDateShort(last.date, today)} />
+        {series.load !== 'normal' ? <Stat label={series.load === 'assisted' ? 'Минимум противовеса' : 'Максимум'} value={bestTop === null ? '–' : kg(bestTop)} /> : null}
+        {series.load !== 'normal' ? <Stat label="Средний RPE" value={series.avgRpe === null ? '–' : formatDecimal(series.avgRpe, 1)} sub={`${series.setsCount} подх.`} /> : null}
       </div>
 
       <TrendBox title="Рабочий вес" data={trend} xKey="x" format={(v) => formatDecimal(v, 1)} reversed={series.load === 'assisted'} series={[{ key: 'weight', label: 'Рабочий вес, кг', color: 'var(--strength)' }]} />
@@ -120,9 +120,9 @@ function OverviewBlock({ sessions }: TabProps): ReactElement {
   return (
     <section className="pg-section" aria-label="Силовые в целом">
       <div className="pg-stats">
-        <Stat label="ТРЕНИРОВОК" value={String(overview.sessions)} sub="за 4 недели" />
-        <Stat label="ПОДХОДОВ" value={String(overview.sets)} sub="за 4 недели" />
-        <Stat label="ТОННАЖ" value={`${formatDecimal(overview.tonnageKg / 1000, 1)} т`} sub="за 4 недели" />
+        <Stat label="Тренировок" value={String(overview.sessions)} sub="за 4 недели" />
+        <Stat label="Подходов" value={String(overview.sets)} sub="за 4 недели" />
+        <Stat label="Тоннаж" value={`${formatDecimal(overview.tonnageKg / 1000, 1)} т`} sub="за 4 недели" />
       </div>
       <BarsBox
         title="Тоннаж по неделям"
@@ -162,7 +162,7 @@ export function StrengthTab({ sessions, catalog }: TabProps & { catalog: Workout
           </select>
           <svg className="pg-picker__chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
         </label>
-        <span className="sheet__label">{weeks} {plural(weeks, 'НЕДЕЛЯ', 'НЕДЕЛИ', 'НЕДЕЛЬ')}</span>
+        <span className="sheet__label">{weeks} {plural(weeks, 'Неделя', 'Недели', 'Недель')}</span>
       </div>
       {series.map((s) => (
         <SeriesView key={s.load} series={s} name={name} />

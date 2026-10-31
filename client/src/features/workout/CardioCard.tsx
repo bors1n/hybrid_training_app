@@ -58,7 +58,7 @@ export function CardioCard({ block, index, count, ctx }: Props): ReactElement {
 
       <div className="two">
         <label className="field-col">
-          <span className="sheet__label">ВИД</span>
+          <span className="sheet__label">Вид</span>
           <select
             aria-label="Вид кардио"
             value={block.modality}
@@ -73,7 +73,7 @@ export function CardioCard({ block, index, count, ctx }: Props): ReactElement {
           </select>
         </label>
         <label className="field-col">
-          <span className="sheet__label">РОЛЬ</span>
+          <span className="sheet__label">Роль</span>
           <select aria-label="Роль" value={block.role} onChange={(e) => patch({ role: e.target.value as CardioBlock['role'] })}>
             {CARDIO_ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
           </select>
@@ -82,34 +82,34 @@ export function CardioCard({ block, index, count, ctx }: Props): ReactElement {
 
       <div className="grid2">
         <label className="metric">
-          <span className="sheet__label">ДИСТАНЦИЯ, КМ</span>
+          <span className="sheet__label">Дистанция, км</span>
           <DistanceField className="metric__input" label="Дистанция, км" value={block.distanceM} min={0} onCommit={(v) => patch({ distanceM: v })} />
         </label>
         <label className="metric">
-          <span className="sheet__label">ВРЕМЯ</span>
+          <span className="sheet__label">Время</span>
           <DurationField className="metric__input" label="Время" value={block.durationSec} onCommit={(v) => patch({ durationSec: v })} />
         </label>
         <div className="metric metric--auto">
-          <span className="sheet__label">ТЕМП{paceNote ? ` · ${paceNote.toUpperCase()}` : ''}</span>
+          <span className="sheet__label">Темп{paceNote ? ` · ${paceNote}` : ''}</span>
           <output className="metric__value" aria-label="Темп">{shownPace !== undefined ? formatPaceLabel(shownPace) : '–'}</output>
         </div>
         <label className="metric">
-          <span className="sheet__label">ПУЛЬС СРЕДНИЙ</span>
+          <span className="sheet__label">Пульс средний</span>
           <NumberField className="metric__input" label="Пульс" value={block.avgHr} integer min={30} max={250} inputMode="numeric" onCommit={(v) => patch({ avgHr: v })} />
         </label>
         <label className="metric">
-          <span className="sheet__label">ТЕМП С ЧАСОВ, /КМ</span>
+          <span className="sheet__label">Темп с часов, /км</span>
           <DurationField className="metric__input" label="Темп с часов" value={block.recordedPace} min={1} onCommit={(v) => patch({ recordedPace: v })} />
         </label>
         {block.modality === 'stairs' ? (
           <label className="metric">
-            <span className="sheet__label">ЭТАЖИ</span>
+            <span className="sheet__label">Этажи</span>
             <NumberField className="metric__input" label="Этажи" value={block.floors} integer min={0} inputMode="numeric" onCommit={(v) => patch({ floors: v })} />
           </label>
         ) : null}
         {block.modality === 'treadmill' ? (
           <label className="metric">
-            <span className="sheet__label">НАКЛОН, %</span>
+            <span className="sheet__label">Наклон, %</span>
             <NumberField className="metric__input" label="Наклон" value={block.inclinePct} min={0} max={40} onCommit={(v) => patch({ inclinePct: v })} />
           </label>
         ) : null}
@@ -121,7 +121,7 @@ export function CardioCard({ block, index, count, ctx }: Props): ReactElement {
       ) : null}
 
       <div className="field-col">
-        <span className="sheet__label">RPE · НАСКОЛЬКО ТЯЖЕЛО</span>
+        <span className="sheet__label">RPE · насколько тяжело</span>
         <RpePicker label="RPE кардио" value={block.rpe} onChange={(v) => patch({ rpe: v })} />
       </div>
       <input

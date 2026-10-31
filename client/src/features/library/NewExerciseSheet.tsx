@@ -48,12 +48,12 @@ export function NewExerciseSheet({ existing, onClose, onCreated }: Props): React
         <h2 className="sheet__title">Своё упражнение</h2>
 
         <label className="sheet__row">
-          <span className="sheet__label">НАЗВАНИЕ</span>
+          <span className="sheet__label">Название</span>
           <input className="field" value={name} onChange={(ev) => setName(ev.target.value)} placeholder="Фермерская прогулка 2 × 24" maxLength={200} autoFocus />
         </label>
 
         <div className="sheet__row">
-          <span className="sheet__label">ТИП</span>
+          <span className="sheet__label">Тип</span>
           <div className="chips chips--wrap">
             {kinds.map((k) => (
               <Chip key={k} on={kind === k} onClick={() => setKind(k)}>{KIND_LABELS[k]}</Chip>
@@ -62,7 +62,7 @@ export function NewExerciseSheet({ existing, onClose, onCreated }: Props): React
         </div>
 
         <div className="sheet__row">
-          <span className="sheet__label">ОБОРУДОВАНИЕ</span>
+          <span className="sheet__label">Оборудование</span>
           <div className="chips chips--wrap">
             {equipments.map((q) => (
               <Chip key={q} on={equipment === q} onClick={() => setEquipment(q)}>{EQUIPMENT_LABELS[q]}</Chip>

@@ -73,11 +73,11 @@ function StrengthEditor({ block, ctx }: { block: Extract<Block, { type: 'strengt
               ) : null}
             </div>
             <div className="plan-grid">
-              <label className="field-col"><span className="sheet__label">ПОДХОДЫ</span><NumberField label={`${name}: подходы`} value={p.sets} integer min={1} max={30} inputMode="numeric" onCommit={(v) => patch({ sets: v ?? 1 })} /></label>
-              <label className="field-col"><span className="sheet__label">ПОВТ. ОТ</span><NumberField label={`${name}: повторы от`} value={p.repsMin} integer min={0} max={10000} inputMode="numeric" onCommit={(v) => patch({ repsMin: v })} /></label>
-              <label className="field-col"><span className="sheet__label">ДО</span><NumberField label={`${name}: повторы до`} value={p.repsMax} integer min={0} max={10000} inputMode="numeric" onCommit={(v) => patch({ repsMax: v })} /></label>
-              <label className="field-col"><span className="sheet__label">ВЕС, КГ</span><NumberField label={`${name}: вес`} value={p.weightKg} min={0} max={1000} onCommit={(v) => patch({ weightKg: v })} /></label>
-              <label className="field-col"><span className="sheet__label">ДО</span><NumberField label={`${name}: вес до`} value={p.weightKgMax} min={0} max={1000} onCommit={(v) => patch({ weightKgMax: v })} /></label>
+              <label className="field-col"><span className="sheet__label">Подходы</span><NumberField label={`${name}: подходы`} value={p.sets} integer min={1} max={30} inputMode="numeric" onCommit={(v) => patch({ sets: v ?? 1 })} /></label>
+              <label className="field-col"><span className="sheet__label">Повт. от</span><NumberField label={`${name}: повторы от`} value={p.repsMin} integer min={0} max={10000} inputMode="numeric" onCommit={(v) => patch({ repsMin: v })} /></label>
+              <label className="field-col"><span className="sheet__label">До</span><NumberField label={`${name}: повторы до`} value={p.repsMax} integer min={0} max={10000} inputMode="numeric" onCommit={(v) => patch({ repsMax: v })} /></label>
+              <label className="field-col"><span className="sheet__label">Вес, кг</span><NumberField label={`${name}: вес`} value={p.weightKg} min={0} max={1000} onCommit={(v) => patch({ weightKg: v })} /></label>
+              <label className="field-col"><span className="sheet__label">До</span><NumberField label={`${name}: вес до`} value={p.weightKgMax} min={0} max={1000} onCommit={(v) => patch({ weightKgMax: v })} /></label>
             </div>
             <label className="check">
               <input type="checkbox" checked={Boolean(p.perSide)} onChange={(e) => patch({ perSide: e.target.checked ? true : undefined })} />
@@ -85,7 +85,7 @@ function StrengthEditor({ block, ctx }: { block: Extract<Block, { type: 'strengt
             </label>
             {canChangeLoad ? (
               <label className="item__load">
-                <span className="sheet__label">НАГРУЗКА</span>
+                <span className="sheet__label">Нагрузка</span>
                 <select aria-label={`${name}: нагрузка`} value={p.load} onChange={(e) => patch({ load: e.target.value as typeof p.load })}>
                   <option value="normal">Обычный вес</option>
                   <option value="added">С отягощением</option>
@@ -131,7 +131,7 @@ function CardioEditor({ block, ctx }: { block: Extract<Block, { type: 'cardio' }
     <>
       <div className="two">
         <label className="field-col">
-          <span className="sheet__label">ВИД</span>
+          <span className="sheet__label">Вид</span>
           <select
             aria-label="Вид кардио"
             value={block.modality}
@@ -144,15 +144,15 @@ function CardioEditor({ block, ctx }: { block: Extract<Block, { type: 'cardio' }
           </select>
         </label>
         <label className="field-col">
-          <span className="sheet__label">РОЛЬ</span>
+          <span className="sheet__label">Роль</span>
           <select aria-label="Роль" value={block.role} onChange={(e) => patch({ role: e.target.value as typeof block.role })}>
             {CARDIO_ROLES.map((r) => <option key={r} value={r}>{ROLE_LABELS[r]}</option>)}
           </select>
         </label>
       </div>
       <div className="two">
-        <label className="field-col"><span className="sheet__label">ВРЕМЯ ОТ, МИН</span><MinutesField label="Время от, мин" className="field" value={block.durationSec} onCommit={(v) => patch({ durationSec: v })} /></label>
-        <label className="field-col"><span className="sheet__label">ДО, МИН</span><MinutesField label="Время до, мин" className="field" value={block.durationSecMax} onCommit={(v) => patch({ durationSecMax: v })} /></label>
+        <label className="field-col"><span className="sheet__label">Время от, мин</span><MinutesField label="Время от, мин" className="field" value={block.durationSec} onCommit={(v) => patch({ durationSec: v })} /></label>
+        <label className="field-col"><span className="sheet__label">До, мин</span><MinutesField label="Время до, мин" className="field" value={block.durationSecMax} onCommit={(v) => patch({ durationSecMax: v })} /></label>
       </div>
       <input className="field" aria-label="Заметка к кардио" placeholder="Заметка (дорожка, гребля или лестница)" defaultValue={block.note ?? ''} maxLength={2000} onBlur={(e) => { if (e.target.value.trim() !== (block.note ?? '')) patch({ note: e.target.value.trim() }); }} />
     </>
@@ -172,7 +172,7 @@ function ConditioningEditor({ block, ctx }: { block: Extract<Block, { type: 'con
       ) : (
         <>
           <label className="field-col">
-            <span className="sheet__label">ИЗ БИБЛИОТЕКИ</span>
+            <span className="sheet__label">Из библиотеки</span>
             <select
               aria-label="Комплекс из библиотеки"
               value={block.complexId ?? ''}
@@ -186,23 +186,23 @@ function ConditioningEditor({ block, ctx }: { block: Extract<Block, { type: 'con
             </select>
           </label>
           <label className="field-col">
-            <span className="sheet__label">НАЗВАНИЕ</span>
+            <span className="sheet__label">Название</span>
             <input className="field" aria-label="Название комплекса" defaultValue={block.name ?? ''} maxLength={200} onBlur={(e) => patch({ name: e.target.value.trim() || undefined })} />
           </label>
           <div className="two">
             <label className="field-col">
-              <span className="sheet__label">ФОРМАТ</span>
+              <span className="sheet__label">Формат</span>
               <select aria-label="Формат комплекса" value={block.format ?? 'AMRAP'} onChange={(e) => patch({ format: e.target.value as NonNullable<typeof block.format> })}>
                 {FORMATS.map((f) => <option key={f} value={f}>{FORMAT_LABELS[f]}</option>)}
               </select>
             </label>
             <label className="field-col">
-              <span className="sheet__label">ЛИМИТ, МИН</span>
+              <span className="sheet__label">Лимит, мин</span>
               <NumberField className="field" label="Лимит времени, мин" value={block.timeCapMin} min={0} max={600} onCommit={(v) => patch({ timeCapMin: v })} />
             </label>
           </div>
           <label className="field-col">
-            <span className="sheet__label">СОСТАВ</span>
+            <span className="sheet__label">Состав</span>
             <textarea className="ex-note" aria-label="Состав комплекса" rows={3} defaultValue={block.description ?? ''} maxLength={4000} onBlur={(e) => patch({ description: e.target.value.trim() || undefined })} />
           </label>
         </>
@@ -225,8 +225,8 @@ function MobilityEditor({ block, ctx }: { block: Extract<Block, { type: 'mobilit
         );
       })}
       <div className="two">
-        <label className="field-col"><span className="sheet__label">ВРЕМЯ ОТ, МИН</span><MinutesField label="Мобильность: время от, мин" className="field" value={block.durationSec} onCommit={(v) => ctx.update((t) => updateMobility(t, block.id, { durationSec: v }))} /></label>
-        <label className="field-col"><span className="sheet__label">ДО, МИН</span><MinutesField label="Мобильность: время до, мин" className="field" value={block.durationSecMax} onCommit={(v) => ctx.update((t) => updateMobility(t, block.id, { durationSecMax: v }))} /></label>
+        <label className="field-col"><span className="sheet__label">Время от, мин</span><MinutesField label="Мобильность: время от, мин" className="field" value={block.durationSec} onCommit={(v) => ctx.update((t) => updateMobility(t, block.id, { durationSec: v }))} /></label>
+        <label className="field-col"><span className="sheet__label">До, мин</span><MinutesField label="Мобильность: время до, мин" className="field" value={block.durationSecMax} onCommit={(v) => ctx.update((t) => updateMobility(t, block.id, { durationSecMax: v }))} /></label>
       </div>
       <div className="item__actions"><button type="button" className="pill-btn" onClick={() => setPicking(true)}>+ Упражнение</button></div>
       {picking ? (
@@ -280,11 +280,11 @@ function AddBlock({ ctx, onClose }: { ctx: Ctx; onClose: () => void }): ReactEle
           <>
             <h2 className="sheet__title">Кардио</h2>
             <div className="sheet__row">
-              <span className="sheet__label">РОЛЬ</span>
+              <span className="sheet__label">Роль</span>
               <div className="chips chips--wrap">{CARDIO_ROLES.map((r) => <Chip key={r} on={role === r} onClick={() => setRole(r)}>{ROLE_LABELS[r]}</Chip>)}</div>
             </div>
             <div className="sheet__row">
-              <span className="sheet__label">ВИД</span>
+              <span className="sheet__label">Вид</span>
               <div className="chips chips--wrap">
                 {MODALITIES.map((m) => <button key={m} type="button" className="chip" onClick={() => { ctx.update((t) => addCardio(t, m, role)); onClose(); }}>{MODALITY_LABELS[m]}</button>)}
               </div>
@@ -364,16 +364,16 @@ export function TemplateEditor(): ReactElement {
 
       <div className="tpl__body">
         <label className="field-col">
-          <span className="sheet__label">НАЗВАНИЕ</span>
+          <span className="sheet__label">Название</span>
           <input className="field" aria-label="Название шаблона" defaultValue={draft.title} maxLength={200} onBlur={(e) => { const v = e.target.value.trim(); if (v === '') e.target.value = draft.title; else if (v !== draft.title) update((t) => updateTemplate(t, { title: v })); }} />
         </label>
         <div className="two">
           <label className="field-col">
-            <span className="sheet__label">ПОДЗАГОЛОВОК</span>
+            <span className="sheet__label">Подзаголовок</span>
             <input className="field" aria-label="Подзаголовок" placeholder="Всё тело A" defaultValue={draft.subtitle ?? ''} maxLength={200} onBlur={(e) => { if (e.target.value.trim() !== (draft.subtitle ?? '')) update((t) => updateTemplate(t, { subtitle: e.target.value.trim() })); }} />
           </label>
           <label className="field-col">
-            <span className="sheet__label">ДЛИТЕЛЬНОСТЬ</span>
+            <span className="sheet__label">Длительность</span>
             <input className="field" aria-label="Длительность" placeholder="65–70 мин" defaultValue={draft.durationHint ?? ''} maxLength={200} onBlur={(e) => { if (e.target.value.trim() !== (draft.durationHint ?? '')) update((t) => updateTemplate(t, { durationHint: e.target.value.trim() })); }} />
           </label>
         </div>

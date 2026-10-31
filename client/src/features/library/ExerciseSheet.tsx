@@ -70,13 +70,13 @@ export function ExerciseSheet({ exercise: e, onClose }: Props): ReactElement {
 
         {e.muscles.primary.length > 0 ? (
           <div className="sheet__row">
-            <span className="sheet__label">ОСНОВНЫЕ МЫШЦЫ</span>
+            <span className="sheet__label">Основные мышцы</span>
             <span>{e.muscles.primary.map(muscleLabel).join(', ')}</span>
           </div>
         ) : null}
         {e.muscles.secondary.length > 0 ? (
           <div className="sheet__row">
-            <span className="sheet__label">ВСПОМОГАТЕЛЬНЫЕ</span>
+            <span className="sheet__label">Вспомогательные</span>
             <span>{e.muscles.secondary.map(muscleLabel).join(', ')}</span>
           </div>
         ) : null}
@@ -84,7 +84,7 @@ export function ExerciseSheet({ exercise: e, onClose }: Props): ReactElement {
         {e.aliases.length > 0 ? <p className="stub">Также: {e.aliases.slice(0, 4).join(' · ')}</p> : null}
 
         <label className="sheet__row">
-          <span className="sheet__label">ЗАМЕТКА</span>
+          <span className="sheet__label">Заметка</span>
           <textarea
             className="ex-note"
             rows={3}

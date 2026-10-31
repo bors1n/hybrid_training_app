@@ -48,19 +48,19 @@ export function CardioTab({ sessions }: TabProps): ReactElement {
         <>
           {filter === 'all' ? (
             <div className="pg-stats pg-stats--three-up">
-              <Stat label="ДИСТАНЦИЯ" value={formatKm(totals.km * 1000)} sub="всего" />
-              <Stat label="ВРЕМЯ" value={formatHours(totals.minutes)} sub="всего" />
-              <Stat label="ТРЕНИРОВОК" value={String(totals.count)} sub={plural(totals.count, 'запись', 'записи', 'записей')} />
+              <Stat label="Дистанция" value={formatKm(totals.km * 1000)} sub="всего" />
+              <Stat label="Время" value={formatHours(totals.minutes)} sub="всего" />
+              <Stat label="Тренировок" value={String(totals.count)} sub={plural(totals.count, 'запись', 'записи', 'записей')} />
             </div>
           ) : (
             <div className="pg-stats">
-              <Stat label="САМАЯ ДЛИННАЯ" value={bests.longestDistance ? formatKm(bests.longestDistance.distanceM) : '–'} sub={bests.longestDistance ? formatDateShort(bests.longestDistance.date, today) : undefined} />
+              <Stat label="Самая длинная" value={bests.longestDistance ? formatKm(bests.longestDistance.distanceM) : '–'} sub={bests.longestDistance ? formatDateShort(bests.longestDistance.date, today) : undefined} />
               {bySpeed ? (
-                <Stat label="САМАЯ БЫСТРАЯ" value={bests.fastestSpeed ? `${formatDecimal(bests.fastestSpeed.speedKmh, 1)} км/ч` : '–'} sub={bests.fastestSpeed ? formatDateShort(bests.fastestSpeed.date, today) : 'от 1 км'} />
+                <Stat label="Самая быстрая" value={bests.fastestSpeed ? `${formatDecimal(bests.fastestSpeed.speedKmh, 1)} км/ч` : '–'} sub={bests.fastestSpeed ? formatDateShort(bests.fastestSpeed.date, today) : 'от 1 км'} />
               ) : (
-                <Stat label="ЛУЧШИЙ ТЕМП" value={bests.bestPace ? formatPaceLabel(bests.bestPace.paceSecPerKm) : '–'} sub={bests.bestPace ? formatDateShort(bests.bestPace.date, today) : 'от 1 км'} />
+                <Stat label="Лучший темп" value={bests.bestPace ? formatPaceLabel(bests.bestPace.paceSecPerKm) : '–'} sub={bests.bestPace ? formatDateShort(bests.bestPace.date, today) : 'от 1 км'} />
               )}
-              <Stat label="ДОЛЬШЕ ВСЕГО" value={bests.longestTime ? formatDuration(bests.longestTime.durationSec) : '–'} sub={bests.longestTime ? formatDateShort(bests.longestTime.date, today) : undefined} />
+              <Stat label="Дольше всего" value={bests.longestTime ? formatDuration(bests.longestTime.durationSec) : '–'} sub={bests.longestTime ? formatDateShort(bests.longestTime.date, today) : undefined} />
             </div>
           )}
 

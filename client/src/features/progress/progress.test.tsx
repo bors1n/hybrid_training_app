@@ -61,21 +61,21 @@ describe('Прогресс: сила', () => {
     fireEvent.change(picker, { target: { value: squat.value } });
 
     const normal = await screen.findByRole('region', { name: /: Обычный вес$/ });
-    expect(within(normal).getByText('РАСЧЁТНЫЙ 1ПМ')).toBeTruthy();
+    expect(within(normal).getAllByText('Расчётный 1ПМ')[0]).toBeTruthy();
     expect(within(normal).getByText('99,2')).toBeTruthy(); // 85 × (1 + 5/30)
-    expect(normal.textContent).toContain('РЕКОРД85 кг × 5');
+    expect(normal.textContent).toContain('Рекорд85 кг × 5');
     expect(normal.textContent).toContain('СР. RPE8'); // средний RPE: подходы с RPE 8, 8
     expect(within(normal).getByRole('table', { name: /Лучший подход по повторам/ }).textContent).toContain('85 кг');
 
     fireEvent.change(picker, { target: { value: 'hybridlog:pullup' } });
     const added = await screen.findByRole('region', { name: /: С отягощением$/ });
-    expect(within(added).queryByText('РАСЧЁТНЫЙ 1ПМ')).toBeNull();
+    expect(within(added).queryAllByText('Расчётный 1ПМ')).toHaveLength(0);
     expect(screen.queryByRole('region', { name: /: Обычный вес$/ })).toBeNull();
     expect(within(added).getAllByText(/\+?10 кг/).length).toBeGreaterThan(0);
 
     fireEvent.change(picker, { target: { value: 'hybridlog:gravitron' } });
     const assisted = await screen.findByRole('region', { name: /: С противовесом$/ });
-    expect(within(assisted).getByText('МИНИМУМ ПРОТИВОВЕСА')).toBeTruthy();
+    expect(within(assisted).getByText('Минимум противовеса')).toBeTruthy();
     expect(assisted.textContent).toContain('18,5 кг');
   });
 });
@@ -91,7 +91,7 @@ describe('Прогресс: кардио', () => {
     // «Все» открыта по умолчанию: итоги по всем видам
     const chips = await screen.findByRole('group', { name: 'Вид кардио' });
     expect(within(chips).getByRole('button', { name: 'Все · 1' }).getAttribute('aria-pressed')).toBe('true');
-    expect(await screen.findByText('ДИСТАНЦИЯ')).toBeTruthy();
+    expect(await screen.findByText('Дистанция')).toBeTruthy();
     expect(screen.getByText('3,09 км')).toBeTruthy();
     expect(screen.getByText('24 мин')).toBeTruthy();
     expect(screen.getByRole('figure', { name: 'Километры по неделям' })).toBeTruthy();
@@ -99,7 +99,7 @@ describe('Прогресс: кардио', () => {
     expect(screen.getByRole('figure', { name: 'Темп по тренировкам' })).toBeTruthy();
 
     fireEvent.click(within(chips).getByRole('button', { name: 'Бег · 1' }));
-    expect(await screen.findByText('САМАЯ ДЛИННАЯ')).toBeTruthy();
+    expect(await screen.findByText('Самая длинная')).toBeTruthy();
     expect(screen.getByText('3,09 км')).toBeTruthy();
     expect(screen.getAllByText('7:46 /км').length).toBeGreaterThan(0);
     expect(screen.queryByText('7:49 /км')).toBeNull();
@@ -125,7 +125,7 @@ describe('Прогресс: кардио', () => {
 
     expect(screen.queryByText(/\/км/)).toBeNull(); // на бегу пока только разминка: темпа нет
     fireEvent.click(within(chips).getByRole('button', { name: 'Вело · 1' }));
-    expect(await screen.findByText('САМАЯ БЫСТРАЯ')).toBeTruthy();
+    expect(await screen.findByText('Самая быстрая')).toBeTruthy();
     expect(screen.getAllByText('24 км/ч').length).toBeGreaterThan(0);
   });
 });
@@ -155,9 +155,9 @@ describe('Прогресс: комплексы', () => {
     expect(cards[2]).toContain('9 раундов');
     expect(cards[2]).toContain('рекорд');
 
-    expect(screen.getByText('КОМПЛЕКСОВ').nextElementSibling!.textContent).toBe('3');
-    expect(screen.getByText('РАУНДОВ').nextElementSibling!.textContent).toBe('21');
-    expect(screen.getByText('ПОВТОРОВ').nextElementSibling!.textContent).toBe('14');
+    expect(screen.getByText('Комплексов').nextElementSibling!.textContent).toBe('3');
+    expect(screen.getByText('Раундов').nextElementSibling!.textContent).toBe('21');
+    expect(screen.getByText('Повторов').nextElementSibling!.textContent).toBe('14');
     expect(screen.queryByRole('region', { name: 'Баланс' })).toBeNull();
     expect(screen.queryByRole('region', { name: 'Регулярность' })).toBeNull();
   });
@@ -181,9 +181,9 @@ describe('Прогресс: баланс', () => {
     expect(within(balance).getByRole('img', { name: 'Тренировки за 4 недели: Сила 2, Выносливость 1' })).toBeTruthy();
     expect(balance.textContent).toContain('Выносливость1');
 
-    expect(screen.getByText('НЕДЕЛЬ ПОДРЯД')).toBeTruthy();
+    expect(screen.getByText('Недель подряд')).toBeTruthy();
     expect(screen.getByText('недели с тренировками')).toBeTruthy();
-    expect(screen.getByText('РЕКОРД СЕРИИ').nextElementSibling!.textContent).toBe('2');
+    expect(screen.getByText('Рекорд серии').nextElementSibling!.textContent).toBe('2');
     expect(screen.getByRole('img', { name: 'Огонёк' })).toBeTruthy();
     expect(screen.getByRole('region', { name: 'Регулярность' })).toBeTruthy();
     expect(screen.getByRole('img', { name: 'Тренировки по дням за 6 месяцев: 3 тренировки' })).toBeTruthy();
@@ -192,7 +192,7 @@ describe('Прогресс: баланс', () => {
     expect(screen.queryByRole('region', { name: 'Баланс недели' })).toBeNull();
     expect(screen.queryByText(/остаток длительности/)).toBeNull();
     // порядок: баланс → серия → регулярность → графики
-    const order = [balance, screen.getByText('НЕДЕЛЬ ПОДРЯД'), screen.getByRole('region', { name: 'Регулярность' }), screen.getByRole('figure', { name: 'Тренировки по неделям' })];
+    const order = [balance, screen.getByText('Недель подряд'), screen.getByRole('region', { name: 'Регулярность' }), screen.getByRole('figure', { name: 'Тренировки по неделям' })];
     for (let i = 1; i < order.length; i += 1) expect(order[i - 1]!.compareDocumentPosition(order[i]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
@@ -207,6 +207,6 @@ describe('Прогресс: баланс', () => {
     expect(screen.queryByRole('region', { name: 'Баланс недели' })).toBeNull();
     const overview = screen.getByRole('region', { name: 'Силовые в целом' });
     expect(within(overview).getByRole('figure', { name: 'Тоннаж по неделям' })).toBeTruthy();
-    expect(within(overview).getByText('ТРЕНИРОВОК')).toBeTruthy();
+    expect(within(overview).getByText('Тренировок')).toBeTruthy();
   });
 });

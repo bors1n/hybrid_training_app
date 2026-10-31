@@ -62,9 +62,9 @@ export function ExercisePicker({ title, catalog, sessions, kinds, onPick, onClos
 
         {query.trim() === '' && recent.length > 0 ? (
           <>
-            <span className="sheet__label">НЕДАВНИЕ</span>
+            <span className="sheet__label">Недавние</span>
             <ul className="ex-list">{recent.map(row)}</ul>
-            <span className="sheet__label">ВСЕ УПРАЖНЕНИЯ</span>
+            <span className="sheet__label">Все упражнения</span>
           </>
         ) : null}
         <ul className="ex-list">{found.map(row)}</ul>

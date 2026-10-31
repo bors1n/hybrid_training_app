@@ -24,7 +24,7 @@ function BalanceCard({ sessions, today }: TabProps & { today: string }): ReactEl
     <section className="pg-card" aria-label="Баланс">
       <div className="pg-card__head">
         <span className="pg-card__title">Баланс</span>
-        <span className="sheet__label">ТРЕНИРОВКИ · {BALANCE_WEEKS} НЕДЕЛИ</span>
+        <span className="sheet__label">Тренировки · {BALANCE_WEEKS} недели</span>
       </div>
       <div className="pg-bar" role="img" aria-label={total > 0 ? `Тренировки за ${BALANCE_WEEKS} недели: ${text}` : `За ${BALANCE_WEEKS} недели силовых и выносливости пока нет`}>
         {PARTS.map((p) => (balance[p.key] > 0 ? <span key={p.key} style={{ width: `${(balance[p.key] / total) * 100}%`, background: p.color }} /> : null))}
@@ -57,9 +57,9 @@ export function BalanceTab({ sessions }: TabProps): ReactElement {
       <BalanceCard sessions={sessions} today={today} />
 
       <div className="pg-stats">
-        <Stat label="НЕДЕЛЬ ПОДРЯД" value={String(streak.current)} sub={`${plural(streak.current, 'неделя', 'недели', 'недель')} с тренировками`} />
+        <Stat label="Недель подряд" value={String(streak.current)} sub={`${plural(streak.current, 'неделя', 'недели', 'недель')} с тренировками`} />
         <Stat
-          label="РЕКОРД СЕРИИ"
+          label="Рекорд серии"
           value={
             streak.longest > 0 ? (
               <span className="pg-stat__flame"><span className="pg-stat__flame-icon" role="img" aria-label="Огонёк"><FlameIcon /></span>{streak.longest}</span>

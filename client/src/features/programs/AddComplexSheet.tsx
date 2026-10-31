@@ -77,23 +77,23 @@ export function AddComplexSheet({ complexQueueId, library, inProgram, onClose }:
         ) : (
           <>
             <label className="field-col">
-              <span className="sheet__label">НАЗВАНИЕ</span>
+              <span className="sheet__label">Название</span>
               <input className="field" aria-label="Название комплекса" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} />
             </label>
             <div className="two">
               <label className="field-col">
-                <span className="sheet__label">ФОРМАТ</span>
+                <span className="sheet__label">Формат</span>
                 <select aria-label="Формат комплекса" value={format} onChange={(e) => setFormat(e.target.value as ComplexRecord['format'])}>
                   {FORMATS.map((f) => <option key={f} value={f}>{FORMAT_LABELS[f]}</option>)}
                 </select>
               </label>
               <label className="field-col">
-                <span className="sheet__label">ЛИМИТ, МИН</span>
+                <span className="sheet__label">Лимит, мин</span>
                 <NumberField className="field" label="Лимит времени, мин" value={cap} min={0} max={600} onCommit={setCap} />
               </label>
             </div>
             <label className="field-col">
-              <span className="sheet__label">СОСТАВ</span>
+              <span className="sheet__label">Состав</span>
               <textarea className="ex-note" aria-label="Состав комплекса" rows={5} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={4000} />
             </label>
             {error ? <p className="login__error sheet__error" role="alert">{error}</p> : null}

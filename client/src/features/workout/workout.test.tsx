@@ -263,7 +263,7 @@ describe('подсказки из истории', () => {
     await screen.findByLabelText('Название тренировки');
     await addBlock('Силовое упражнение');
     const dialog = await screen.findByRole('dialog', { name: 'Силовое упражнение' });
-    expect(within(dialog).getByText('НЕДАВНИЕ')).toBeTruthy();
+    expect(within(dialog).getByText('Недавние')).toBeTruthy();
     expect(within(dialog).getAllByRole('button', { name: /Присед в тренажёре/ }).length).toBeGreaterThan(0);
   });
 });
@@ -366,7 +366,7 @@ describe('комплексы', () => {
     expect(summary.getByText(/#005 · AMRAP 15 мин, вес тела/)).toBeTruthy();
     click('Открыть', summary);
     const card = within(await screen.findByRole('region', { name: 'Результат' }));
-    expect(screen.getByText('КОМПЛЕКС #005')).toBeTruthy();
+    expect(screen.getByText('Комплекс #005')).toBeTruthy();
     for (let i = 0; i < 9; i++) fireEvent.click(card.getByRole('button', { name: 'Плюс раунд' }));
     fireEvent.click(card.getByRole('button', { name: 'RPE комплекса 8' }));
     await savedWhere((s) => s.blocks[0]?.type === 'conditioning' && s.blocks[0].result.rounds === 9 && s.blocks[0].rpe === 8);

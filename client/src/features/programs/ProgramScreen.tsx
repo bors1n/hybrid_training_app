@@ -92,17 +92,17 @@ export function ProgramScreen(): ReactElement {
   return (
     <>
       <button type="button" className="back-link" onClick={() => navigate('/programs')}>← Программы</button>
-      <ScreenHead label={state ? `ЦИКЛ ${state.cycle}` : undefined} title={program.title} />
+      <ScreenHead label={state ? `Цикл ${state.cycle}` : undefined} title={program.title} />
       <div className="prog-meta">
         {isActive ? <span className="prog-card__badge">Активная</span> : null}
         {program.description ? <p className="prog-card__desc">{program.description}</p> : null}
-        <button type="button" className="track__edit" onClick={() => setSheet({ kind: 'program' })}>О ПРОГРАММЕ</button>
+        <button type="button" className="track__edit" onClick={() => setSheet({ kind: 'program' })}>О программе</button>
       </div>
 
       <section className="track" aria-label="Очередь тренировок">
         <div className="track__head">
-          <span className="track__label">ОЧЕРЕДЬ · ПО КРУГУ</span>
-          <button type="button" className="track__edit" onClick={() => setSheet({ kind: 'queue' })}>ИЗМЕНИТЬ</button>
+          <span className="track__label">Очередь · по кругу</span>
+          <button type="button" className="track__edit" onClick={() => setSheet({ kind: 'queue' })}>Изменить</button>
         </div>
         {queue && queue.templateIds.length > 0 ? (
           <ol className="track__lanes">

@@ -32,11 +32,11 @@ export function ProgramSheet({ program, isActive, onClose, onDeleted }: Props): 
       <section className="sheet sheet--tall" role="dialog" aria-modal="true" aria-label="О программе">
         <h2 className="sheet__title">О программе</h2>
         <label className="field-col">
-          <span className="sheet__label">НАЗВАНИЕ</span>
+          <span className="sheet__label">Название</span>
           <input className="field" aria-label="Название программы" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} />
         </label>
         <label className="field-col">
-          <span className="sheet__label">ОПИСАНИЕ</span>
+          <span className="sheet__label">Описание</span>
           <textarea className="ex-note" aria-label="Описание программы" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} maxLength={2000} />
         </label>
         {error ? <p className="login__error sheet__error" role="alert">{error}</p> : null}

@@ -170,7 +170,7 @@ export function WorkoutScreen(): ReactElement {
           <h2 className="summary__title">Итог тренировки</h2>
           <div className="grid3">
             <label className="metric">
-              <span className="sheet__label">ВРЕМЯ, МИН</span>
+              <span className="sheet__label">Время, мин</span>
               <NumberField
                 className="metric__input"
                 label="Время тренировки, мин"
@@ -184,22 +184,22 @@ export function WorkoutScreen(): ReactElement {
               />
             </label>
             <div className="metric metric--auto">
-              <span className="sheet__label">ТОННАЖ, КГ</span>
+              <span className="sheet__label">Тоннаж, кг</span>
               <output className="metric__value" aria-label="Тоннаж">{summary.tonnageKg > 0 ? formatDecimal(summary.tonnageKg, 1) : '–'}</output>
             </div>
             <div className="metric metric--auto">
-              <span className="sheet__label">КМ</span>
+              <span className="sheet__label">Км</span>
               <output className="metric__value" aria-label="Километры">{summary.distanceM > 0 ? formatDecimal(summary.distanceM / 1000, 2) : '–'}</output>
             </div>
           </div>
 
           <div className="field-col">
-            <span className="sheet__label">RPE ВСЕЙ ТРЕНИРОВКИ</span>
+            <span className="sheet__label">RPE всей тренировки</span>
             <RpeSlider label="RPE тренировки" value={draft.rpe} onChange={(v) => update((s) => updateSession(s, { rpe: v }))} />
           </div>
 
           <label className="field-col">
-            <span className="sheet__label">ЗАМЕТКА</span>
+            <span className="sheet__label">Заметка</span>
             <textarea
               className="ex-note"
               aria-label="Заметка к тренировке"

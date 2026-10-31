@@ -100,7 +100,7 @@ export function AddBlockSheet({ ctx, onClose }: Props): ReactElement {
           <>
             <h2 className="sheet__title">Кардио</h2>
             <div className="sheet__row">
-              <span className="sheet__label">РОЛЬ</span>
+              <span className="sheet__label">Роль</span>
               <div className="chips chips--wrap">
                 {CARDIO_ROLES.map((r) => (
                   <Chip key={r} on={role === r} onClick={() => setRole(r)}>{ROLE_LABELS[r]}</Chip>
@@ -108,7 +108,7 @@ export function AddBlockSheet({ ctx, onClose }: Props): ReactElement {
               </div>
             </div>
             <div className="sheet__row">
-              <span className="sheet__label">ВИД</span>
+              <span className="sheet__label">Вид</span>
               <div className="chips chips--wrap">
                 {MODALITIES.map((m) => (
                   <button
