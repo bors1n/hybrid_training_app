@@ -113,6 +113,10 @@ npx vitest run --project site   # тесты сайта (Astro Container API)
 
 Задачи ведутся в GitHub Issues (`bors1n/hybrid_training_app`, через `gh`). См. `docs/agents/issue-tracker.md`.
 
+### Triage labels
+
+Стандартные пять ролей (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). См. `docs/agents/triage-labels.md`.
+
 ### Domain docs
 
 Одноконтекстный репозиторий: один `GLOSSARY.md` и `docs/adr/` в корне. См. `docs/agents/domain.md`.
