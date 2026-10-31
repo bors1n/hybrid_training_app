@@ -22,6 +22,7 @@
 :root {
   /* Заголовки сайта набраны узким гротеском под фото на главной; приложение остаётся на Unbounded. */
   --font-display: 'Oswald', 'Arial Narrow', 'Arial Black', system-ui, sans-serif;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --site-max: 1240px;
   --site-pad: max(20px, 4vw);
   --night-panel: #22262E;
@@ -39,7 +40,7 @@ a:hover { color: var(--ink); }
 h1, h2, h3, p { overflow-wrap: break-word; }
 
 .wrap { max-width: var(--site-max); margin: 0 auto; padding-inline: var(--site-pad); }
-.label { font: 500 13px/1.3 var(--font-data); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-muted); }
+.label { font: 500 13px/1.3 var(--font-data); color: var(--ink-muted); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 .skip { position: absolute; left: 12px; top: -60px; z-index: 10; padding: 10px 16px; background: var(--sky); color: var(--night); border-radius: 999px; font-weight: 600; text-decoration: none; }
 .skip:focus { top: 12px; }
@@ -48,11 +49,12 @@ h1, h2, h3, p { overflow-wrap: break-word; }
    Всё включается только при обычных настройках движения; без JavaScript контент виден сразу. */
 @media (prefers-reduced-motion: no-preference) {
   html { scroll-behavior: smooth; }
-  a, .btn { transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease; }
+  a, .btn { transition: color 0.16s var(--ease), background-color 0.16s var(--ease), border-color 0.16s var(--ease), transform 0.16s var(--ease); }
+  .btn:active { transform: scale(0.98); }
   html.js [data-reveal] {
     opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0s), transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0s);
+    transform: translateY(12px);
+    transition: opacity 0.4s var(--ease) var(--reveal-delay, 0s), transform 0.4s var(--ease) var(--reveal-delay, 0s);
     will-change: opacity, transform;
   }
   html.js [data-reveal].is-in { opacity: 1; transform: none; will-change: auto; }
