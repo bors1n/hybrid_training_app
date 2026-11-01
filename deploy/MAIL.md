@@ -11,17 +11,19 @@
 
 ## 2. Записи в DNS (reg.ru)
 
-В reg.ru: Домены → hybridtraining.ru → «DNS-серверы и управление зоной» → добавить TXT-запись.
+В reg.ru: Домены → hybridtraining.ru → «DNS-серверы и управление зоной». В поле «Имя» пиши только часть до домена (`@`, `gokey._domainkey`, `_dmarc`, `track`), без `.hybridtraining.ru`: полное имя превратится в `….hybridtraining.ru.hybridtraining.ru`.
+
+Записи выдаёт кабинет Unisender Go, значения копируй оттуда. Примерно так (значения — пример):
 
 | Имя | Тип | Значение |
 |---|---|---|
-| `@` | TXT | SPF из кабинета. Если запись `v=spf1 …` уже есть, **не создавай вторую**, а допиши в неё `include:` из кабинета. Вторая SPF-запись ломает проверку |
-| имя из кабинета (вида `…._domainkey`) | TXT | DKIM из кабинета, значение копируй целиком |
-| `_dmarc` | TXT | `v=DMARC1; p=none; rua=mailto:[[твоя почта]]` |
+| `@` | TXT | `v=spf1 include:spf.unisender.ru ~all`. Должна быть одна SPF-запись; если `v=spf1 …` уже есть, допиши в неё `include:` вместо второй записи |
+| `@` | TXT | `unisender-go-validate-hash=…` подтверждение домена; рядом с SPF допустимо |
+| `gokey._domainkey` | TXT | `v=DKIM1; k=rsa; p=…` DKIM целиком, без переносов |
+| `_dmarc` | CNAME | `hybridtraining.ru.dmarc.unisender.ru.`. Политику ведёт Unisender. Свою TXT-запись `_dmarc` не добавляй: у имени не может быть и CNAME, и TXT |
+| `track` | NS ×3 | `uns1.unisender.com.`, `uns2.unisender.com.`, `uns3.unisender.com.` Нужны для отслеживания ссылок в рассылках; для кодов входа не обязательны |
 
-DMARC начни с `p=none` (только отчёты). Ужесточить (`quarantine`) можно через пару недель, когда убедишься, что письма доходят.
-
-Проверка после обновления зоны (до часа): в кабинете сервиса домен получает статус «подтверждён»; снаружи — `dig +short TXT hybridtraining.ru` и `dig +short TXT _dmarc.hybridtraining.ru`.
+Проверка после обновления зоны (до часа): в кабинете сервиса домен получает статус «подтверждён»; снаружи — `dig +short TXT hybridtraining.ru @ns1.reg.ru`, `dig +short TXT gokey._domainkey.hybridtraining.ru @ns1.reg.ru` и `dig +short CNAME _dmarc.hybridtraining.ru @ns1.reg.ru`.
 
 ## 3. Данные для SMTP
 
