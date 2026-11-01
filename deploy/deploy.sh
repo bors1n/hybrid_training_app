@@ -7,6 +7,11 @@ HOST="${DEPLOY_HOST:-root@194.58.120.127}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+# Каталог RepDB и комплексы не лежат в git: без них приложение уйдёт на сервер пустым.
+for f in client/src/seed/generated/catalog.json client/src/seed/generated/wods.json; do
+  [ -f "$f" ] || { echo "Нет $f: выполни npm run seed:media и npm run seed:wods" >&2; exit 1; }
+done
+
 npm run build
 
 # Данные оператора в политике и согласии должны быть заполнены (site/src/config.ts, OPERATOR).
