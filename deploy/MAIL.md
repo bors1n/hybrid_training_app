@@ -21,7 +21,7 @@
 | `@` | TXT | `unisender-go-validate-hash=…` подтверждение домена; рядом с SPF допустимо |
 | `gokey._domainkey` | TXT | `v=DKIM1; k=rsa; p=…` DKIM целиком, без переносов |
 | `_dmarc` | CNAME | `hybridtraining.ru.dmarc.unisender.ru.`. Политику ведёт Unisender. Свою TXT-запись `_dmarc` не добавляй: у имени не может быть и CNAME, и TXT |
-| `track` | NS ×3 | `uns1.unisender.com.`, `uns2.unisender.com.`, `uns3.unisender.com.` Нужны для отслеживания ссылок в рассылках; для кодов входа не обязательны |
+| `track` | NS ×3 | `uns1.unisender.com.`, `uns2.unisender.com.`, `uns3.unisender.com.` **Обязательны**: без домена отслеживания Unisender Go отклоняет отправку (код 229, «Custom backend domain or tracking domain required for sending») |
 
 Проверка после обновления зоны (до часа): в кабинете сервиса домен получает статус «подтверждён»; снаружи — `dig +short TXT hybridtraining.ru @ns1.reg.ru`, `dig +short TXT gokey._domainkey.hybridtraining.ru @ns1.reg.ru` и `dig +short CNAME _dmarc.hybridtraining.ru @ns1.reg.ru`.
 
