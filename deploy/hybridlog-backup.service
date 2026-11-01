@@ -1,0 +1,7 @@
+[Unit]
+Description=Копия базы HybridLog
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/hybridlog.env
+ExecStart=/srv/hybridlog/app/deploy/backup.sh

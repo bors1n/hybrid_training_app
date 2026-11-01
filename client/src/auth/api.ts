@@ -1,4 +1,4 @@
-import { UserSchema, type User } from '@hybridlog/shared';
+import { CONSENT_VERSION, UserSchema, type User } from '@hybridlog/shared';
 import { z } from 'zod';
 import { AuthError } from '../sync/engine.ts';
 import { request } from '../sync/http.ts';
@@ -11,8 +11,9 @@ const UserResponseSchema = z.object({ user: UserSchema });
 const post = (body: unknown): RequestInit => ({ method: 'POST', body: JSON.stringify(body) });
 
 export const authApi = {
+  /** Вызывается только после явного согласия на экране входа. */
   requestCode: async (email: string): Promise<void> => {
-    await request('/api/auth/code', OkSchema, post({ email }));
+    await request('/api/auth/code', OkSchema, post({ email, consent: true, consentVersion: CONSENT_VERSION }));
   },
 
   /** 401 на этом эндпоинте значит «неверный или просроченный код», а не истёкшую сессию. */

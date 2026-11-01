@@ -1,4 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { CONSENT_VERSION } from '@hybridlog/shared';
+import { loginCodes } from '../db/schema.ts';
 import { createTestApp, type TestApp } from '../test-helpers.ts';
 
 let t: TestApp;
@@ -11,12 +13,13 @@ afterAll(async () => {
 
 const post = (url: string, payload: unknown, sid?: string) =>
   t.app.inject({ method: 'POST', url, payload: payload as object, ...(sid ? { cookies: { sid } } : {}) });
+const consent = { consent: true, consentVersion: CONSENT_VERSION };
 const me = (sid?: string) => t.app.inject({ method: 'GET', url: '/api/auth/me', ...(sid ? { cookies: { sid } } : {}) });
 
 describe('вход по коду', () => {
   it('полный путь: код → вход → /me → выход', async () => {
     const email = 'flow@example.com';
-    expect((await post('/api/auth/code', { email })).statusCode).toBe(200);
+    expect((await post('/api/auth/code', { email, ...consent })).statusCode).toBe(200);
     const code = t.lastCode(email);
     expect(code).toMatch(/^[0-9]{6}$/);
 
@@ -36,24 +39,24 @@ describe('вход по коду', () => {
   });
 
   it('почта нормализуется: регистр и пробелы не важны', async () => {
-    await post('/api/auth/code', { email: ' Case@Example.com ' });
+    await post('/api/auth/code', { email: ' Case@Example.com ', ...consent });
     const res = await post('/api/auth/verify', { email: 'case@example.com', code: t.lastCode('case@example.com') });
     expect(res.statusCode).toBe(200);
   });
 
   it('неверный код отклоняется, неверный формат даёт 400', async () => {
     const email = 'wrong@example.com';
-    await post('/api/auth/code', { email });
+    await post('/api/auth/code', { email, ...consent });
     const real = t.lastCode(email);
     const wrong = real === '000000' ? '111111' : '000000';
     expect((await post('/api/auth/verify', { email, code: wrong })).statusCode).toBe(401);
     expect((await post('/api/auth/verify', { email, code: '12' })).statusCode).toBe(400);
-    expect((await post('/api/auth/code', { email: 'не-почта' })).statusCode).toBe(400);
+    expect((await post('/api/auth/code', { email: 'не-почта', ...consent })).statusCode).toBe(400);
   });
 
   it('после 5 неверных попыток верный код уже не работает', async () => {
     const email = 'attempts@example.com';
-    await post('/api/auth/code', { email });
+    await post('/api/auth/code', { email, ...consent });
     const real = t.lastCode(email);
     const wrong = real === '000000' ? '111111' : '000000';
     for (let i = 0; i < 5; i++) {
@@ -64,7 +67,7 @@ describe('вход по коду', () => {
 
   it('код одноразовый', async () => {
     const email = 'once@example.com';
-    await post('/api/auth/code', { email });
+    await post('/api/auth/code', { email, ...consent });
     const code = t.lastCode(email);
     expect((await post('/api/auth/verify', { email, code })).statusCode).toBe(200);
     expect((await post('/api/auth/verify', { email, code })).statusCode).toBe(401);
@@ -72,7 +75,7 @@ describe('вход по коду', () => {
 
   it('код живёт 10 минут', async () => {
     const email = 'expire@example.com';
-    await post('/api/auth/code', { email });
+    await post('/api/auth/code', { email, ...consent });
     const code = t.lastCode(email);
     t.clock.t += 10 * 60 * 1000 + 1;
     expect((await post('/api/auth/verify', { email, code })).statusCode).toBe(401);
@@ -80,9 +83,9 @@ describe('вход по коду', () => {
 
   it('новый код отменяет предыдущий', async () => {
     const email = 'newer@example.com';
-    await post('/api/auth/code', { email });
+    await post('/api/auth/code', { email, ...consent });
     const first = t.lastCode(email);
-    await post('/api/auth/code', { email });
+    await post('/api/auth/code', { email, ...consent });
     const second = t.lastCode(email);
     if (first !== second) expect((await post('/api/auth/verify', { email, code: first })).statusCode).toBe(401);
     expect((await post('/api/auth/verify', { email, code: second })).statusCode).toBe(200);
@@ -90,10 +93,10 @@ describe('вход по коду', () => {
 
   it('не больше 5 кодов на почту за 10 минут', async () => {
     const email = 'flood@example.com';
-    for (let i = 0; i < 5; i++) expect((await post('/api/auth/code', { email })).statusCode).toBe(200);
-    expect((await post('/api/auth/code', { email })).statusCode).toBe(429);
+    for (let i = 0; i < 5; i++) expect((await post('/api/auth/code', { email, ...consent })).statusCode).toBe(200);
+    expect((await post('/api/auth/code', { email, ...consent })).statusCode).toBe(429);
     t.clock.t += 10 * 60 * 1000 + 1;
-    expect((await post('/api/auth/code', { email })).statusCode).toBe(200);
+    expect((await post('/api/auth/code', { email, ...consent })).statusCode).toBe(200);
   });
 });
 
@@ -123,7 +126,7 @@ describe('флаг Secure', () => {
   it('ставится, когда включён в конфиге', async () => {
     const secure = await createTestApp({ cookieSecure: true });
     try {
-      await secure.app.inject({ method: 'POST', url: '/api/auth/code', payload: { email: 's@example.com' } });
+      await secure.app.inject({ method: 'POST', url: '/api/auth/code', payload: { email: 's@example.com', ...consent } });
       const res = await secure.app.inject({
         method: 'POST',
         url: '/api/auth/verify',
@@ -134,4 +137,22 @@ describe('флаг Secure', () => {
       await secure.close();
     }
   }, 60_000);
+});
+
+describe('согласие на обработку почты', () => {
+  it('без согласия код не отправляется', async () => {
+    const before = t.sent.length;
+    expect((await post('/api/auth/code', { email: 'no-consent@example.com' })).statusCode).toBe(400);
+    expect((await post('/api/auth/code', { email: 'no-consent@example.com', consent: false, consentVersion: CONSENT_VERSION })).statusCode).toBe(400);
+    expect(t.sent).toHaveLength(before);
+  });
+
+  it('момент согласия и редакция документа сохраняются вместе с кодом', async () => {
+    const email = 'consent@example.com';
+    await post('/api/auth/code', { email, ...consent });
+    const rows = (await t.db.select().from(loginCodes)).filter((r) => r.email === email);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]?.consentAt).toBe(t.clock.t);
+    expect(rows[0]?.consentVersion).toBe(CONSENT_VERSION);
+  });
 });

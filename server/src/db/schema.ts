@@ -22,6 +22,9 @@ export const loginCodes = sqliteTable(
     expiresAt: ms('expires_at').notNull(),
     attempts: integer('attempts').notNull().default(0),
     usedAt: ms('used_at'),
+    /** Когда и на какую редакцию политики человек согласился, запросив код (подтверждение согласия по 152-ФЗ). */
+    consentAt: ms('consent_at').notNull(),
+    consentVersion: text('consent_version').notNull(),
   },
   (t) => [index('login_codes_email_idx').on(t.email, t.createdAt)],
 );

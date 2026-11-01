@@ -29,7 +29,11 @@ function safeEqualHex(a: string, b: string): boolean {
   return x.length === y.length && timingSafeEqual(x, y);
 }
 
-export async function requestCode({ db, mailer, config, now }: AuthDeps, email: string): Promise<void> {
+export async function requestCode(
+  { db, mailer, config, now }: AuthDeps,
+  email: string,
+  consentVersion: string,
+): Promise<void> {
   const t = now();
   const recent = await db
     .select({ n: sql<number>`count(*)` })
@@ -46,6 +50,8 @@ export async function requestCode({ db, mailer, config, now }: AuthDeps, email: 
     codeHash: hashCode(config.authSecret, email, code),
     createdAt: t,
     expiresAt: t + config.codeTtlMs,
+    consentAt: t,
+    consentVersion,
   });
   await mailer.sendCode(email, code);
 }

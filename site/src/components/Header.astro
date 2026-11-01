@@ -17,7 +17,7 @@ const active = (href: string): boolean => current === href || (href !== '/' && c
   <nav aria-label="Разделы" class="head__nav">
     {NAV.map((item) => <a href={item.href} aria-current={active(item.href) ? 'page' : undefined}>{item.label}</a>)}
   </nav>
-  <Button href={SITE.instagramUrl} variant="sky" class="head__cta"><InstagramIcon />Инстаграм</Button>
+  <Button href={SITE.instagramUrl} variant="sky" class="head__cta"><InstagramIcon />Инстаграм*</Button>
 </header>
 
 <style>

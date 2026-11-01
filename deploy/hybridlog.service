@@ -1,0 +1,22 @@
+[Unit]
+Description=HybridLog API
+After=network.target
+
+[Service]
+User=hybridlog
+Group=hybridlog
+WorkingDirectory=/srv/hybridlog/app/server
+EnvironmentFile=/etc/hybridlog.env
+ExecStart=/srv/hybridlog/app/node_modules/.bin/tsx src/main.ts
+Restart=on-failure
+RestartSec=3
+
+# Запись только в каталог базы.
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/hybridlog
+
+[Install]
+WantedBy=multi-user.target

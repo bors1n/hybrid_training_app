@@ -42,7 +42,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDeps): void {
     const body = RequestCodeSchema.safeParse(request.body);
     if (!body.success) return reply.code(400).send({ error: 'bad_request' });
     try {
-      await requestCode(deps, body.data.email);
+      await requestCode(deps, body.data.email, body.data.consentVersion);
     } catch (e) {
       if (e instanceof TooManyCodesError) return reply.code(429).send({ error: 'too_many_codes' });
       throw e;

@@ -17,7 +17,9 @@ CREATE TABLE `login_codes` (
 	`created_at` integer NOT NULL,
 	`expires_at` integer NOT NULL,
 	`attempts` integer DEFAULT 0 NOT NULL,
-	`used_at` integer
+	`used_at` integer,
+	`consent_at` integer NOT NULL,
+	`consent_version` text NOT NULL
 );
 --> statement-breakpoint
 CREATE INDEX `login_codes_email_idx` ON `login_codes` (`email`,`created_at`);--> statement-breakpoint

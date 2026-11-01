@@ -1,5 +1,5 @@
 ---
-import { FOOTER_NAV } from '../config.ts';
+import { FOOTER_NAV, INSTAGRAM_NOTE } from '../config.ts';
 import HtrLogo from './HtrLogo.astro';
 import InstagramIcon from './InstagramIcon.astro';
 ---
@@ -11,6 +11,11 @@ import InstagramIcon from './InstagramIcon.astro';
       {FOOTER_NAV.map((item) => <a href={item.href}>{item.icon === 'instagram' ? <InstagramIcon size={16} /> : null}{item.label}</a>)}
     </nav>
     <span class="foot__copy">© 2026 Hybrid Training Russia</span>
+    <nav aria-label="Документы" class="foot__docs">
+      <a href="/privacy/">Политика конфиденциальности</a>
+      <a href="/consent/">Согласие на обработку данных</a>
+    </nav>
+    <p class="foot__note">{INSTAGRAM_NOTE}</p>
   </div>
 </footer>
 
@@ -21,4 +26,8 @@ import InstagramIcon from './InstagramIcon.astro';
   .foot__nav a { color: var(--on-night); text-decoration: none; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; }
   .foot__nav a:hover { color: var(--sky); }
   .foot__copy { color: var(--on-night-muted); }
+  .foot__docs { display: flex; flex-wrap: wrap; gap: 8px 24px; flex-basis: 100%; }
+  .foot__docs a { color: var(--on-night-muted); text-decoration: underline; min-height: 44px; display: inline-flex; align-items: center; }
+  .foot__docs a:hover { color: var(--sky); }
+  .foot__note { flex-basis: 100%; margin: 0; max-width: 760px; font-size: 13px; line-height: 1.5; color: var(--on-night-muted); }
 </style>

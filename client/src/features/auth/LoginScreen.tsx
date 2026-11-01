@@ -1,6 +1,7 @@
 import { useState, type FormEvent, type ReactElement } from 'react';
 import { CODE_LENGTH, EmailSchema } from '@hybridlog/shared';
 import { authApi, InvalidCodeError } from '../../auth/api.ts';
+import { CONSENT_URL, PRIVACY_URL } from '../../auth/legal.ts';
 import { useAuth } from '../../auth/store.ts';
 import { NetworkError } from '../../sync/engine.ts';
 import { RateLimitError } from '../../sync/http.ts';
@@ -28,6 +29,7 @@ export function LoginScreen(): ReactElement {
   const [step, setStep] = useState<'email' | 'code'>('email');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,6 +41,7 @@ export function LoginScreen(): ReactElement {
       setError('Проверьте адрес почты');
       return;
     }
+    if (!agreed) return;
     setBusy(true);
     setError(null);
     try {
@@ -100,8 +103,15 @@ export function LoginScreen(): ReactElement {
                 required
               />
             </label>
+            <label className="login__consent">
+              <input type="checkbox" checked={agreed} onChange={(ev) => setAgreed(ev.target.checked)} />
+              <span>
+                Согласен на <a href={CONSENT_URL} target="_blank" rel="noopener">обработку моей почты и данных тренировок</a>.{' '}
+                <a href={PRIVACY_URL} target="_blank" rel="noopener">Политика обработки персональных данных</a>
+              </span>
+            </label>
             {error ? <p className="login__error" role="alert">{error}</p> : null}
-            <button type="submit" className="htr-btn htr-btn--night login__btn" disabled={busy || email.trim() === ''}>
+            <button type="submit" className="htr-btn htr-btn--night login__btn" disabled={busy || email.trim() === '' || !agreed}>
               {busy ? 'Отправляем…' : 'Получить код'}
             </button>
             <p className="login__hint">Есть таблица с тренировками? После входа загрузи её через CSV в профиле.</p>

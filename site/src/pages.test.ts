@@ -7,6 +7,8 @@ import RubricNav from './components/RubricNav.astro';
 
 import Index from './pages/index.astro';
 import AppPage from './pages/app/index.astro';
+import Privacy from './pages/privacy/index.astro';
+import Consent from './pages/consent/index.astro';
 
 async function render(component: Parameters<AstroContainer['renderToString']>[0], path = '/', props?: Record<string, unknown>) {
   const container = await AstroContainer.create();
@@ -99,7 +101,6 @@ describe('рубрики и список статей', () => {
 
 describe('страницы-заглушки', () => {
   it.each([
-    ['HybridLog', AppPage, '/app/'],
     ['О проекте', About, '/about/'],
   ] as const)('%s: заголовок, ссылка на главную, текущий пункт меню', async (title, component, path) => {
     const html = await render(component, path);
@@ -107,5 +108,44 @@ describe('страницы-заглушки', () => {
     expect(html).toContain(title);
     expect(html).toContain('href="/"');
     expect(html).toContain('aria-current="page"');
+  });
+});
+
+describe('страница HybridLog', () => {
+  it('описывает продукт, помечена «бета», ведёт в приложение и объясняет установку на iPhone', async () => {
+    const html = await render(AppPage, '/app/');
+    expect(html.match(/<h1[\s>]/g)).toHaveLength(1);
+    expect(html).toContain('бета');
+    expect(html).toMatch(/href="https:\/\/app\.hybridtraining\.ru"[^>]*>[^<]*Открыть приложение</);
+    expect(html).toContain('Как поставить на iPhone');
+    expect(html.match(/<ol[\s\S]*?<\/ol>/)?.[0].match(/<li/g)).toHaveLength(3);
+    expect(html).toContain('aria-current="page"');
+  });
+});
+
+describe('Инстаграм: маркировка и документы', () => {
+  it('в шапке и подвале у Инстаграма звёздочка, а в подвале — сноска про Meta', async () => {
+    const html = await render(Index);
+    expect(html.match(/Инстаграм\*/g)!.length).toBeGreaterThanOrEqual(2);
+    expect(html).toContain('Meta Platforms Inc.');
+    expect(html).toContain('Деятельность компании на территории Российской Федерации запрещена');
+    expect(html).toContain('href="https://www.instagram.com/hybridtrainingrus/"');
+    expect(html).toContain('@hybridtrainingrus*');
+  });
+
+  it('подвал ведёт на политику и согласие', async () => {
+    const html = await render(Index);
+    expect(html).toContain('href="/privacy/"');
+    expect(html).toContain('href="/consent/"');
+  });
+
+  it.each([
+    ['политика', Privacy, 'Политика обработки персональных данных'],
+    ['согласие', Consent, 'Согласие на обработку персональных данных'],
+  ] as const)('страница «%s»: заголовок, редакция и один h1', async (_n, component, title) => {
+    const html = await render(component, '/x/');
+    expect(html.match(/<h1[\s>]/g)).toHaveLength(1);
+    expect(html).toContain(title);
+    expect(html).toContain('Редакция от 01.11.2026');
   });
 });

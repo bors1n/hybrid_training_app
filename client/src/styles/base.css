@@ -95,6 +95,9 @@ button { font: inherit; color: inherit; }
 .login__input:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
 .login__error { margin: 0; font-size: 14px; color: #FF9A92; }
 .login__btn { min-height: 52px; }
+.login__consent { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--on-night-muted); }
+.login__consent input { flex: none; width: 22px; height: 22px; margin: 0; accent-color: var(--sky); }
+.login__consent a { color: var(--on-night); text-decoration: underline; }
 .login__ghost { background: transparent; color: var(--on-night); border-color: var(--on-night); }
 .sheet__credit { margin: 0; font-size: 12px; color: var(--ink-muted); }
 .sheet__credit a { color: inherit; }

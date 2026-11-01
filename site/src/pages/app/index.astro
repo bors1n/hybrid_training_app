@@ -1,5 +1,55 @@
 ---
-import StubPage from '../../components/StubPage.astro';
+import Base from '../../layouts/Base.astro';
+import Button from '../../components/Button.astro';
+import { SITE } from '../../config.ts';
+
+const steps = [
+  { title: 'Откройте ссылку в Safari', text: 'Если вы пришли из Инстаграма*, нажмите «⋯» и выберите «Открыть в Safari». Во встроенном браузере приложение установить нельзя.' },
+  { title: 'Нажмите «Поделиться»', text: 'Значок квадрата со стрелкой внизу экрана, затем «На экран \u00abДомой\u00bb».' },
+  { title: 'Войдите по коду из письма', text: 'Откройте HybridLog с экрана «Домой», введите почту и код, который придёт в письме. Пароль не нужен.' },
+];
 ---
 
-<StubPage title="HybridLog" label="Приложение" text="Страница приложения появится вместе с запуском HybridLog." />
+<Base title="HybridLog" headerOnNight={false}>
+  <section class="hl wrap">
+    <span class="label">Приложение · бета</span>
+    <h1 class="hl__title">HybridLog</h1>
+    <p class="hl__lead">Журнал для тех, кто тренируется сам: сила, бег, функциональные комплексы и мобильность в одном месте. Видно, как делится ваша неделя между силой и выносливостью.</p>
+    <ul class="hl__list">
+      <li>Любую тренировку можно внести без программы и задним числом.</li>
+      <li>Работает без сети: данные сохраняются на телефоне и синхронизируются, когда сеть появится.</li>
+      <li>Приложение ничего не советует: нет автоматических весов, целей и оценок.</li>
+    </ul>
+    <div class="hl__cta">
+      <Button href={SITE.appUrl} size="lg">Открыть приложение</Button>
+    </div>
+    <p class="hl__note">Это бета: что-то может работать неидеально. Приложение сделано Hybrid Training Russia и не даёт медицинских рекомендаций.</p>
+  </section>
+
+  <section class="hl wrap" aria-labelledby="install">
+    <h2 id="install" class="hl__h2">Как поставить на iPhone</h2>
+    <ol class="hl__steps">
+      {steps.map((s) => (
+        <li>
+          <strong>{s.title}</strong>
+          <span>{s.text}</span>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .hl { padding-block: 72px 24px; display: flex; flex-direction: column; gap: 16px; align-items: flex-start; }
+  .hl + .hl { padding-block: 24px 120px; }
+  .hl__title { margin: 0; font: 700 clamp(40px, 6vw, 76px) / 0.98 var(--font-display); letter-spacing: 0.005em; text-transform: uppercase; }
+  .hl__lead { margin: 0; max-width: 620px; font-size: 20px; }
+  .hl__list { margin: 0; padding-left: 20px; max-width: 620px; color: var(--ink-muted); font-size: 18px; display: grid; gap: 8px; }
+  .hl__cta { margin-top: 8px; }
+  .hl__note { margin: 0; max-width: 620px; font-size: 15px; color: var(--ink-muted); }
+  .hl__h2 { margin: 0; font: 700 clamp(28px, 4vw, 40px) / 1.05 var(--font-display); text-transform: uppercase; }
+  .hl__steps { margin: 0; padding-left: 24px; max-width: 620px; display: grid; gap: 16px; font-size: 18px; }
+  .hl__steps li { padding-left: 4px; }
+  .hl__steps strong { display: block; }
+  .hl__steps span { color: var(--ink-muted); }
+</style>

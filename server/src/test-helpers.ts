@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify';
 import type { SyncRecord } from '@hybridlog/shared';
+import { CONSENT_VERSION } from '@hybridlog/shared';
 import { sessionData } from '@hybridlog/shared/fixtures';
 import { buildApp } from './app.ts';
 import type { Mailer } from './auth/mailer.ts';
@@ -8,6 +9,7 @@ import { openDb } from './db/client.ts';
 
 export interface TestApp {
   app: FastifyInstance;
+  db: Awaited<ReturnType<typeof openDb>>['db'];
   clock: { t: number };
   sent: { email: string; code: string }[];
   lastCode: (email: string) => string;
@@ -35,7 +37,7 @@ export async function createTestApp(overrides: Partial<Config> = {}): Promise<Te
   };
 
   const login = async (email: string): Promise<string> => {
-    await app.inject({ method: 'POST', url: '/api/auth/code', payload: { email } });
+    await app.inject({ method: 'POST', url: '/api/auth/code', payload: { email, consent: true, consentVersion: CONSENT_VERSION } });
     const res = await app.inject({ method: 'POST', url: '/api/auth/verify', payload: { email, code: lastCode(email) } });
     const sid = res.cookies.find((c) => c.name === 'sid')?.value;
     if (res.statusCode !== 200 || !sid) throw new Error(`Вход не удался: ${res.statusCode} ${res.body}`);
@@ -44,6 +46,7 @@ export async function createTestApp(overrides: Partial<Config> = {}): Promise<Te
 
   return {
     app,
+    db: handle.db,
     clock,
     sent,
     lastCode,

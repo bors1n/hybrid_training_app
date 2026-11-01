@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "37adb32b-e274-4830-a31c-0f851d5728e4",
+  "id": "1348a459-5448-4f47-b945-9194844fd1f0",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "auth_sessions": {
@@ -136,6 +136,20 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
+          "autoincrement": false
+        },
+        "consent_at": {
+          "name": "consent_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "consent_version": {
+          "name": "consent_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
           "autoincrement": false
         }
       },

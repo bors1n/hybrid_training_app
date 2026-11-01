@@ -1,0 +1,26 @@
+---
+import Base from '../layouts/Base.astro';
+interface Props {
+  title: string;
+  /** Редакция документа: показывается под заголовком. */
+  version: string;
+}
+const { title, version } = Astro.props;
+---
+
+<Base title={title} headerOnNight={false}>
+  <article class="legal wrap">
+    <h1 class="legal__title">{title}</h1>
+    <p class="legal__version">Редакция от {version}</p>
+    <div class="legal__body"><slot /></div>
+  </article>
+</Base>
+
+<style>
+  .legal { padding-block: 72px 120px; max-width: 760px; }
+  .legal__title { margin: 0 0 8px; font: 700 clamp(30px, 5vw, 52px) / 1.02 var(--font-display); text-transform: uppercase; }
+  .legal__version { margin: 0 0 32px; color: var(--ink-muted); font-size: 15px; }
+  .legal__body :global(h2) { margin: 32px 0 8px; font: 700 22px / 1.2 var(--font-display); }
+  .legal__body :global(p), .legal__body :global(li) { font-size: 17px; line-height: 1.6; }
+  .legal__body :global(ul), .legal__body :global(ol) { padding-left: 22px; display: grid; gap: 6px; }
+</style>
