@@ -1,5 +1,5 @@
 import { mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { buildApp } from './app.ts';
 import { consoleMailer, smtpMailer } from './auth/mailer.ts';
 import { loadConfig } from './config.ts';
@@ -7,9 +7,9 @@ import { openDb } from './db/client.ts';
 
 const env = process.env;
 const config = loadConfig(env);
-const dataDir = env['DATABASE_URL'] ? undefined : (env['PGLITE_DIR'] ?? join(import.meta.dirname, '..', '.data', 'pg'));
-if (dataDir) mkdirSync(dataDir, { recursive: true });
-const { db, close } = await openDb({ url: env['DATABASE_URL'], dataDir });
+const dbFile = env['DATABASE_FILE'] ?? join(import.meta.dirname, '..', '.data', 'hybridlog.db');
+mkdirSync(dirname(dbFile), { recursive: true });
+const { db, close } = await openDb({ file: dbFile });
 
 const smtpUrl = env['SMTP_URL'];
 const mailer = smtpUrl ? smtpMailer(smtpUrl, env['MAIL_FROM'] ?? 'HybridLog <no-reply@localhost>') : consoleMailer;

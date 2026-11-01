@@ -32,7 +32,7 @@ function safeEqualHex(a: string, b: string): boolean {
 export async function requestCode({ db, mailer, config, now }: AuthDeps, email: string): Promise<void> {
   const t = now();
   const recent = await db
-    .select({ n: sql<number>`count(*)::int` })
+    .select({ n: sql<number>`count(*)` })
     .from(loginCodes)
     .where(and(eq(loginCodes.email, email), gt(loginCodes.createdAt, t - config.codeWindowMs)));
   if ((recent[0]?.n ?? 0) >= config.maxCodesPerWindow) throw new TooManyCodesError();

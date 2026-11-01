@@ -26,7 +26,7 @@ npm run dev:site          # сайт (Astro) на :4321
 npx vitest run --project site   # тесты сайта (Astro Container API)
 ```
 
-Сквозные тесты (клиентская синхронизация против настоящего сервера) — в `tests/e2e/`, запуск: `npx vitest run --project e2e`. Код входа в dev печатается в консоль сервера (`npm run dev`); база — PGlite в `server/.data/` (при сбое удалить папку).
+Сквозные тесты (клиентская синхронизация против настоящего сервера) — в `tests/e2e/`, запуск: `npx vitest run --project e2e`. Код входа в dev печатается в консоль сервера (`npm run dev`); база — файл SQLite `server/.data/hybridlog.db` (при сбое удалить папку).
 
 Тесты компонентов (React Testing Library) — файлы `*.test.tsx` с первой строкой `// @vitest-environment jsdom`; остальные тесты клиента идут в `node` с `fake-indexeddb`.
 
@@ -49,7 +49,7 @@ npx vitest run --project site   # тесты сайта (Astro Container API)
 
 - Вход только по коду на почту. Apple и Яндекс ID — после MVP; их кнопки с макета Login не показываем.
 - Разработка и тесты локально на Windows-ПК; на iPhone — через HTTPS-туннель (PWA и service worker на iOS работают только по HTTPS). После MVP — деплой на российский VPS (152-ФЗ).
-- Docker и PostgreSQL на машине нет. Локально и в тестах сервер работает на PGlite, в проде — на PostgreSQL; диалект Drizzle один и тот же.
+- База — SQLite (`better-sqlite3`, Drizzle `sqlite-core`) и локально, и в проде, и в тестах (в памяти); один сервер приложения. PostgreSQL — если проект вырастет (01.11.2026 решено начинать с SQLite).
 - Сайт — Astro в монорепо, статьи в Markdown.
 
 ## Принципы продукта (из ТЗ, не нарушать)

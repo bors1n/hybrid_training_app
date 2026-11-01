@@ -11,21 +11,22 @@ import { records, users } from '../db/schema.ts';
 export async function pushRecords(db: Db, userId: string, batch: SyncRecord[]): Promise<Omit<PushResponse, 'rejected'>> {
   if (batch.length === 0) return { applied: 0, stale: [] };
 
-  return db.transaction(async (tx) => {
-    // Обновление строки пользователя сериализует параллельные push одного аккаунта,
-    // поэтому курсор seq внутри пользователя растёт в порядке фиксации транзакций.
-    const [counter] = await tx
+  // Транзакция better-sqlite3 синхронная: SQLite пишет по одному, поэтому параллельные push одного
+  // аккаунта выстраиваются в очередь сами, а курсор seq растёт в порядке фиксации.
+  return db.transaction((tx) => {
+    const [counter] = tx
       .update(users)
       .set({ syncSeq: sql`${users.syncSeq} + ${batch.length}` })
       .where(eq(users.id, userId))
-      .returning({ syncSeq: users.syncSeq });
+      .returning({ syncSeq: users.syncSeq })
+      .all();
     if (!counter) throw new Error('Пользователь не найден');
     const firstSeq = counter.syncSeq - batch.length + 1;
 
     const stale: PushResponse['stale'] = [];
     let applied = 0;
     for (const [i, rec] of batch.entries()) {
-      const written = await tx
+      const written = tx
         .insert(records)
         .values({
           userId,
@@ -41,7 +42,8 @@ export async function pushRecords(db: Db, userId: string, batch: SyncRecord[]): 
           set: { data: rec.data, updatedAt: rec.updatedAt, deletedAt: rec.deletedAt, seq: firstSeq + i },
           setWhere: sql`${records.updatedAt} < excluded.updated_at`,
         })
-        .returning({ id: records.id });
+        .returning({ id: records.id })
+        .all();
       if (written.length > 0) applied += 1;
       else stale.push({ collection: rec.collection, id: rec.id });
     }

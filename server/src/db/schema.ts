@@ -1,8 +1,10 @@
-import { bigint, index, jsonb, pgTable, primaryKey, integer, text, uuid } from 'drizzle-orm/pg-core';
+import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-const ms = (name: string) => bigint(name, { mode: 'number' });
+/** Время в миллисекундах: INTEGER в SQLite 64-битный, в число JS помещается. */
+const ms = (name: string) => integer(name);
+const uuid = (name: string) => text(name);
 
-export const users = pgTable('users', {
+export const users = sqliteTable('users', {
   id: uuid('id').primaryKey(),
   email: text('email').notNull().unique(),
   createdAt: ms('created_at').notNull(),
@@ -10,7 +12,7 @@ export const users = pgTable('users', {
   syncSeq: ms('sync_seq').notNull().default(0),
 });
 
-export const loginCodes = pgTable(
+export const loginCodes = sqliteTable(
   'login_codes',
   {
     id: uuid('id').primaryKey(),
@@ -24,7 +26,7 @@ export const loginCodes = pgTable(
   (t) => [index('login_codes_email_idx').on(t.email, t.createdAt)],
 );
 
-export const authSessions = pgTable(
+export const authSessions = sqliteTable(
   'auth_sessions',
   {
     id: uuid('id').primaryKey(),
@@ -37,13 +39,13 @@ export const authSessions = pgTable(
   (t) => [index('auth_sessions_user_idx').on(t.userId)],
 );
 
-export const records = pgTable(
+export const records = sqliteTable(
   'records',
   {
     userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
     collection: text('collection').notNull(),
     id: text('id').notNull(),
-    data: jsonb('data').$type<Record<string, unknown>>().notNull(),
+    data: text('data', { mode: 'json' }).$type<Record<string, unknown>>().notNull(),
     updatedAt: ms('updated_at').notNull(),
     deletedAt: ms('deleted_at'),
     seq: ms('seq').notNull(),

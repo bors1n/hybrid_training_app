@@ -29,9 +29,9 @@ npx vitest run client/src/data/db.test.ts   # один тест
 
 ## Вход в dev-режиме
 
-Почтовый сервис не нужен: пока не задан `SMTP_URL`, сервер печатает код входа в свою консоль (`npm run dev`, строка «[вход] код для …»). База — встроенный PGlite в `server/.data/pg` (создаётся при первом запуске, первый старт занимает несколько секунд). Сломалась или не нужна — удалите папку `server/.data`.
+Почтовый сервис не нужен: пока не задан `SMTP_URL`, сервер печатает код входа в свою консоль (`npm run dev`, строка «[вход] код для …»). База — файл SQLite `server/.data/hybridlog.db` (создаётся при первом запуске). Сломалась или не нужна — удалите папку `server/.data`.
 
-Переменные окружения сервера: `PORT` (8787), `DATABASE_URL` (PostgreSQL вместо PGlite), `PGLITE_DIR`, `AUTH_SECRET` (обязателен при `NODE_ENV=production`), `SMTP_URL`, `MAIL_FROM`, `COOKIE_SECURE` (`1`/`0`, по умолчанию `1` в production), `TRUST_PROXY=1` (за Caddy или туннелем — чтобы лимиты считались по реальному IP).
+Переменные окружения сервера: `PORT` (8787), `DATABASE_FILE` (путь к файлу SQLite, по умолчанию `server/.data/hybridlog.db`), `AUTH_SECRET` (обязателен при `NODE_ENV=production`), `SMTP_URL`, `MAIL_FROM`, `COOKIE_SECURE` (`1`/`0`, по умолчанию `1` в production), `TRUST_PROXY=1` (за Caddy или туннелем — чтобы лимиты считались по реальному IP).
 
 Миграции: после правки `server/src/db/schema.ts` выполните `npx drizzle-kit generate` в папке `server/`; применяются при старте сервера.
 

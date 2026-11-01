@@ -1,14 +1,10 @@
-import { PGlite } from '@electric-sql/pglite';
-import { drizzle as drizzlePglite } from 'drizzle-orm/pglite';
-import { migrate as migratePglite } from 'drizzle-orm/pglite/migrator';
-import { drizzle as drizzlePg } from 'drizzle-orm/node-postgres';
-import { migrate as migratePg } from 'drizzle-orm/node-postgres/migrator';
-import type { PgDatabase, PgQueryResultHKT } from 'drizzle-orm/pg-core';
+import Database from 'better-sqlite3';
+import { drizzle, type BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
+import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import { join } from 'node:path';
-import pg from 'pg';
 import * as schema from './schema.ts';
 
-export type Db = PgDatabase<PgQueryResultHKT, typeof schema>;
+export type Db = BetterSQLite3Database<typeof schema>;
 
 export interface DbHandle {
   db: Db;
@@ -16,24 +12,19 @@ export interface DbHandle {
 }
 
 export interface DbOptions {
-  /** Строка подключения PostgreSQL. Если не задана — встроенный PGlite. */
-  url?: string | undefined;
-  /** Каталог данных PGlite; без него база живёт в памяти (тесты). */
-  dataDir?: string | undefined;
+  /** Путь к файлу базы SQLite; без него база живёт в памяти (тесты). */
+  file?: string | undefined;
 }
 
 const migrationsFolder = join(import.meta.dirname, '..', '..', 'drizzle');
 
-/** Открывает базу и применяет миграции. Один и тот же SQL работает и на PGlite, и на PostgreSQL. */
-export async function openDb({ url, dataDir }: DbOptions = {}): Promise<DbHandle> {
-  if (url) {
-    const pool = new pg.Pool({ connectionString: url });
-    const db = drizzlePg(pool, { schema });
-    await migratePg(db, { migrationsFolder });
-    return { db: db as unknown as Db, close: () => pool.end() };
-  }
-  const client = new PGlite(dataDir);
-  const db = drizzlePglite(client, { schema });
-  await migratePglite(db, { migrationsFolder });
-  return { db: db as unknown as Db, close: () => client.close() };
+/** Открывает базу и применяет миграции. */
+export async function openDb({ file }: DbOptions = {}): Promise<DbHandle> {
+  const sqlite = new Database(file ?? ':memory:');
+  // WAL: читатели не блокируют запись, а копия файла через `.backup` остаётся целой.
+  sqlite.pragma('journal_mode = WAL');
+  sqlite.pragma('foreign_keys = ON');
+  const db = drizzle(sqlite, { schema });
+  migrate(db, { migrationsFolder });
+  return { db, close: async () => void sqlite.close() };
 }
