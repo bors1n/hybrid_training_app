@@ -22,9 +22,9 @@ export const INSTAGRAM_NOTE =
  * `deploy/deploy.sh` не выкладывает сайт, пока такие маркеры остаются в собранных страницах.
  */
 export const OPERATOR = {
-  name: '[[ФИО оператора]]',
-  email: '[[почта для обращений]]',
-  address: '[[почтовый адрес оператора]]',
+  name: 'Борсин Александр Владимирович',
+  email: 'borsin686@yandex.ru',
+  address: 'г. Владивосток, ул. Опорная, д. 18а',
 } as const;
 
 export interface NavItem {

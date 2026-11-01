@@ -28,7 +28,11 @@ rsync -az --delete \
 
 ssh "$HOST" 'set -e
   cd /srv/hybridlog/app
-  npm ci --workspace server --workspace shared --include-workspace-root
+  # Заголовки Node берём с самого сервера: nodejs.org оттуда может не открываться (таймаут node-gyp).
+  test -f /usr/include/node/node.h || { echo "Нет /usr/include/node/node.h: переустанови nodejs из NodeSource" >&2; exit 1; }
+  npm_config_nodedir=/usr npm ci --workspace server --workspace shared --include-workspace-root
+  # Новый npm не запускает скрипты установки без разрешения: собираем нативный модуль явно.
+  [ -f node_modules/better-sqlite3/build/Release/better_sqlite3.node ] || npm_config_nodedir=/usr npm rebuild better-sqlite3
   chown -R hybridlog:hybridlog /srv/hybridlog/app
   chmod +x deploy/backup.sh
   systemctl restart hybridlog
