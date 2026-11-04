@@ -3,6 +3,7 @@ export const REVEAL_SELECTOR = [
   '.hero__text > *', '.hero__photo', '.section__head', '.section__row', '.basic', '.card',
   '.app__text > *', '.app__phone-wrap', '.insta', '.page__head', '.rubrics', '.stub > *',
   '.article__head > *', '.article__cover', '.prose > *', '.cta', '.more__title',
+  '.intro > *', '.author__photo', '.author__text > *', '.pillar', '.about-app__text > *', '.about-app__phone', '.join',
 ].join(', ');
 
 /** Задержка соседних блоков: каждый следующий чуть позже, но не дольше полусекунды. */

@@ -1,5 +1,194 @@
 ---
-import StubPage from '../../components/StubPage.astro';
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import Button from '../../components/Button.astro';
+import HybridLogWordmark from '../../components/HybridLogWordmark.astro';
+import IphoneFrame from '../../components/IphoneFrame.astro';
+import { SITE } from '../../config.ts';
+import portrait from '../../assets/about/portrait.jpg';
+import crossfit from '../../assets/about/crossfit-2018.jpg';
+import appScreen from '../../assets/about/app-progress.jpg';
+
+const VIDEO_URL = 'https://www.youtube.com/watch?v=3Ke4QbFDH4A&t=126s';
+
+const pillars = [
+  {
+    dot: 'var(--cobalt)',
+    tag: 'Статьи',
+    title: 'Гибридные тренировки и всё, что рядом',
+    text: 'Здоровье, восстановление, кардио, сила. Например: «Как построить план гибридных тренировок», «Зачем тренировать кардио», «Как прогрессировать в однократных максимумах», «Какие бывают комплексы».',
+    href: '/articles/',
+    link: 'Читать статьи',
+  },
+  {
+    dot: 'var(--conditioning)',
+    tag: 'Комплексы и программы',
+    title: 'Что и как делать',
+    text: 'Программы для разных уровней подготовленности от популярных спортсменов. Особенности тренировок атлетов. Принципы выполнения комплексов.',
+    href: '/rubrics/complexes/',
+    link: 'Открыть комплексы',
+  },
+  {
+    dot: 'var(--cardio)',
+    tag: 'Сообщество',
+    title: 'Люди, которым интересно то же самое',
+    text: `Оно живёт в Инстаграме*: ${SITE.instagramHandle}*. Там можно следить за проектом, задавать вопросы и находить единомышленников.`,
+    href: SITE.instagramUrl,
+    link: 'Перейти в Инстаграм*',
+  },
+];
 ---
 
-<StubPage title="О проекте" label="Hybrid Training Russia" text="Страница о проекте появится позже." />
+<Base
+  title="О проекте"
+  description="Hybrid Training Russia — русскоязычный проект о гибридных тренировках: статьи, комплексы, программы и приложение HybridLog. Рассказывает автор."
+  headerOnNight={false}
+>
+  <section class="intro wrap">
+    <span class="label">Hybrid Training Russia</span>
+    <h1 class="intro__title">О проекте</h1>
+    <p class="intro__lead">
+      Hybrid Training Russia — русскоязычный проект о гибридных тренировках: когда силовые, кардио и комплексы живут в одной программе. Здесь будут статьи, разборы комплексов и программ, а ещё приложение HybridLog, где можно вести всё это в одном месте.
+    </p>
+    <p class="intro__note">
+      Проект для тех, кто тренируется сам, хочет разнообразия и хочет совмещать силу и выносливость, не выбирая что-то одно.
+    </p>
+  </section>
+
+  <section class="section wrap" aria-labelledby="author-title">
+    <div class="author">
+      <div class="author__photo">
+        <Image
+          src={portrait}
+          alt="Александр, автор проекта, на фоне моря во Владивостоке"
+          widths={[420, 640, 900]}
+          sizes="(max-width: 860px) 100vw, 40vw"
+          loading="eager"
+        />
+      </div>
+      <div class="author__text">
+        <span class="label">Автор</span>
+        <h2 id="author-title" class="h2">Кто я</h2>
+        <p>
+          Привет! Меня зовут Александр, мне 31, я из Владивостока. Занимался борьбой, футболом, кроссфитом, много ходил в зал. В 28 лет надолго бросил активный спорт, а от офисной работы заболела спина. Тогда я понял, зачем на самом деле нужны тренировки: чтобы оставаться здоровым, чувствовать себя подвижным и свободным. И чтобы это приносило удовольствие.
+        </p>
+        <figure class="author__figure">
+          <div class="author__frame">
+            <Image
+              src={crossfit}
+              alt="Александр на соревнованиях по кроссфиту: запрыгивание на бокс"
+              widths={[480, 720, 960]}
+              sizes="(max-width: 860px) 100vw, 50vw"
+            />
+          </div>
+          <figcaption class="label">Кроссфит, 2018</figcaption>
+        </figure>
+        <p>
+          Занятия в тренажёрном зале для меня быстро становятся скучным делом. Мне нравились комплексы из кроссфита и спринты, бег и гребля, силовые и работа мышц в разных диапазонах. Как-то мне на YouTube попался <a href={VIDEO_URL} rel="noopener noreferrer">ролик</a> о гибридных тренировках, и всё сложилось: оказывается, это целая философия и набор принципов, которые мне по душе.
+        </p>
+        <p>
+          В русскоязычном интернете об этом не так много, поэтому я решил собрать материалы и сообщество в одном месте: Hybrid Training Russia.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="about-title">
+    <div class="section__head">
+      <span class="label">Содержание</span>
+      <h2 id="about-title" class="h2">Про что здесь</h2>
+    </div>
+    <div class="pillars">
+      {pillars.map((p) => (
+        <article class="pillar">
+          <span class="pillar__tag"><span class="pillar__dot" style={`background:${p.dot}`}></span>{p.tag}</span>
+          <h3 class="pillar__title">{p.title}</h3>
+          <p class="pillar__text">{p.text}</p>
+          <a class="pillar__link" href={p.href}>{p.link} →</a>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="app-title">
+    <div class="about-app">
+      <div class="about-app__text">
+        <HybridLogWordmark />
+        <h2 id="app-title" class="about-app__title">Журнал тренировок для тех, кто тренируется сам</h2>
+        <p class="about-app__lead">
+          Сила, бег и комплексы в одном месте. Видно, как делится ваша неделя между силой и выносливостью. Приложение ничего не навязывает: вы сами решаете, что и как делать.
+        </p>
+        <Button href="/app/" variant="cobalt">Узнать о HybridLog</Button>
+      </div>
+      <div class="about-app__phone">
+        <IphoneFrame src={appScreen} alt="Экран «Прогресс» в приложении HybridLog: баланс силы и выносливости, серия недель, регулярность" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--last wrap" aria-labelledby="join-title">
+    <div class="join">
+      <span class="join__label">Присоединяйся</span>
+      <h2 id="join-title" class="join__title">Как присоединиться</h2>
+      <p class="join__text">
+        Добавь сайт в закладки и подпишись на Инстаграм*. Если есть вопросы, пожелания или замечания по сайту и приложению, пиши мне в личные сообщения в Инстаграме*.
+      </p>
+      <div class="join__actions">
+        <Button href={SITE.instagramUrl} variant="sky" size="lg">Подписаться в Инстаграме*</Button>
+        <Button href="/articles/" variant="outline" size="lg">Читать статьи</Button>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .intro { padding-block: 72px 24px; display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+  .intro__title { margin: 0; font: 700 clamp(48px, 8vw, 112px) / 0.96 var(--font-display); letter-spacing: 0.005em; text-transform: uppercase; }
+  .intro__lead { margin: 0; max-width: 760px; font-size: clamp(19px, 2.2vw, 24px); line-height: 1.5; }
+  .intro__note { margin: 0; max-width: 640px; font-size: 18px; color: var(--ink-muted); }
+
+  .section { padding-top: 88px; display: flex; flex-direction: column; gap: 32px; }
+  .section--last { padding-bottom: 88px; }
+  .section__head { display: flex; flex-direction: column; gap: 12px; }
+  .h2 { margin: 0; font: 700 clamp(28px, 3.8vw, 48px) / 1.02 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; }
+
+  .author { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(32px, 5vw, 72px); align-items: start; }
+  .author__photo { position: sticky; top: 24px; aspect-ratio: 4 / 5; border-radius: 20px; overflow: hidden; background: var(--surface); }
+  .author__photo :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+  .author__text { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .author__text p { margin: 0; max-width: 640px; font-size: 18px; line-height: 1.6; }
+  .author__figure { margin: 8px 0; display: flex; flex-direction: column; gap: 10px; max-width: 640px; }
+  .author__frame { aspect-ratio: 1 / 1; max-width: 480px; border-radius: 16px; overflow: hidden; background: var(--surface); }
+  .author__frame :global(img) { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 8%; }
+
+  .pillars { display: flex; flex-wrap: wrap; gap: 20px; }
+  .pillar { flex: 1 1 300px; min-width: 0; border: 1px solid var(--line); border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .pillar__tag { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; font: 500 13px/1.3 var(--font-data); color: var(--ink-muted); }
+  .pillar__dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+  .pillar__title { margin: 0; font: 600 22px/1.2 var(--font-display); }
+  .pillar__text { margin: 0; flex: 1; color: var(--ink-muted); font-size: 16px; line-height: 1.55; }
+  .pillar__link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+
+  .about-app { background: var(--surface); border-radius: 20px; padding: clamp(24px, 5vw, 64px); display: flex; flex-wrap: wrap; align-items: center; gap: 48px; }
+  .about-app__text { flex: 1 1 440px; min-width: 0; display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+  .about-app__title { margin: 0; font: 700 clamp(26px, 3.4vw, 44px) / 1.05 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; }
+  .about-app__lead { margin: 0; max-width: 520px; font-size: 18px; line-height: 1.55; color: var(--ink-muted); }
+  .about-app__phone { flex: 1 1 320px; min-width: 0; display: flex; justify-content: center; }
+
+  .join { background: var(--night); color: var(--on-night); border-radius: 20px; padding: clamp(28px, 5vw, 64px); display: flex; flex-direction: column; gap: 20px; align-items: flex-start; }
+  .join__label { font: 500 13px/1.3 var(--font-data); color: var(--sky); }
+  .join__title { margin: 0; font: 700 clamp(32px, 5vw, 64px) / 1 var(--font-display); letter-spacing: 0.01em; text-transform: uppercase; }
+  .join__text { margin: 0; max-width: 620px; font-size: 19px; line-height: 1.55; color: var(--on-night-soft); }
+  .join__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+
+  @media (max-width: 860px) {
+    .author { grid-template-columns: minmax(0, 1fr); }
+    .author__photo { position: static; aspect-ratio: 4 / 4.4; max-width: 520px; }
+  }
+  @media (max-width: 640px) {
+    .intro { padding-block: 40px 8px; }
+    .section { padding-top: 56px; }
+    .section--last { padding-bottom: 56px; }
+    .author__text p { font-size: 17px; }
+  }
+</style>

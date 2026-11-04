@@ -99,15 +99,31 @@ describe('рубрики и список статей', () => {
   });
 });
 
-describe('страницы-заглушки', () => {
-  it.each([
-    ['О проекте', About, '/about/'],
-  ] as const)('%s: заголовок, ссылка на главную, текущий пункт меню', async (title, component, path) => {
-    const html = await render(component, path);
-    expect(html).toContain(`<h1 class="stub__title`);
-    expect(html).toContain(title);
-    expect(html).toContain('href="/"');
+describe('страница «О проекте»', () => {
+  it('один заголовок первого уровня, текущий пункт меню, фото автора и скриншот приложения с описаниями', async () => {
+    const html = await render(About, '/about/');
+    expect(html.match(/<h1[\s>]/g)).toHaveLength(1);
     expect(html).toContain('aria-current="page"');
+    expect(html).toMatch(/<img[^>]*alt="Александр, автор проекта/);
+    expect(html).toMatch(/<img[^>]*alt="Александр на соревнованиях по кроссфиту/);
+    expect(html).toMatch(/<img[^>]*alt="Экран «Прогресс» в приложении HybridLog/);
+  });
+
+  it('содержит разделы текста: кто я, про что здесь, как присоединиться', async () => {
+    const html = await render(About, '/about/');
+    for (const text of ['Кто я', 'Про что здесь', 'Как присоединиться', 'Владивостока', 'Hybrid Training Russia']) {
+      expect(html).toContain(text);
+    }
+    expect(html).toMatch(/href="https:\/\/www\.instagram\.com\/hybridtrainingrus\/"/);
+  });
+
+  it('везде, где упомянут Инстаграм, стоит звёздочка', async () => {
+    const html = await render(About, '/about/');
+    const body = html.slice(html.indexOf('id="content"'), html.indexOf('<footer'));
+    const text = body.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, ' ');
+    const mentions = text.match(/Инстаграм[а-я]*\*?/g) ?? [];
+    expect(mentions.length).toBeGreaterThan(0);
+    for (const m of mentions) expect(m.endsWith('*')).toBe(true);
   });
 });
 
