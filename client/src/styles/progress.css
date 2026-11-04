@@ -1,8 +1,9 @@
 /* Экран «Прогресс»: вкладки, плитки, графики, таблицы */
-.pg-tabs { display: flex; gap: 4px; padding: 4px; border-radius: var(--radius-pill); background: var(--surface); margin: var(--space-2) 0 var(--space-4); }
+.pg-tabs { display: flex; gap: 4px; padding: 4px; border-radius: var(--radius-pill); background: var(--surface); margin: var(--space-2) 0 var(--space-4); overflow-x: auto; scrollbar-width: none; }
+.pg-tabs::-webkit-scrollbar { display: none; }
 .pg-tab {
-  flex: 1; min-width: 0; min-height: 40px; border: none; border-radius: var(--radius-pill); cursor: pointer; background: transparent; color: var(--ink-muted);
-  font: 500 13px var(--font-text); padding: 0 6px;
+  flex: 1 1 auto; white-space: nowrap; min-height: 40px; border: none; border-radius: var(--radius-pill); cursor: pointer; background: transparent; color: var(--ink-muted);
+  font: 500 13px var(--font-text); padding: 0 10px;
 }
 .pg-tab[aria-selected='true'] { background: var(--paper); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / 0.12); }
 .pg-panel { display: flex; flex-direction: column; gap: var(--space-4); margin-bottom: var(--space-8); min-width: 0; }

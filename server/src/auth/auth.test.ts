@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { CONSENT_VERSION } from '@hybridlog/shared';
+import { buildApp } from '../app.ts';
+import { loadConfig } from '../config.ts';
+import { openDb } from '../db/client.ts';
 import { loginCodes } from '../db/schema.ts';
 import { createTestApp, type TestApp } from '../test-helpers.ts';
 
@@ -154,5 +157,33 @@ describe('согласие на обработку почты', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]?.consentAt).toBe(t.clock.t);
     expect(rows[0]?.consentVersion).toBe(CONSENT_VERSION);
+  });
+});
+
+describe('сбой отправки письма', () => {
+  it('502, код не сохраняется и не тратит лимит попыток', async () => {
+    const handle = await openDb();
+    const app = await buildApp({
+      db: handle.db,
+      mailer: {
+        async sendCode() {
+          throw new Error('535 Bad credentials');
+        },
+      },
+      config: { ...loadConfig({}), ipRateLimitPerMin: 100_000 },
+      now: () => 1_800_000_000_000,
+    });
+    try {
+      const payload = { email: 'mailfail@example.com', ...consent };
+      for (let i = 0; i < 5; i++) {
+        const res = await app.inject({ method: 'POST', url: '/api/auth/code', payload });
+        expect(res.statusCode).toBe(502);
+        expect(res.json()).toEqual({ error: 'mail_failed' });
+      }
+      expect(await handle.db.select().from(loginCodes)).toHaveLength(0);
+    } finally {
+      await app.close();
+      await handle.close();
+    }
   });
 });

@@ -4,11 +4,17 @@ import { authApi, InvalidCodeError } from '../../auth/api.ts';
 import { CONSENT_URL, PRIVACY_URL } from '../../auth/legal.ts';
 import { useAuth } from '../../auth/store.ts';
 import { NetworkError } from '../../sync/engine.ts';
-import { RateLimitError } from '../../sync/http.ts';
+import { RateLimitError, ServerError } from '../../sync/http.ts';
 
 function errorText(e: unknown): string {
   if (e instanceof InvalidCodeError) return 'Неверный или просроченный код. Запросите новый.';
   if (e instanceof RateLimitError) return 'Слишком много попыток. Подождите несколько минут.';
+  // 502 — сервер доступен, но письмо с кодом не отправилось.
+  if (e instanceof ServerError) {
+    return e.status === 502
+      ? 'Не удалось отправить письмо на этот адрес. Проверьте адрес и попробуйте позже.'
+      : 'Сервер сейчас не отвечает. Попробуйте через несколько минут.';
+  }
   if (e instanceof NetworkError) return 'Нет связи с сервером. Для первого входа нужен интернет.';
   return 'Не получилось. Проверьте данные и попробуйте ещё раз.';
 }

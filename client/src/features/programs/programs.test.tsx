@@ -117,7 +117,7 @@ describe('главный экран: следующая тренировка', (
     renderApp();
     const complex = await screen.findByLabelText('Последний комплекс');
     expect(complex.textContent).toContain('#001');
-    expect(complex.textContent).toContain('Чиппер');
+    expect(complex.textContent).not.toContain('Чиппер'); // только номер и вид, без длинного названия
     expect(complex.textContent).toContain('на время');
     expect(complex.textContent).toContain('12:35');
     const cardio = screen.getByLabelText('Последнее кардио');

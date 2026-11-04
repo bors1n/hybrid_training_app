@@ -7,6 +7,8 @@ import { authSessions, loginCodes, users } from '../db/schema.ts';
 import type { Mailer } from './mailer.ts';
 
 export class TooManyCodesError extends Error {}
+/** Письмо с кодом не отправилось (SMTP отказал или недоступен). */
+export class MailSendError extends Error {}
 
 const DAY = 24 * 60 * 60 * 1000;
 
@@ -44,8 +46,9 @@ export async function requestCode(
   const code = String(randomInt(0, 10 ** CODE_LENGTH)).padStart(CODE_LENGTH, '0');
   // Новый код отменяет предыдущие неиспользованные.
   await db.update(loginCodes).set({ usedAt: t }).where(and(eq(loginCodes.email, email), isNull(loginCodes.usedAt)));
+  const id = randomUUID();
   await db.insert(loginCodes).values({
-    id: randomUUID(),
+    id,
     email,
     codeHash: hashCode(config.authSecret, email, code),
     createdAt: t,
@@ -53,7 +56,13 @@ export async function requestCode(
     consentAt: t,
     consentVersion,
   });
-  await mailer.sendCode(email, code);
+  try {
+    await mailer.sendCode(email, code);
+  } catch (e) {
+    // Неотправленный код не должен тратить лимит попыток.
+    await db.delete(loginCodes).where(eq(loginCodes.id, id));
+    throw new MailSendError(e instanceof Error ? e.message : 'mail failed', { cause: e });
+  }
 }
 
 export interface Login {

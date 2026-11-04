@@ -122,7 +122,7 @@ export function TodayScreen(): ReactElement {
               <button type="button" className="recent-card" aria-label="Последний комплекс" onClick={() => navigate(`/workout/${lastComplex.sessionId}`)}>
                 <span className="recent-card__main">
                   <span className="recent-card__label"><span className="dot" style={{ background: 'var(--conditioning)' }} />Комплекс</span>
-                  <span className="recent-card__title">{[lastComplex.block.complexId, lastComplex.block.name].filter(Boolean).join(' · ') || 'Комплекс'}</span>
+                  <span className="recent-card__title">{lastComplex.block.complexId ?? lastComplex.block.name ?? 'Комплекс'}</span>
                   <span className="recent-card__sub">{FORMAT_SHORT[lastComplex.block.format]}</span>
                 </span>
                 <span className="recent-card__value">

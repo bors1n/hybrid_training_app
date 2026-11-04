@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { RequestCodeSchema, VerifyCodeSchema, type User } from '@hybridlog/shared';
 import type { AuthDeps } from './service.ts';
-import { endSession, getSession, requestCode, TooManyCodesError, verifyCode } from './service.ts';
+import { endSession, getSession, MailSendError, requestCode, TooManyCodesError, verifyCode } from './service.ts';
 
 export const SESSION_COOKIE = 'sid';
 
@@ -45,6 +45,10 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDeps): void {
       await requestCode(deps, body.data.email, body.data.consentVersion);
     } catch (e) {
       if (e instanceof TooManyCodesError) return reply.code(429).send({ error: 'too_many_codes' });
+      if (e instanceof MailSendError) {
+        request.log.error({ err: e.cause ?? e }, 'не удалось отправить код входа');
+        return reply.code(502).send({ error: 'mail_failed' });
+      }
       throw e;
     }
     return { ok: true };

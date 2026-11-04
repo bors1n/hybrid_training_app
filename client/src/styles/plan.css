@@ -3,19 +3,21 @@
 
 .next-card {
   position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--night); color: var(--on-night);
-  padding: var(--space-5, 20px); display: flex; flex-direction: column; gap: 16px; margin-bottom: var(--space-3);
-  background-image: repeating-linear-gradient(to bottom, transparent 0 74px, #2A3140 74px 76px);
+  display: flex; flex-direction: column; margin-bottom: var(--space-3);
 }
+/* Дорожки — линии между строками, а не фон: строки переносятся, и повторяющийся фон с ними не совпадает. */
+.next-card > *, .next-card__list li { padding: 14px 20px; border-top: 2px solid #2A3140; }
+.next-card > :first-child { border-top: none; }
 .next-card__head { display: flex; justify-content: space-between; align-items: center; }
 .next-card__label { font: 500 12px/16px var(--font-data); color: var(--sky); }
 .next-card__cycle { font: 500 12px/16px var(--font-data); color: var(--on-night-muted); }
 .next-card__title { display: flex; flex-direction: column; gap: 4px; }
 .next-card__name { font: 600 26px/1.05 var(--font-display); }
-.next-card__sub { font-size: 15px; color: var(--sky); }
-.next-card__list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #C9CFD8; }
-.next-card__list li { display: flex; justify-content: space-between; gap: var(--space-3); }
+.next-card__sub { font-size: 15px; line-height: 22px; color: var(--sky); }
+.next-card__list { list-style: none; margin: 0; padding: 0; border-top: none; display: flex; flex-direction: column; font-size: 14px; line-height: 20px; color: #C9CFD8; }
+.next-card__list li { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); }
 .next-card__list .mono { color: var(--on-night); white-space: nowrap; }
-.next-card__rest { margin: 0; font-size: 14px; color: var(--on-night-muted); }
+.next-card__rest { margin: 0; font-size: 14px; line-height: 20px; color: var(--on-night-muted); }
 .next-card__actions { display: flex; justify-content: center; }
 .next-card__start { padding-inline: var(--space-6); }
 
@@ -27,7 +29,7 @@
 .recent-card { width: 100%; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; border-radius: var(--radius-md); background: var(--surface); padding: 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
 .recent-card__main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .recent-card__label { display: inline-flex; align-items: center; gap: 8px; font: 500 12px/16px var(--font-data); color: var(--ink-muted); }
-.recent-card__title { font: 600 17px/22px var(--font-display); overflow-wrap: anywhere; }
+.recent-card__title { font: 600 17px/22px var(--font-display); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .recent-card__sub { font-size: 13px; line-height: 17px; color: var(--ink-muted); }
 .recent-card__value { flex: none; text-align: right; font: 600 17px/22px var(--font-data); }
 .recent-card__value small { display: block; font: 400 13px/17px var(--font-body, inherit); color: var(--ink-muted); }
